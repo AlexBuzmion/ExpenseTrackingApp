@@ -11,19 +11,13 @@ export default function AccountScreen() {
 
             <Text style={styles.title}>Welcome</Text>
 
-            <TouchableOpacity 
-                style={[styles.loginButton, { borderWidth: 1.5, margin: 10}]}
-                onPress={() => router.push("/login")}
-                >
+            <TouchableOpacity style={[styles.loginButton, { borderWidth: 1.5, margin: 10}]} onPress={() => router.navigate("/login")}>
                 <Text>Login</Text>
             </TouchableOpacity>
 
             <Text>- or -</Text>
 
-            <TouchableOpacity 
-                style={[styles.signupButton, { borderWidth: 0, margin: 10 }]}
-                onPress={() => router.push("/signup")}
-                >
+            <TouchableOpacity style={[styles.signupButton, { borderWidth: 0, margin: 10 }]} onPress={() => router.navigate("/signup")}>
                 <Text>Sign Up</Text>
             </TouchableOpacity>
         </View>
@@ -35,6 +29,7 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
+        padding: 10
     },
     title: {
         fontSize: 20,
