@@ -5,6 +5,7 @@ import { printToFileAsync } from "expo-print";
 import { shareAsync } from "expo-sharing";
 import { CrossPlatformDatePicker } from '@/src/components/CrossPlatformDatePicker';
 import { useState } from 'react';
+import { signOut } from '@/src/utils/authService';
 
 export default function TabTwoScreen() {
     const listStore = useExpenseListStore();
@@ -167,10 +168,19 @@ export default function TabTwoScreen() {
             <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
             
             <TouchableOpacity 
-                style={[styles.button, { borderWidth: 1, margin: 10 }]} 
+                style={[styles.button, { borderWidth: 1, margin: 10, borderColor: '#ccc'  }]} 
                 onPress={() => generatePDF()}
             >
                 <Text>Generate PDF</Text>
+            </TouchableOpacity>
+            {/* //! for signing out */}
+            <TouchableOpacity 
+                style={[styles.button, { borderWidth: 1, margin: 10, borderColor: '#ccc' }]} 
+                onPress={() => {
+                    signOut()
+                }}
+            >
+                <Text>Sign Out</Text>
             </TouchableOpacity>
         </View>
     );

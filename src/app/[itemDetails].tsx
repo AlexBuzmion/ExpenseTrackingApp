@@ -4,7 +4,7 @@ import { Alert, Pressable, StyleSheet, TouchableOpacity } from 'react-native';
 import { useExpenseListStore } from '@/store/expenseListStore';
 import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useState } from 'react';
-import Colors from '../constants/Colors';
+import Colors from '@/src/constants/Colors';
 
 const ItemDetails = () => {
     const router = useRouter();

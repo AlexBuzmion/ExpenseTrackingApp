@@ -1,4 +1,4 @@
-import { SectionList, StyleSheet, TouchableOpacity, Animated, Easing } from 'react-native';
+import { SectionList, StyleSheet, TouchableOpacity, Animated, Easing, Pressable, ActivityIndicator, KeyboardAvoidingView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text, View, InputText } from '@/src/components/Themed';
 import { Link, Stack } from 'expo-router';
@@ -7,9 +7,11 @@ import Colors from '@/src/constants/Colors';
 import { useExpenseListStore } from '@/store/expenseListStore';
 import { format } from 'date-fns';
 import ItemEntry from '@/src/components/itemEntry';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+
 
 export default function TabOneScreen() {
+
     const listStore = useExpenseListStore().expenseList;
     const sections = groupExpensesByMonth(listStore);
 	const scaleAnim = useRef(new Animated.Value(1)).current;
@@ -56,45 +58,49 @@ export default function TabOneScreen() {
 
     return (
 		<SafeAreaView style={styles.container}>
-			<View style={styles.container}>
-				<Stack.Screen options={{ title: 'Expenses' }} />
-				<View style={[ styles.searchBar, {flexDirection: 'row', alignItems: 'center'}]}>
-					<Ionicons style={{paddingHorizontal: 10}} name="search" size={20} color={Colors.dark.tint}></Ionicons>
-					<InputText
-						style={{ marginLeft: 10, color: Colors.dark.tint }}
-						placeholder="Search"
-					>
-					</InputText>
+			{/* ! Login related components*/}
+			<KeyboardAvoidingView style={{ flex: .5, padding: 10}}>
+				
+				{/* ! End of login related components */}
+				<View style={styles.container}>
+					<Stack.Screen options={{ title: 'Expenses' }} />
+					<View style={[ styles.searchBar, {flexDirection: 'row', alignItems: 'center'}]}>
+						<Ionicons style={{paddingHorizontal: 10}} name="search" size={20} color={Colors.dark.tint}></Ionicons>
+						<InputText
+							style={{ marginLeft: 10, color: Colors.dark.tint }}
+							placeholder="Search"
+						>
+						</InputText>
+					</View>
+					{/* <Text style={styles.title}>Expense List</Text> */}
+					{/* <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" /> */}
+					{listStore.length === 0 ? (
+						<Text style={styles.title}>No expenses found</Text>
+						) : (
+							<SectionList
+								sections={sections}
+								keyExtractor={(item, index) => item.id + index}
+								renderItem={({ item }) => (
+									<ItemEntry item={item} />
+								)}
+								renderSectionHeader={({ section: { title } }) => (
+									<View style={styles.headerContainer}>
+										<Text style={styles.headerText} lightColor={Colors.dark.tint} darkColor={Colors.light.tint}>{title}</Text>
+										<View style={styles.separator} lightColor={Colors.dark.tint} darkColor={Colors.light.tint} />
+									</View>
+								)}
+							/>
+						)
+					}
 				</View>
-				{/* <Text style={styles.title}>Expense List</Text> */}
-				{/* <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" /> */}
-				{listStore.length === 0 ? (
-					<Text style={styles.title}>No expenses found</Text>
-					) : (
-						<SectionList
-							sections={sections}
-							keyExtractor={(item, index) => item.id + index}
-							renderItem={({ item }) => (
-								<ItemEntry item={item} />
-							)}
-							renderSectionHeader={({ section: { title } }) => (
-								<View style={styles.headerContainer}>
-									<Text style={styles.headerText} lightColor={Colors.dark.tint} darkColor={Colors.light.tint}>{title}</Text>
-									<View style={styles.separator} lightColor={Colors.dark.tint} darkColor={Colors.light.tint} />
-								</View>
-								
-							)}
-						/>
-					)
-				}
-				<Animated.View style={[styles.addbutton, { transform: [{ scale: listStore.length === 0 ? scaleAnim : 1 }] }]}>
-					<Link href="/modal" asChild>
-						<TouchableOpacity>
-						<Ionicons name="add" size={30} color={Colors.dark.tint} />
-						</TouchableOpacity>
-					</Link>
-				</Animated.View>
-			</View>
+			</KeyboardAvoidingView>
+			<Animated.View style={[styles.addbutton, { transform: [{ scale: listStore.length === 0 ? scaleAnim : 1 }] }]}>
+				<Link href="/modal" asChild>
+					<TouchableOpacity>
+					<Ionicons name="add" size={30} color={Colors.dark.tint} />
+					</TouchableOpacity>
+				</Link>
+			</Animated.View>
 		</SafeAreaView>
   );
 }

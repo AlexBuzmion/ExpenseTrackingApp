@@ -1,7 +1,6 @@
 import React from "react";
 import { View, Text } from "./Themed";
 import { StyleSheet, TouchableOpacity } from "react-native";
-import Colors from "../constants/Colors";
 import { Link } from "expo-router";
 
 export default ItemEntry; 
