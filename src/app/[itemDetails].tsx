@@ -6,6 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { opacity } from 'react-native-reanimated/lib/typescript/Colors';
 import { useEffect, useState } from 'react';
 import { useTheme } from '@react-navigation/native';
+import Colors from '../constants/Colors';
 
 
 export default ItemDetails; 
@@ -81,13 +82,13 @@ function ItemDetails() {
         <View style={styles.container}>
             <Stack.Screen options={{ title: item.name }} />
             
-            <Text>Expense Name:</Text>
+            <Text style={styles.title}>Expense Name:</Text>
             <InputText value={name} onChangeText={setName} style={styles.input} />
 
-            <Text>Category:</Text>
+            <Text style={styles.title}>Category:</Text>
             <InputText value={category} onChangeText={setCategory} style={styles.input} />
 
-            <Text>Subtotal:</Text>
+            <Text style={styles.title}>Subtotal:</Text>
             <InputText 
                 value={subtotal} 
                 onChangeText={(val) => setSubtotal(val.replace(/[^0-9.]/g, ''))} 
@@ -95,7 +96,7 @@ function ItemDetails() {
                 style={styles.input} 
             />
 
-            <Text>HST:</Text>
+            <Text style={styles.title}>HST:</Text>
             <InputText 
                 value={hst} 
                 onChangeText={(val) => setHst(val.replace(/[^0-9.]/g, ''))} 
@@ -103,7 +104,7 @@ function ItemDetails() {
                 style={styles.input} 
             />
 
-            <Text>Total:</Text>
+            <Text style={styles.title}>Total:</Text>
             <InputText value={`$${total}`} editable={false} style={styles.input} />
 
             <View style={styles.footer}>
@@ -111,7 +112,7 @@ function ItemDetails() {
                     'en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
                 </Text>
                 <Pressable onPress={() => handleDeleteItem(item.id)}>
-                    <Ionicons name="trash-outline" size={24} color="#ccc" />
+                    <Ionicons name="trash-outline" size={40} color="#ccc" />
                 </Pressable>
             </View>
 
@@ -127,11 +128,13 @@ function ItemDetails() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        alignItems: 'center',
+        alignItems: 'flex-start',
+        padding: 10,
     },
     title: {
-        fontSize: 20,
+        fontSize: 15,
         fontWeight: 'bold',
+        marginVertical: 3
     },
     separator: {
         marginVertical: 30,
@@ -140,7 +143,7 @@ const styles = StyleSheet.create({
     },
     footer: {
         position: 'absolute',
-        bottom: 20,
+        bottom: 10,
         width: '100%',
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -150,21 +153,33 @@ const styles = StyleSheet.create({
     input: {
         borderBottomWidth: 1,
         padding: 10,
-        marginBottom: 10,
+        marginBottom: 15,
+        fontSize: 20,
+        letterSpacing: 0.5,
+        borderColor: '#ccc', 
+        borderWidth: 1, 
+        borderRadius: 8,
     },
     saveText: {
         color: useThemeColor({}, 'text'),
         fontWeight: 'bold',
+
     },
     saveButton: {
-        backgroundColor: useThemeColor({}, 'tint'),
-        padding: 12,
-        borderRadius: 8,
-        alignItems: 'center',
-        marginTop: 20,
+        backgroundColor: Colors.light.tint,
+        borderRadius: 20,
+        width: 100,
+        height: 40, 
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        paddingVertical: 10
     },
     dateText: {
-        fontSize: 12,
+        fontSize: 15,
         color: '#888',
     },
 });

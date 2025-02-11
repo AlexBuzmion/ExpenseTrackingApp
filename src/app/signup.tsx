@@ -70,6 +70,6 @@ const styles = StyleSheet.create({
         borderRadius: 8,  
         flexDirection: 'row',
         marginBottom: 10,
-         width: '60%' 
+        width: '60%' 
     }
 });
