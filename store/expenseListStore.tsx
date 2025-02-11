@@ -1,6 +1,47 @@
 import { create } from 'zustand';
 import uuid from 'react-native-uuid';
 
+type ExpenseEntry = {
+    id: string;
+    name: string;
+    date: string;
+    category: string;
+    subcategory: string;
+    subtotal: number;
+    hst: number;
+    total: number;
+    creationDate: string;
+};
+
+type ExpenseListStore = {
+    expenseList: ExpenseEntry[];
+    setExpenseList: (expenses: ExpenseEntry[]) => void;
+    addExpense: (expense: Omit<ExpenseEntry, "id">) => void; 
+    removeExpense: (id: string) => void;
+    updateExpense: (id: string, updatedFields: Partial<ExpenseEntry>) => void;
+};
+
+export const useExpenseListStore = create<ExpenseListStore>((set) => ({
+    expenseList: [],
+    setExpenseList: (expenses) => set({ expenseList: expenses }),
+    addExpense: (expense) => set((state) => ({
+        expenseList: [
+            ...state.expenseList,
+            { ...expense, id: uuid.v4() as string }, 
+            // this is where the cloud storing happens
+        ],
+    })),
+    removeExpense: (id: string) => set((state) => ({
+        expenseList: state.expenseList.filter(expense => expense.id !== id),
+    })),
+    updateExpense: (id: string, updatedFields: Partial<ExpenseEntry>) => 
+        set((state) => ({
+            expenseList: state.expenseList.map(expense =>
+                expense.id === id ? { ...expense, ...updatedFields } : expense
+            ),
+    })),
+}));
+
 type CategoriesType = {
     [key: string]: string[];  // 
 };
@@ -85,44 +126,3 @@ export const categories : CategoriesType= {
         'Repair & Service Maintenance'
     ],
 }
-
-type ExpenseEntry = {
-    id: string;
-    name: string;
-    date: string;
-    category: string;
-    subcategory: string;
-    subtotal: number;
-    hst: number;
-    total: number;
-    creationDate: string;
-};
-
-type ExpenseListStore = {
-    expenseList: ExpenseEntry[];
-    setExpenseList: (expenses: ExpenseEntry[]) => void;
-    addExpense: (expense: Omit<ExpenseEntry, "id">) => void; 
-    removeExpense: (id: string) => void;
-    updateExpense: (id: string, updatedFields: Partial<ExpenseEntry>) => void;
-};
-
-export const useExpenseListStore = create<ExpenseListStore>((set) => ({
-    expenseList: [],
-    setExpenseList: (expenses) => set({ expenseList: expenses }),
-    addExpense: (expense) => set((state) => ({
-        expenseList: [
-            ...state.expenseList,
-            { ...expense, id: uuid.v4() as string }, 
-            // this is where the cloud storing happens
-        ],
-    })),
-    removeExpense: (id: string) => set((state) => ({
-        expenseList: state.expenseList.filter(expense => expense.id !== id),
-    })),
-    updateExpense: (id: string, updatedFields: Partial<ExpenseEntry>) => 
-        set((state) => ({
-            expenseList: state.expenseList.map(expense =>
-                expense.id === id ? { ...expense, ...updatedFields } : expense
-            ),
-    })),
-}));

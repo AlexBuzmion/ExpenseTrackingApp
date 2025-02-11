@@ -3,14 +3,10 @@ import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { Alert, Pressable, StyleSheet, TouchableOpacity } from 'react-native';  
 import { useExpenseListStore } from '@/store/expenseListStore';
 import { Ionicons } from '@expo/vector-icons';
-import { opacity } from 'react-native-reanimated/lib/typescript/Colors';
 import { useEffect, useState } from 'react';
-import { useTheme } from '@react-navigation/native';
+import Colors from '../constants/Colors';
 
-
-export default ItemDetails; 
-
-function ItemDetails() {
+const ItemDetails = () => {
     const router = useRouter();
     const { itemDetails } = useLocalSearchParams<{ itemDetails: string }>();
     const itemList = useExpenseListStore().expenseList;
@@ -153,11 +149,11 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     saveText: {
-        color: useThemeColor({}, 'text'),
+        color: Colors.light.text,
         fontWeight: 'bold',
     },
     saveButton: {
-        backgroundColor: useThemeColor({}, 'tint'),
+        backgroundColor: Colors.light.tint,
         padding: 12,
         borderRadius: 8,
         alignItems: 'center',
@@ -168,3 +164,5 @@ const styles = StyleSheet.create({
         color: '#888',
     },
 });
+
+export default ItemDetails; 
