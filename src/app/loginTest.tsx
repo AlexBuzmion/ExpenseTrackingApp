@@ -1,7 +1,7 @@
 import { Text, View, InputText } from '@/src/components/Themed';
 import { Stack } from 'expo-router';
 import { ActivityIndicator, TouchableOpacity } from 'react-native';
-import {logIn, signUp, signOut}  from '@/src/utils/authService';
+import {logIn, signUp, signOut, googleSignIn}  from '@/src/utils/authService';
 import { useState } from 'react';
 import Colors from '@/src/constants/Colors';
 import auth from '@react-native-firebase/auth';
@@ -53,7 +53,7 @@ export default function Login() {
             <View >
 					<Text style={{ marginTop: 10}} >email: </Text>
 					<InputText
-						style={{ marginLeft: 10, color: Colors.dark.tint, borderColor: Colors.dark.tint, borderWidth: 1, marginTop: 10 }}
+						style={{ marginLeft: 10, color: Colors.dark.tint, borderColor: Colors.dark.tint, borderWidth: 1, marginTop: 10, width: 300 }}
 						placeholder="Email"
 						value={email}
 						autoCapitalize='none'
@@ -91,6 +91,12 @@ export default function Login() {
                                 </TouchableOpacity> 
                                 ) : (null)
                             }
+							<TouchableOpacity 
+								style={{ marginTop: 10, borderWidth: 1, backgroundColor: 'darkblue', borderRadius: 5, padding: 10, width: 100}} 
+								onPress={googleSignIn}
+							>
+								<Text style={{ textAlign: 'center'}}>Google</Text>
+							</TouchableOpacity>
 						</View>
 					)}
 				</View>

@@ -86,7 +86,7 @@ function RootLayoutNav() {
 
     return (
         <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-            <Stack initialRouteName='login'>
+            <Stack initialRouteName='loginTest'>
                 <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
                 <Stack.Screen name="modal" 
                     options={{ presentation: 'card',  
@@ -95,7 +95,7 @@ function RootLayoutNav() {
                         headerBackButtonDisplayMode: 'minimal',
                     }}
                 />
-                <Stack.Screen name="login"  options={{ headerShown: false}} />
+                <Stack.Screen name="loginTest"  options={{ headerShown: false}} />
             </Stack>
         </ThemeProvider>
     );

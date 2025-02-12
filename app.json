@@ -16,7 +16,10 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.finotech.iSpend",
-      "googleServicesFile": "./GoogleService-Info.plist"
+      "googleServicesFile": "./GoogleService-Info.plist",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -33,18 +36,28 @@
     },
     "plugins": [
       "expo-router",
-      ["expo-build-properties",
+      [
+        "expo-build-properties",
         {
           "ios": {
             "useFrameworks": "static"
           }
         }
-    ],
+      ],
       "@react-native-firebase/app",
-      "@react-native-firebase/auth"
+      "@react-native-firebase/auth",
+      "@react-native-google-signin/google-signin"
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "3a4ab861-f793-4ddf-a8e4-ac106a4cb869"
+      }
     }
   }
 }

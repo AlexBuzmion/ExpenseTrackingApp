@@ -26,6 +26,7 @@
         <category android:name="android.intent.category.BROWSABLE"/>
         <data android:scheme="myapp"/>
         <data android:scheme="com.finotech.iSpend"/>
+        <data android:scheme="exp+ispend"/>
       </intent-filter>
     </activity>
   </application>
