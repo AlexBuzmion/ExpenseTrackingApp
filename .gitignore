@@ -9,6 +9,22 @@ dist/
 web-build/
 expo-env.d.ts
 
+# Android 
+/android/build/
+/android/.gradle/
+# Ignore build artifacts
+/android/app/build/
+/android/app/.cxx/
+/android/app/intermediates/
+/android/app/generated/
+
+# Ignore local Gradle properties
+/android/app/local.properties
+
+# Ignore Keystore (if you're storing sensitive signing keys)
+android/app/*.keystore
+android/app/key.properties
+
 # Native
 *.orig.*
 *.jks
@@ -31,6 +47,6 @@ yarn-error.*
 
 # local env files
 .env*.local
-
+.env 
 # typescript
 *.tsbuildinfo
