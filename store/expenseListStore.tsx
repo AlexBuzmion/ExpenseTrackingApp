@@ -104,10 +104,14 @@ type ExpenseListStore = {
     addExpense: (expense: Omit<ExpenseEntry, "id">) => void; 
     removeExpense: (id: string) => void;
     updateExpense: (id: string, updatedFields: Partial<ExpenseEntry>) => void;
+    categories: CategoriesType;
+    addCategory: (category: string) => void;
+    addSubcategory: (category: string, subcategory: string) => void;
 };
 
 export const useExpenseListStore = create<ExpenseListStore>((set) => ({
     expenseList: [],
+    categories,
     setExpenseList: (expenses) => set({ expenseList: expenses }),
     addExpense: (expense) => set((state) => ({
         expenseList: [
@@ -124,5 +128,16 @@ export const useExpenseListStore = create<ExpenseListStore>((set) => ({
             expenseList: state.expenseList.map(expense =>
                 expense.id === id ? { ...expense, ...updatedFields } : expense
             ),
+    })),
+
+    // Adding new categories
+    addCategory: (category) => set((state) => ({
+        categories: { ...state.categories, [category]: [] },
+    })),
+    addSubcategory: (category, subcategory) => set((state) => ({
+        categories: {
+            ...state.categories,
+            [category]: [...(state.categories[category] || []), subcategory],
+        },
     })),
 }));

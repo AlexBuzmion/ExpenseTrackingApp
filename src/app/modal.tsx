@@ -8,6 +8,8 @@ import DropdownComponent from '../components/DropdownComponent';
 import { useExpenseListStore } from '@/store/expenseListStore';
 import { useRouter } from 'expo-router';
 import { useTaxRatesStore } from '@/store/provincialTaxStore';
+import { Ionicons } from '@expo/vector-icons';
+import Colors from '../constants/Colors';
 
 export default function ModalScreen() {
 	const listStore = useExpenseListStore();
