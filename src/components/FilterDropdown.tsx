@@ -1,5 +1,6 @@
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { Text, View, StyleSheet } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
 
 interface FilterDropdownProps {
@@ -15,6 +16,10 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({ selectedFilter, setSele
 
   return (
     <View style={styles.container}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 5}}>
+        <Ionicons name='filter-sharp' size={24} color="black" />
+        <Text>Filter</Text>
+      </View>
       <Dropdown
         data={filterOptions}
         labelField="label"
@@ -30,6 +35,7 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({ selectedFilter, setSele
 
 const styles = StyleSheet.create({
   container: {
+    //flexDirection: 'row',
     marginHorizontal: 12,
     marginBottom: 10,
   },
