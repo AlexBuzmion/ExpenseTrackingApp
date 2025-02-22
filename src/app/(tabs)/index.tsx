@@ -1,21 +1,23 @@
-import { SectionList, StyleSheet, TouchableOpacity, Animated, Easing } from 'react-native';
+import { useState, useEffect, useRef, useMemo } from 'react';
+import { SectionList, StyleSheet, TouchableOpacity, Animated, Easing, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Text, View, InputText } from '@/src/components/Themed';
+import { Text, View } from '@/src/components/Themed';
 import { Link, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '@/src/constants/Colors';
 import { useExpenseListStore } from '@/store/expenseListStore';
 import { format } from 'date-fns';
 import ItemEntry from '@/src/components/itemEntry';
-import { useEffect, useRef } from 'react';
 
 export default function TabOneScreen() {
     const listStore = useExpenseListStore().expenseList;
-    const sections = groupExpensesByMonth(listStore);
+    const [searchQuery, setSearchQuery] = useState(''); // Store the user's input
 	const scaleAnim = useRef(new Animated.Value(1)).current;
 
+	// Animate the add button if no expenses exist
 	useEffect(() => {
 		if (listStore.length === 0) {
+			scaleAnim.setValue(1); // Reset before animating
             Animated.loop(
                 Animated.sequence([
                     Animated.timing(scaleAnim, {
@@ -34,46 +36,60 @@ export default function TabOneScreen() {
             ).start();
         }
     }, [listStore.length]);
+	
+	// Filter expenses based on search query
+    const filteredExpenses = listStore.filter(expense => 
+        expense.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        expense.category.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
-	function groupExpensesByMonth(listStore: any[]) {
-		const grouped:Record<string, any[]> = {};
-	
-		listStore.forEach((expense) => {
-			const date = new Date(expense.date);
-			const monthKey = format(date, "MMMM yyyy"); // Example: "February 2025"
-	
-			if (!grouped[monthKey]) {
-				grouped[monthKey] = [];
-			}
-			grouped[monthKey].push(expense);
-		});
-	
-		return Object.keys(grouped).map((month) => ({
-			title: month,
-			data: grouped[month],
-		}));
-	}
+	// Only expenses matching the search query are displayed.
+	// 'useMemo()' is used to avoid unnecessary re-renders. Only recalculates when 'filteredExpenses' changes.
+	const sections = useMemo(() => groupExpensesByMonth(filteredExpenses), [filteredExpenses]);
+
+	// Group filtered expenses by month
+    function groupExpensesByMonth(expenses: any[]) {
+        const grouped: Record<string, any[]> = {};
+
+        expenses.forEach((expense) => {
+            const date = new Date(expense.date);
+            const monthKey = format(date, "MMMM yyyy"); // Example: "February 2025"
+
+            if (!grouped[monthKey]) {
+                grouped[monthKey] = [];
+            }
+            grouped[monthKey].push(expense);
+        });
+
+        return Object.keys(grouped).map((month) => ({
+            title: month,
+            data: grouped[month],
+        }));
+    }
 
     return (
 		<SafeAreaView style={styles.container}>
 			<View style={styles.container}>
 				<Stack.Screen options={{ title: 'Expenses' }} />
-				<View style={[ styles.searchBar, {flexDirection: 'row', alignItems: 'center'}]}>
-					<Ionicons style={{paddingHorizontal: 10}} name="search" size={20} color={Colors.dark.tint}></Ionicons>
-					<InputText
-						style={{ marginLeft: 10, color: Colors.dark.tint }}
+				{/* Search Bar */}
+				<View style={styles.searchBar}>
+					<Ionicons style={{ paddingHorizontal: 10 }} name="search" size={20} color={Colors.dark.tint} />
+					<TextInput
+						style={{ flex: 1, color: Colors.dark.tint }}
 						placeholder="Search"
-					>
-					</InputText>
+						placeholderTextColor="#999"
+						onChangeText={(text) => setSearchQuery(text.trimStart())}
+						value={searchQuery}
+					/>
 				</View>
-				{/* <Text style={styles.title}>Expense List</Text> */}
-				{/* <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" /> */}
-				{listStore.length === 0 ? (
+
+				{/* Expense List */}
+				{filteredExpenses.length === 0 ? (
 					<Text style={styles.title}>No expenses found</Text>
 					) : (
 						<SectionList
 							sections={sections}
-							keyExtractor={(item, index) => item.id + index}
+							keyExtractor={(item, index) => item.id?.toString() ?? index.toString()} // Prevents crashes if item.id is undefined or null. If item.id is missing, it falls back to index.toString().
 							renderItem={({ item }) => (
 								<ItemEntry item={item} />
 							)}
@@ -87,10 +103,12 @@ export default function TabOneScreen() {
 						/>
 					)
 				}
+
+				{/* Add Button */}
 				<Animated.View style={[styles.addbutton, { transform: [{ scale: listStore.length === 0 ? scaleAnim : 1 }] }]}>
 					<Link href="/modal" asChild>
 						<TouchableOpacity>
-						<Ionicons name="add" size={30} color={Colors.dark.tint} />
+							<Ionicons name="add" size={30} color={Colors.dark.tint} />
 						</TouchableOpacity>
 					</Link>
 				</Animated.View>
@@ -106,6 +124,8 @@ const styles = StyleSheet.create({
 	title: {
 		fontSize: 20,
 		fontWeight: 'bold',
+		textAlign: 'center',
+		marginTop: 20,
 	},
 	separator: {
 		marginVertical: 5,
@@ -125,10 +145,6 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
 		alignItems: 'center',
 		justifyContent: 'center',
-	},
-	itemContainer: {
-		flexDirection: 'row',
-		justifyContent: 'space-between',
 		padding: 10,
 	},
 	headerContainer: {
@@ -136,7 +152,7 @@ const styles = StyleSheet.create({
 	},
 	headerText: {
 		fontSize: 18,
-		fontWeight: 400,
+		fontWeight: 'bold',
 	},
 	searchBar: {
 		height: 40,
@@ -144,5 +160,9 @@ const styles = StyleSheet.create({
 		borderWidth: 1,
 		borderRadius: 8,
 		borderColor: '#ccc',
+		paddingHorizontal: 10,
+		backgroundColor: '#fff',
+		flexDirection: 'row', 
+		alignItems: 'center'
 	},
 });
