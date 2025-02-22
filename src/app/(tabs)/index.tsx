@@ -8,11 +8,13 @@ import Colors from '@/src/constants/Colors';
 import { useExpenseListStore } from '@/store/expenseListStore';
 import { format } from 'date-fns';
 import ItemEntry from '@/src/components/itemEntry';
+import FilterDropdown from '@/src/components/FilterDropdown';
 
 export default function TabOneScreen() {
     const listStore = useExpenseListStore().expenseList;
     const [searchQuery, setSearchQuery] = useState(''); // Store the user's input
 	const scaleAnim = useRef(new Animated.Value(1)).current;
+	const [selectedFilter, setSelectedFilter] = useState('date'); // Track selected filter
 
 	// Animate the add button if no expenses exist
 	useEffect(() => {
@@ -45,8 +47,16 @@ export default function TabOneScreen() {
 
 	// Only expenses matching the search query are displayed.
 	// 'useMemo()' is used to avoid unnecessary re-renders. Only recalculates when 'filteredExpenses' changes.
-	const sections = useMemo(() => groupExpensesByMonth(filteredExpenses), [filteredExpenses]);
 
+	const sections = useMemo(() => {
+		if (selectedFilter === 'category') {
+			return groupExpensesByCategory(filteredExpenses);
+		}
+		return groupExpensesByMonth(filteredExpenses);
+	}, [filteredExpenses, selectedFilter]);
+
+	//const sections = useMemo(() => groupExpensesByMonth(filteredExpenses), [filteredExpenses]);
+	
 	// Group filtered expenses by month
     function groupExpensesByMonth(expenses: any[]) {
         const grouped: Record<string, any[]> = {};
@@ -67,6 +77,24 @@ export default function TabOneScreen() {
         }));
     }
 
+	function groupExpensesByCategory(expenses: any[]) {
+		const grouped: Record<string, any[]> = {};
+	
+		expenses.forEach((expense) => {
+			const categoryKey = expense.category;
+	
+			if (!grouped[categoryKey]) {
+				grouped[categoryKey] = [];
+			}
+			grouped[categoryKey].push(expense);
+		});
+	
+		return Object.keys(grouped).map((category) => ({
+			title: category,
+			data: grouped[category],
+		}));
+	}	
+
     return (
 		<SafeAreaView style={styles.container}>
 			<View style={styles.container}>
@@ -82,6 +110,8 @@ export default function TabOneScreen() {
 						value={searchQuery}
 					/>
 				</View>
+
+				<FilterDropdown selectedFilter={selectedFilter} setSelectedFilter={setSelectedFilter} />
 
 				{/* Expense List */}
 				{filteredExpenses.length === 0 ? (
