@@ -8,8 +8,7 @@ import DropdownComponent from '../components/DropdownComponent';
 import { useExpenseListStore } from '@/store/expenseListStore';
 import { useRouter } from 'expo-router';
 import { useTaxRatesStore } from '@/store/provincialTaxStore';
-import { Ionicons } from '@expo/vector-icons';
-import Colors from '../constants/Colors';
+import { Dropdown } from 'react-native-element-dropdown';
 
 export default function ModalScreen() {
 	const listStore = useExpenseListStore();
@@ -35,6 +34,12 @@ export default function ModalScreen() {
 	// get tax rates from Store
 	const provinceTax = taxRates[province] || { GST: 0, HST: 0, PST: 0 };
 	const totalTaxRate = provinceTax.GST + provinceTax.HST + provinceTax.PST;
+
+	// Generate province list dynamically from taxRates
+    const provinceList = Object.keys(taxRates).map(prov => ({
+        label: prov,
+        value: prov
+    }));
 
 	// function to calculate tax
 	function calculateTax(subtotal: string) {
@@ -145,11 +150,27 @@ export default function ModalScreen() {
 						}}
 						inputTitle='Subtotal'
 					/>
-					<CurrencyInputField 
-						value={hst.toString()}
-						onValidChange={val => {setHst(val)}}
-						inputTitle='Tax'
-					/>
+
+					<View style={{ flexDirection: 'row', alignItems: 'baseline' }}>
+
+						<CurrencyInputField 
+							value={hst.toString()}
+							onValidChange={val => {setHst(val)}}
+							inputTitle='Tax'
+						/>
+
+						{/* Province Dropdown with Dynamic Data */}
+						<Dropdown
+							style={styles.provinceDropdown}
+							data={provinceList}
+							labelField="label"
+							valueField="value"
+							placeholder="Select Province"
+							value={province}
+							onChange={item => setProvince(item.value)}
+                    	/>
+					</View>
+					
 					<View style={styles.inputFieldContainer}>
 						<Text style={[styles.currencySymbol]}>Total</Text>
 						<Text style={[styles.currencySymbol]}>
@@ -207,5 +228,13 @@ const styles = StyleSheet.create({
 		height: 40, 
 		justifyContent: 'center', 
 		alignItems: 'center' 
+	},
+	provinceDropdown: {
+		width: 'auto',
+		height: 45,
+		borderWidth: 1, 
+		borderColor: '#ccc', 
+		borderRadius: 8, 
+		paddingHorizontal: 10
 	}
 });
