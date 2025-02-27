@@ -84,7 +84,7 @@ export const categories : CategoriesType= {
         'Licensing & Registration Fees',
         'Repair & Service Maintenance'
     ],
-}
+};
 
 type ExpenseEntry = {
     id: string;
@@ -107,6 +107,8 @@ type ExpenseListStore = {
     categories: CategoriesType;
     addCategory: (category: string) => void;
     addSubcategory: (category: string, subcategory: string) => void;
+    renameCategory: (oldCategory: string, newCategory: string) => void;
+    renameSubcategory: (category: string, oldSubcategory: string, newSubcategory: string) => void;
 };
 
 export const useExpenseListStore = create<ExpenseListStore>((set) => ({
@@ -140,4 +142,22 @@ export const useExpenseListStore = create<ExpenseListStore>((set) => ({
             [category]: [...(state.categories[category] || []), subcategory],
         },
     })),
+
+    // Renaming a category
+    renameCategory: (oldCategory, newCategory) => set((state) => {
+        if (!state.categories[oldCategory]) return state;
+        const newCategories = { ...state.categories };
+        newCategories[newCategory] = newCategories[oldCategory];
+        delete newCategories[oldCategory];
+        return { categories: newCategories };
+    }),
+
+    // Renaming a subcategory
+    renameSubcategory: (category, oldSubcategory, newSubcategory) => set((state) => {
+        if (!state.categories[category]) return state;
+        const newSubcategories = state.categories[category].map(sub =>
+            sub === oldSubcategory ? newSubcategory : sub
+        );
+        return { categories: { ...state.categories, [category]: newSubcategories } };
+    }),
 }));

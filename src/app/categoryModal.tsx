@@ -1,14 +1,24 @@
 import { useState } from 'react';
-import { Text, View, TextInput, Button, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
+import { Text, View, TextInput, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import { useExpenseListStore } from '@/store/expenseListStore';
+import { Feather } from '@expo/vector-icons';
 import Colors from '../constants/Colors';
 
 export default function CategoryModalScreen() {
-    const { categories, addCategory, addSubcategory } = useExpenseListStore();
+    const { categories, addCategory, addSubcategory, renameCategory, renameSubcategory } = useExpenseListStore();
     
     const [newCategory, setNewCategory] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('');
     const [newSubcategory, setNewSubcategory] = useState('');
+    const [isEditing, setIsEditing] = useState('');
+    const [editedCategoryName, setEditedCategoryName] = useState('');
+
+    // Subcategory Editing State
+    const [editingSubcategory, setEditingSubcategory] = useState('');
+    const [editedSubcategoryName, setEditedSubcategoryName] = useState('');
+
+    const [, setState] = useState({});
+    const forceUpdate = () => setState({});
 
     return (
         <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 20 }}>
@@ -32,49 +42,112 @@ export default function CategoryModalScreen() {
 
             <Text style={{ fontSize: 18, marginTop: 20 }}>Categories</Text>
             
-            {Object.keys(categories).map((category) => (
+            {/* Object.keys() returns an array of keys from the categories object */}
+            {Object.keys(categories)
+            .sort()
+            .map((category) => (
                 <View key={category} style={{ marginVertical: 10 }}>
-                    <Text 
-                        onPress={() => setSelectedCategory(category)}
-                        style={{
-                            fontSize: 16, fontWeight: 'bold',
-                            textDecorationLine: selectedCategory === category ? 'underline' : 'none'
-                        }}
-                    >
-                        {category}
-                    </Text>
-
-                    {selectedCategory === category && (
-                        <View style={{ justifyContent: 'space-between', flexDirection: 'row' }}>
-                            <TextInput 
-                                placeholder="Subcategory name"
-                                value={newSubcategory}
-                                onChangeText={setNewSubcategory}
+                    <View style={styles.categoryHeader}>
+                        {isEditing === category ? (
+                            <TextInput
+                                value={editedCategoryName}
+                                onChangeText={setEditedCategoryName}
                                 style={styles.inputFieldContainer}
+                                // onBlur is triggered when the input loses focus, usually when the user taps outside the input or presses the return key
+                                onBlur={() => {
+                                    if (editedCategoryName.trim() && editedCategoryName !== category) {
+                                        renameCategory(category, editedCategoryName.trim());
+                                    }
+                                    setIsEditing('');
+                                }}
                             />
+                        ) : (
+                            <Text 
+                                onPress={() => setSelectedCategory(category)}
+                                style={{
+                                    fontSize: 16, fontWeight: 'bold',
+                                    textDecorationLine: selectedCategory === category ? 'underline' : 'none'
+                                }}>
+                                {category}
+                            </Text>
+                        )}
+                        <TouchableOpacity onPress={() => {
+                            if (isEditing === category) {
+                                setIsEditing('');
+                            } else {
+                                setIsEditing(category);
+                                setEditedCategoryName(category);
+                            }
+                        }}>
+                            <Feather name="edit" size={18} color="gray" />
+                        </TouchableOpacity>
+                    </View>
 
-                            <TouchableOpacity style={styles.button} onPress={() => {
-                                if (newSubcategory.trim()) {
-                                    addSubcategory(category, newSubcategory.trim());
-                                    setNewSubcategory('');
-                                }
-                            }}>
-                                <Text>Add</Text>
-                            </TouchableOpacity> 
+                    {isEditing === category && (
+                        <View>
+                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                <TextInput 
+                                    placeholder="Subcategory name"
+                                    value={newSubcategory}
+                                    onChangeText={setNewSubcategory}
+                                    style={styles.inputFieldContainer}
+                                />
+                                <TouchableOpacity style={styles.button} onPress={() => {
+                                    if (newSubcategory.trim()) {
+                                        addSubcategory(category, newSubcategory.trim());
+                                        setNewSubcategory('');
+                                    }
+                                }}>
+                                    <Text>Add</Text>
+                                </TouchableOpacity> 
+                            </View>
+                            
+                            {/* categories[category].map() iterates over the array and renders each subcategory. */}
+                            {categories[category].map((sub, index) => (
+                                <View key={index} style={styles.subcategoryContainer}>
+                                    {editingSubcategory === sub ? (
+                                        <TextInput
+                                            value={editedSubcategoryName}
+                                            onChangeText={setEditedSubcategoryName}
+                                            style={styles.inputFieldContainer}
+                                            onBlur={() => {
+                                                if (editedSubcategoryName.trim() && editedSubcategoryName !== sub) {
+                                                    renameSubcategory(category, sub, editedSubcategoryName.trim());
+                                                }
+                                                setEditingSubcategory('');
+                                            }}
+                                        />
+                                    ) : (
+                                        <Text style={{ color: 'gray' }}>- {sub}</Text>
+                                    )}
+                                    <TouchableOpacity onPress={() => {
+                                        setEditingSubcategory(sub);
+                                        setEditedSubcategoryName(sub);
+                                    }}>
+                                        <Feather name="edit" size={14} color="gray" />
+                                    </TouchableOpacity>
+                                </View>
+                            ))}
                         </View>
                     )}
-
-                    {categories[category].map((sub) => (
-                        <Text key={sub} style={{ marginLeft: 10, color: 'gray' }}>- {sub}</Text>
-                    ))}
-
                 </View>
             ))}
+
         </ScrollView>
     );
 }
 
 const styles = StyleSheet.create({
+    categoryHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between'
+    },
+    subcategoryContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginLeft: 10
+    },
     button: {
         backgroundColor: Colors.light.tint,
         borderRadius: 20,
@@ -86,17 +159,19 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
         justifyContent: 'center', 
         alignItems: 'center', 
+        marginLeft: 10
     },
     inputFieldContainer: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		borderColor: '#ccc',
-		borderWidth: 1,
-		borderRadius: 8,
-		paddingHorizontal: 10,
-		maxWidth: 400,
-		height: 40,
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderColor: '#ccc',
+        borderWidth: 1,
+        borderRadius: 8,
+        paddingHorizontal: 10,
+        maxWidth: 400,
+        height: 40,
         marginTop: 10,
         marginBottom: 10
-	}
+    },
 });
+

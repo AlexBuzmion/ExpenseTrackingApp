@@ -9,6 +9,7 @@ import { useExpenseListStore } from '@/store/expenseListStore';
 import { useRouter } from 'expo-router';
 import { useTaxRatesStore } from '@/store/provincialTaxStore';
 import { Dropdown } from 'react-native-element-dropdown';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function ModalScreen() {
 	const listStore = useExpenseListStore();
@@ -116,20 +117,25 @@ export default function ModalScreen() {
 			style={styles.container}
 		>
 			<View style={[styles.container, {padding: 14}]}>
-				<Animated.View style={[styles.inputFieldContainer, {
-						borderColor: itemBorderAnim.interpolate({
-							inputRange: [0, 2],
-							outputRange: ["#ccc", "red"],
-						}),
-						borderWidth: missingFields.itemName ? 2 : 1,
-					},]}
-				>
-					<Text >Item : </Text>
-					<InputText 
-						style={styles.inputField} 
-						onChangeText={val => setItemName(val)}
-					/>
-				</Animated.View>
+			<Animated.View 
+				style={[styles.inputFieldContainer, {
+					borderColor: itemBorderAnim.interpolate({
+						inputRange: [0, 2],
+						outputRange: ["#ccc", "red"],
+					}),
+					borderWidth: missingFields.itemName ? 2 : 1,
+				}]}
+			>
+				<Text style={{ marginRight: 10, fontSize: 16 }}>Item:</Text>
+				<InputText 
+					style={styles.inputField} 
+					onChangeText={val => setItemName(val)}
+					placeholder="Enter item name"
+					placeholderTextColor="#888"
+				/>
+			</Animated.View>
+
+
 				<View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
 					<CrossPlatformDatePicker 
 						onChange={ val => setDate(val)}
@@ -151,15 +157,15 @@ export default function ModalScreen() {
 						inputTitle='Subtotal'
 					/>
 
-					<View style={{ flexDirection: 'row', alignItems: 'baseline' }}>
-
+					<View style={styles.inputWrapper}>
 						<CurrencyInputField 
 							value={hst.toString()}
-							onValidChange={val => {setHst(val)}}
+							onValidChange={val => setHst(val)}
 							inputTitle='Tax'
 						/>
+					</View>
 
-						{/* Province Dropdown with Dynamic Data */}
+					<View style={styles.inputWrapper}>
 						<Dropdown
 							style={styles.provinceDropdown}
 							data={provinceList}
@@ -168,21 +174,25 @@ export default function ModalScreen() {
 							placeholder="Select Province"
 							value={province}
 							onChange={item => setProvince(item.value)}
-                    	/>
+							renderLeftIcon={() => (
+								<Ionicons name="filter" size={20} color="#555" style={{ marginRight: 8 }} />
+							)}
+						/>
 					</View>
+
 					
 					<View style={styles.inputFieldContainer}>
 						<Text style={[styles.currencySymbol]}>Total</Text>
 						<Text style={[styles.currencySymbol]}>
 							${getTotal()}
 						</Text>
-				</View>
+					</View>
+
 				{/* Use a light status bar on iOS to account for the black space above the modal */}
 				<StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
 				<TouchableOpacity 
 					style={[styles.button,{ borderWidth: 1, margin: 10,}]} 
-					onPress={() => {trySaveEntry()}}
-				>
+					onPress={() => {trySaveEntry()}}>
 					<Text>Save</Text>
 				</TouchableOpacity>
 			</View>
@@ -206,8 +216,10 @@ const styles = StyleSheet.create({
 	inputField: {
 		flex: 1,
 		fontSize: 16,
-		paddingVertical: 8
-	},
+		paddingVertical: 10,
+		paddingHorizontal: 8,
+		height: '100%'
+	},	
 	inputFieldContainer: {
 		flexDirection: 'row',
 		alignItems: 'center',
@@ -215,9 +227,10 @@ const styles = StyleSheet.create({
 		borderWidth: 1,
 		borderRadius: 8,
 		paddingHorizontal: 10,
-		maxWidth: 400,
-		height: 40,
-	}, 
+		maxWidth: '100%',
+		height: 50,
+		backgroundColor: 'white'
+	},	
 	currencySymbol: {
 		fontSize: 16,
 
@@ -235,6 +248,11 @@ const styles = StyleSheet.create({
 		borderWidth: 1, 
 		borderColor: '#ccc', 
 		borderRadius: 8, 
-		paddingHorizontal: 10
+		paddingHorizontal: 10,
+		marginBottom: 10
+	},
+	inputWrapper: {
+		height: 45, 
+		justifyContent: 'center'
 	}
 });
