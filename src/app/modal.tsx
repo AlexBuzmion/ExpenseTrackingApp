@@ -6,10 +6,11 @@ import { CurrencyInputField } from '../components/CurrencyInputField';
 import { CrossPlatformDatePicker } from '../components/CrossPlatformDatePicker';
 import DropdownComponent from '../components/DropdownComponent';
 import { useExpenseListStore } from '@/store/expenseListStore';
-import { useRouter } from 'expo-router';
+import { useRouter, Link } from 'expo-router'; // Import Link!
 import { useTaxRatesStore } from '@/store/provincialTaxStore';
 import { Dropdown } from 'react-native-element-dropdown';
 import { Ionicons } from '@expo/vector-icons';
+import Colors from '../constants/Colors';
 
 export default function ModalScreen() {
 	const listStore = useExpenseListStore();
@@ -135,58 +136,64 @@ export default function ModalScreen() {
 				/>
 			</Animated.View>
 
+			<View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
+				<CrossPlatformDatePicker 
+					onChange={ val => setDate(val)}
+					value={date}
+				/>
 
-				<View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-					<CrossPlatformDatePicker 
-						onChange={ val => setDate(val)}
-						value={date}
-					/>
+			<DropdownComponent 
+				category={categorySelected}
+				subcategory={subCategorySelected}
+				onCategoryChange={val => setCategorySelected(val) }
+				onSubcategoryChange={val => setSubCategorySelected(val)}
+			/>
 
-					<DropdownComponent 
-						category={categorySelected}
-						subcategory={subCategorySelected}
-						onCategoryChange={val => setCategorySelected(val) }
-						onSubcategoryChange={val => setSubCategorySelected(val)}
-					/>
+			{/* Add Category Button */}
+            <Link href="/categoryModal" asChild>
+                <TouchableOpacity style={styles.addCategoryButton}>
+                    <Text>Edit Categories</Text>
+                </TouchableOpacity>
+            </Link>
+			
 
-					<CurrencyInputField 
-						value={subTotal}
-						onValidChange={val => {
-							setSubTotal(val)
-						}}
-						inputTitle='Subtotal'
-					/>
+			<CurrencyInputField 
+				value={subTotal}
+				onValidChange={val => {
+					setSubTotal(val)
+				}}
+				inputTitle='Subtotal'
+			/>
 
-					<View style={styles.inputWrapper}>
-						<CurrencyInputField 
-							value={hst.toString()}
-							onValidChange={val => setHst(val)}
-							inputTitle='Tax'
-						/>
-					</View>
-
-					<View style={styles.inputWrapper}>
-						<Dropdown
-							style={styles.provinceDropdown}
-							data={provinceList}
-							labelField="label"
-							valueField="value"
-							placeholder="Select Province"
-							value={province}
-							onChange={item => setProvince(item.value)}
-							renderLeftIcon={() => (
-								<Ionicons name="filter" size={20} color="#555" style={{ marginRight: 8 }} />
-							)}
-						/>
-					</View>
-
+			<View style={styles.inputWrapper}>
+				<CurrencyInputField 
+					value={hst.toString()}
+					onValidChange={val => setHst(val)}
+					inputTitle='Tax'
+				/>
+			</View>
 					
-					<View style={styles.inputFieldContainer}>
-						<Text style={[styles.currencySymbol]}>Total</Text>
-						<Text style={[styles.currencySymbol]}>
-							${getTotal()}
-						</Text>
-					</View>
+			<View style={styles.inputWrapper}>
+				<Dropdown
+					style={styles.provinceDropdown}
+					data={provinceList}
+					labelField="label"
+					valueField="value"
+					placeholder="Select Province"
+					value={province}
+					onChange={item => setProvince(item.value)}
+					renderLeftIcon={() => (
+						<Ionicons name="filter" size={20} color="#555" style={{ marginRight: 8 }} />
+					)}
+				/>
+			</View>
+
+			<View style={styles.inputFieldContainer}>
+				<Text style={[styles.currencySymbol]}>Total </Text>
+				<Text style={[styles.currencySymbol]}>
+					${getTotal()}
+				</Text>
+			</View>	
 
 				{/* Use a light status bar on iOS to account for the black space above the modal */}
 				<StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
@@ -229,7 +236,8 @@ const styles = StyleSheet.create({
 		paddingHorizontal: 10,
 		maxWidth: '100%',
 		height: 50,
-		backgroundColor: 'white'
+		backgroundColor: 'white',
+		marginVertical: 10
 	},	
 	currencySymbol: {
 		fontSize: 16,
@@ -249,10 +257,20 @@ const styles = StyleSheet.create({
 		borderColor: '#ccc', 
 		borderRadius: 8, 
 		paddingHorizontal: 10,
-		marginBottom: 10
+		marginVertical: 10
 	},
 	inputWrapper: {
 		height: 45, 
 		justifyContent: 'center'
-	}
+	},
+	addCategoryButton: {
+		backgroundColor: Colors.light.tint,
+		borderRadius: 20,
+		width: 120,
+		height: 40,
+		justifyContent: 'center',
+		alignItems: 'center',
+		marginVertical: 10,
+		alignSelf: 'center',
+	},
 });
