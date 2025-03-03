@@ -24,7 +24,7 @@ export default function SignupScreen() {
 
             <Text>Password</Text>
             <View style={styles.inputtextcontainer}>
-                <InputText secureTextEntry={!passwordVisibillity}/>
+                <InputText style={{ flex: 1 }} secureTextEntry={!passwordVisibillity}/>
                 <TouchableOpacity onPress={() => setPasswordVisibillity(!passwordVisibillity)}>
                     <Ionicons name={passwordVisibillity ? 'eye' : 'eye-off'} size={30} color={Colors.dark.tint} style={{ margin: 3}} />
                 </TouchableOpacity>
@@ -32,7 +32,7 @@ export default function SignupScreen() {
 
             <Text>Confirm Password</Text>
             <View style={styles.inputtextcontainer}>
-                <InputText secureTextEntry={!passwordVisibillity}/>
+                <InputText style={{ flex: 1 }} secureTextEntry={!passwordVisibillity}/>
                 <TouchableOpacity onPress={() => setPasswordVisibillity(!passwordVisibillity)}>
                     <Ionicons name={passwordVisibillity ? 'eye' : 'eye-off'} size={30} color={Colors.dark.tint} style={{ margin: 3}} />
                 </TouchableOpacity>
