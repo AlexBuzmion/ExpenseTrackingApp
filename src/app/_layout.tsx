@@ -6,6 +6,8 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 import { useColorScheme } from '@/src/components/useColorScheme';
+import { useExpenseListStore } from '@/store/expenseListStore';
+import { generateExampleExpenses } from '@/src/components/generateExampleExpenses';
 
 export {
     // Catch any errors thrown by the Layout component.
@@ -46,7 +48,13 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
+  const setExpenseList = useExpenseListStore(state => state.setExpenseList); // Get setExpenseList
 
+  // Use useEffect to initialize the store *once* when the component mounts
+  useEffect(() => {
+      const exampleExpenses = generateExampleExpenses(0); // Generate 20 example expenses
+      setExpenseList(exampleExpenses); // Set the expenses in the store
+  }, []); // Empty dependency array ensures this runs only once
   
   return (
         <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
