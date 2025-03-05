@@ -24,6 +24,7 @@ function ItemDetails() {
     // State to track editable fields
     const [name, setName] = useState(item?.name || '');
     const [category, setCategory] = useState(item?.category || '');
+    const [subcategory, setSubcategory] = useState(item?.subcategory || '');
     const [subtotal, setSubtotal] = useState(item?.subtotal.toString() || '0.00');
     const [hst, setHst] = useState(item?.hst.toString() || '0.00');
     const [total, setTotal] = useState(item?.total.toString() || '0.00');
@@ -87,6 +88,9 @@ function ItemDetails() {
 
             <Text style={styles.title}>Category:</Text>
             <InputText value={category} onChangeText={setCategory} style={styles.input} />
+
+            <Text style={styles.title}>Subcategory:</Text>
+            <InputText value={subcategory} onChangeText={setSubcategory} style={styles.input} />
 
             <Text style={styles.title}>Subtotal:</Text>
             <InputText 
