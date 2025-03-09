@@ -10,20 +10,27 @@ web-build/
 expo-env.d.ts
 
 # Android 
-/android/build/
-/android/.gradle/
-# Ignore build artifacts
-/android/app/build/
-/android/app/.cxx/
-/android/app/intermediates/
-/android/app/generated/
+# Gradle
+android/.gradle/
+android/gradle/wrapper/gradle-wrapper.jar
 
-# Ignore local Gradle properties
-/android/app/local.properties
+# Build output
+android/app/build/
+android/app/.cxx/
+android/app/intermediates/
+android/app/generated/
 
-# Ignore Keystore (if you're storing sensitive signing keys)
+# Local properties (machine-specific)
+android/local.properties
+android/app/local.properties
+
+# Keystore (sensitive)
 android/app/*.keystore
 android/app/key.properties
+
+# Has credentials
+google-services.json
+GoogleService-Info.plist
 
 # Native
 *.orig.*

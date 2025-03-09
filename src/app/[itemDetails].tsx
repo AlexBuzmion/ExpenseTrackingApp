@@ -1,17 +1,12 @@
-import { View, Text, InputText, useThemeColor } from '@/src/components/Themed';
+import { View, Text, InputText } from '@/src/components/Themed';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { Alert, Pressable, StyleSheet, TouchableOpacity } from 'react-native';  
 import { useExpenseListStore } from '@/store/expenseListStore';
 import { Ionicons } from '@expo/vector-icons';
-import { opacity } from 'react-native-reanimated/lib/typescript/Colors';
 import { useEffect, useState } from 'react';
-import { useTheme } from '@react-navigation/native';
 import Colors from '../constants/Colors';
 
-
-export default ItemDetails; 
-
-function ItemDetails() {
+export default function ItemDetails() {
     const router = useRouter();
     const { itemDetails } = useLocalSearchParams<{ itemDetails: string }>();
     const itemList = useExpenseListStore().expenseList;
@@ -161,7 +156,7 @@ const styles = StyleSheet.create({
         borderRadius: 8,
     },
     saveText: {
-        color: useThemeColor({}, 'text'),
+        // color: useThemeColor({}, 'text'),
         fontWeight: 'bold',
 
     },

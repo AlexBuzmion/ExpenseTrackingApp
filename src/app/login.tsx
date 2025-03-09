@@ -4,15 +4,20 @@ import { useRouter } from "expo-router";
 import Colors from "../constants/Colors";
 import { Ionicons } from '@expo/vector-icons';
 import { useState } from "react";
-
-function handleLogin() {
-
-};
+// import { logIn } from "../utils/authService"; //? login function
 
 export default function LoginScreen() {
     const router = useRouter();
-
+    const [email, setEmail] = useState(''); //? added the username state to save the users entry
+    const [password, setPassword] = useState(''); //? added the password state to save the users entry
     const [passwordVisibillity, setPasswordVisibillity] = useState(false);
+
+    //? moved the function inside the component function for email and password references
+    //? converted the function to an arrow function from hoisted 
+    const handleLogin = () => { 
+        alert(`email: ${email}, password: ${password}`);
+        logIn(email, password); //? added the login function 
+    };
 
     return (
         <View style={styles.container}>
@@ -26,7 +31,7 @@ export default function LoginScreen() {
             <View style={styles.inputtextcontainer}>
                 <InputText secureTextEntry={!passwordVisibillity} />
                 <TouchableOpacity onPress={() => setPasswordVisibillity(!passwordVisibillity)}>
-                    <Ionicons name={passwordVisibillity ? 'eye' : 'eye-off'} size={30} color={Colors.dark.tint} style={{ margin: 3}} />
+                    <Ionicons name={passwordVisibillity ? 'eye' : 'eye-off'} size={28} color={Colors.dark.tint} style={{ margin: 3}} />
                 </TouchableOpacity>
             </View>
 
