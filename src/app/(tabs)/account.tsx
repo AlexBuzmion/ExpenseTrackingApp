@@ -1,7 +1,6 @@
 import { View, Text, InputText } from "../../components/Themed";
 import { StyleSheet, TouchableOpacity } from 'react-native';
 import { useRouter } from "expo-router";
-import { Button } from "react-native";
 import Colors from "../../constants/Colors";
 
 export default function AccountScreen() {
@@ -11,7 +10,7 @@ export default function AccountScreen() {
 
             <Text style={styles.title}>Welcome</Text>
 
-            <TouchableOpacity style={[styles.loginButton, { borderWidth: 1.5, margin: 10}]} onPress={() => router.navigate("/login")}>
+            <TouchableOpacity style={[styles.loginButton, { borderWidth: 1.5, margin: 10}]} onPress={() => router.push("/login")}>
                 <Text>Login</Text>
             </TouchableOpacity>
 

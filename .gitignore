@@ -9,6 +9,29 @@ dist/
 web-build/
 expo-env.d.ts
 
+# Android 
+# Gradle
+android/.gradle/
+android/gradle/wrapper/gradle-wrapper.jar
+
+# Build output
+android/app/build/
+android/app/.cxx/
+android/app/intermediates/
+android/app/generated/
+
+# Local properties (machine-specific)
+android/local.properties
+android/app/local.properties
+
+# Keystore (sensitive)
+android/app/*.keystore
+android/app/key.properties
+
+# Has credentials
+google-services.json
+GoogleService-Info.plist
+
 # Native
 *.orig.*
 *.jks
@@ -31,6 +54,6 @@ yarn-error.*
 
 # local env files
 .env*.local
-
+.env 
 # typescript
 *.tsbuildinfo
