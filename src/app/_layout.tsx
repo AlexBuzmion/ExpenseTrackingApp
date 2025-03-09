@@ -52,7 +52,7 @@ function RootLayoutNav() {
 
   // Use useEffect to initialize the store *once* when the component mounts
   useEffect(() => {
-      const exampleExpenses = generateExampleExpenses(0); // Generate 20 example expenses
+      const exampleExpenses = generateExampleExpenses(12); // Generate 20 example expenses
       setExpenseList(exampleExpenses); // Set the expenses in the store
   }, []); // Empty dependency array ensures this runs only once
   

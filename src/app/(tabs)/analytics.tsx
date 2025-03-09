@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { StyleSheet, ScrollView, View, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text } from '@/src/components/Themed';
 import CategoryPieChart from '@/src/components/CategoryPieChart';
 import DateLineChart from '@/src/components/DateLineChart';
 import Colors from '@/src/constants/Colors';
@@ -70,7 +71,7 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'flex-start', // Start from the top
-        backgroundColor: Colors.light.background,
+        
         padding: 20,
     },
     title: {
