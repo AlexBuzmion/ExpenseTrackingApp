@@ -2,15 +2,15 @@ import { StatusBar } from 'expo-status-bar';
 import { Animated, Keyboard, Platform, StyleSheet, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
 import { Text, View, InputText } from '@/src/components/Themed';
 import { useEffect, useRef, useState} from 'react';
-import { CurrencyInputField } from '../components/CurrencyInputField';
-import { CrossPlatformDatePicker } from '../components/CrossPlatformDatePicker';
-import DropdownComponent from '../components/DropdownComponent';
+import { CurrencyInputField } from '../../components/CurrencyInputField';
+import { CrossPlatformDatePicker } from '../../components/CrossPlatformDatePicker';
+import DropdownComponent from '../../components/DropdownComponent';
 import { useExpenseListStore } from '@/store/expenseListStore';
 import { useRouter, Link } from 'expo-router'; // Import Link!
 import { useTaxRatesStore } from '@/store/provincialTaxStore';
 import { Dropdown } from 'react-native-element-dropdown';
 import { Ionicons } from '@expo/vector-icons';
-import Colors from '../constants/Colors';
+import Colors from '../../constants/Colors';
 
 export default function ModalScreen() {
 	const listStore = useExpenseListStore();

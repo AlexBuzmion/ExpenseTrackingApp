@@ -6,7 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { opacity } from 'react-native-reanimated/lib/typescript/Colors';
 import { useEffect, useState } from 'react';
 import { useTheme } from '@react-navigation/native';
-import Colors from '../constants/Colors';
+import Colors from '../../constants/Colors';
 
 
 export default ItemDetails; 

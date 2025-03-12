@@ -1,7 +1,7 @@
-import { View, Text, InputText } from "../components/Themed";
+import { View, Text, InputText } from "@/src/components/Themed";
 import { StyleSheet, TouchableOpacity } from 'react-native';
 import { useRouter } from "expo-router";
-import Colors from "../constants/Colors";
+import Colors from "@/src/constants/Colors";
 import { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 

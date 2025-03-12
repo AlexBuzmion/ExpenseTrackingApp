@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
-import { Text, View, InputText as TextInput } from '../components/Themed';
+import { Text, View, InputText as TextInput } from '../../components/Themed';
 import { useExpenseListStore } from '@/store/expenseListStore';
 import { Feather } from '@expo/vector-icons';
-import Colors from '../constants/Colors';
+import Colors from '../../constants/Colors';
 
 export default function CategoryModalScreen() {
     const { categories, addCategory, addSubcategory, renameCategory, renameSubcategory } = useExpenseListStore();

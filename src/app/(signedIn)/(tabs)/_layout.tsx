@@ -14,7 +14,7 @@ function TabBarIcon(props: {
   return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />;
 }
 
-export default function TabLayout() {
+export default function SignedInLayout() {
   const colorScheme = useColorScheme();
 
   return (
@@ -61,15 +61,14 @@ export default function TabLayout() {
                 tabBarIcon: ({ color }) => <TabBarIcon name="bar-chart" color={color} />,
                 }}
         />
-
+{/* 
         <Tabs.Screen
                 name="account"
                 options={{
                 title: 'Login',
                 tabBarIcon: ({ color }) => <TabBarIcon name="sign-in" color={color} />,
                 }}
-        />
-        
+        /> */}
         </Tabs> 
     );
 }

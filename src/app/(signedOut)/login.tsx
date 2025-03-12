@@ -1,19 +1,21 @@
-import { View, Text, InputText } from "../components/Themed";
+import { View, Text, InputText } from "@/src/components/Themed";
 import { StyleSheet, TouchableOpacity } from 'react-native';
 import { useRouter } from "expo-router";
-import Colors from "../constants/Colors";
+import Colors from "@/src/constants/Colors";
 import { Ionicons } from '@expo/vector-icons';
 import { useState } from "react";
-
-function handleLogin() {
-
-};
+import { AuthInfo } from "@/store/signedInState";
 
 export default function LoginScreen() {
     const router = useRouter();
-
     const [passwordVisibillity, setPasswordVisibillity] = useState(false);
 
+    const isSignedIn = AuthInfo(state => state.signedIn);
+    const setSignedIn = AuthInfo((state) => state.setSignedIn);
+
+    function handleLogin() {
+        setSignedIn(!isSignedIn);
+    };
     return (
         <View style={styles.container}>
 

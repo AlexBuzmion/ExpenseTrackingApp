@@ -1,8 +1,8 @@
-import { View, Text, InputText } from "../../components/Themed";
+import { View, Text, InputText } from "@/src/components/Themed";
 import { StyleSheet, TouchableOpacity } from 'react-native';
 import { useRouter } from "expo-router";
 import { Button } from "react-native";
-import Colors from "../../constants/Colors";
+import Colors from "@/src/constants/Colors";
 
 export default function AccountScreen() {
     const router = useRouter();
