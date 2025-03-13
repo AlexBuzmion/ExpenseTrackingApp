@@ -9,33 +9,16 @@ import { useExpenseListStore } from '@/store/expenseListStore';
 import { useRouter, Link } from 'expo-router'; // Import Link!
 import { Dropdown } from 'react-native-element-dropdown';
 import { Ionicons } from '@expo/vector-icons';
-import Colors from '../../constants/Colors';
+import Colors from '@/src/constants/Colors';
 import { taxRatesStore } from "@/store/provincialTaxStore";
-import { getApp } from "firebase/app";
-import { doc, getDoc, getFirestore } from "firebase/firestore";
+// import { getApp } from "firebase/app";
+// import { doc, getDoc, getFirestore } from "firebase/firestore";
+import { fetchProvTaxRates } from '@/utils/firebaseUtils';
 
 export default function ModalScreen() {
-	const db = getFirestore(getApp());
 	const taxStore = taxRatesStore((state) => state.setTaxRates);
-	async function fetchProvTaxRates() {
-		// create the doc ref, then get the doc
-		const docRef = doc(db, "app-configs", "provincial-tax-rates");
-		let docSnap;
-		try {
-			// get the doc
-			docSnap = await getDoc(docRef);
-		} catch (error: any) {
-			alert(error.message);
-		}
-		if (docSnap?.exists()) {
-			const data = docSnap.data() as Record<string, { GST: number; HST: number; PST: number }>;
-			taxStore(data);
-			// const updatedTaxRates = taxRatesStore.getState().taxRates;
-			// console.log('data tax rates: ', data);
-			// console.log('state Tax Rates: ', updatedTaxRates);
-		}
-	}
-	fetchProvTaxRates();
+	// const taxData = fetchProvTaxRates as Record<string, { GST: number; HST: number; PST: number }>
+	
 	const listStore = useExpenseListStore();
 	const router = useRouter();
 	const { taxRates } = taxRatesStore();

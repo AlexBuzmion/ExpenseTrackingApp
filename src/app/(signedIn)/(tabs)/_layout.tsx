@@ -5,6 +5,7 @@ import { Pressable } from 'react-native';
 
 import Colors from '@/src/constants/Colors';
 import { useColorScheme } from '@/src/components/useColorScheme';
+import { AuthInfo } from '@/store/authStore';
 
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 function TabBarIcon(props: {
@@ -15,8 +16,12 @@ function TabBarIcon(props: {
 }
 
 export default function SignedInLayout() {
+	const isSignedIn = AuthInfo(state => state.signedIn);
   	const colorScheme = useColorScheme();
-
+	
+	if (!isSignedIn) {
+		return null;
+	}
 	return (
 		<Tabs
 			screenOptions={{

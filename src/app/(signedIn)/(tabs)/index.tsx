@@ -9,13 +9,27 @@ import { useExpenseListStore } from '@/store/expenseListStore';
 import { format } from 'date-fns';
 import ItemEntry from '@/src/components/itemEntry';
 import FilterDropdown from '@/src/components/FilterDropdown';
+import { getUserDataFromFirestore, convertDBMap } from '@/utils/firebaseUtils';
 
 export default function TabOneScreen() {
     const listStore = useExpenseListStore().expenseList;
     const [searchQuery, setSearchQuery] = useState(''); // Store the user's input
 	const scaleAnim = useRef(new Animated.Value(1)).current;
 	const [selectedFilter, setSelectedFilter] = useState('date'); // Track selected filter
+	
+	const setList = useExpenseListStore((state) => state.setExpenseList);
+	// async function fetchAndSetExpenses() {
+	// 	try {
+	// 		const itemEntries = await getUserDataFromFirestore();
+	// 		const array = convertDBMap(itemEntries);
+	// 		console.log('array: ', array);
+	// 		setList(array);
+	// 	} catch (error) {
+	// 		console.error('Error fetching expenses:', error);
+	// 	}
+	// }
 
+	// fetchAndSetExpenses();
 	// Animate the add button if no expenses exist
 	useEffect(() => {
 		if (listStore.length === 0) {

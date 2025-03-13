@@ -3,9 +3,9 @@ import { ActivityIndicator, StyleSheet, TouchableOpacity } from 'react-native';
 import Colors from "@/src/constants/Colors";
 import { Ionicons } from '@expo/vector-icons';
 import { useState } from "react";
-import { AuthInfo } from "@/store/signedInState";
+import { AuthInfo } from "@/store/authStore";
 import {getApp} from "@firebase/app";
-import { getAuth , signInWithEmailAndPassword} from "firebase/auth";
+import { getAuth , signInAnonymously, signInWithEmailAndPassword} from "firebase/auth";
 
 export default function LoginScreen() {
     const [email, setEmail] = useState('');
@@ -20,6 +20,12 @@ export default function LoginScreen() {
         setIsLoading(true);
         try {
             await signInWithEmailAndPassword(firebaseAuth, email, password);
+            const userVerified = getAuth().currentUser?.emailVerified;
+            if(!userVerified) throw new Error('email not verified');
+            console.log('response from sign in: ',userVerified);
+            // if (!user?.emailVerified) {
+            //     throw new Error('email not verified');
+            // }
             setSignedIn(!isSignedIn);
             console.log(firebaseAuth.currentUser);
         } catch (error: any) {

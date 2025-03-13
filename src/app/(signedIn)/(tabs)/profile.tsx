@@ -1,17 +1,19 @@
 import { View, Text } from "@/src/components/Themed";
 import Colors from "@/src/constants/Colors";
-import { AuthInfo } from "@/store/signedInState";
+import { AuthInfo } from "@/store/authStore";
 import { TouchableOpacity } from "react-native";
 import { StyleSheet } from "react-native";
 import { getApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { useState } from "react";
+import { getUserDataFromFirestore, fetchProvTaxRates } from "@/utils/firebaseUtils";
 
 export default function ProfileScreen() {
     const setSignedIn = AuthInfo(state => state.setSignedIn);
     const [isLoading, setIsLoading] = useState(false);
     const firebaseAuth = getAuth(getApp());
     
+
     async function logOut() {
         try {
             await firebaseAuth.signOut() 

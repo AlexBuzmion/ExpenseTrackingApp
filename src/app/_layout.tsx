@@ -9,7 +9,7 @@ import { useColorScheme } from '@/src/components/useColorScheme';
 import { useExpenseListStore } from '@/store/expenseListStore';
 import { generateExampleExpenses } from '@/src/components/generateExampleExpenses';
 import { FIREBASE_API_KEY, FIREBASE_AUTH_DOMAIN, FIREBASE_PROJECT_ID, FIREBASE_STORAGE_BUCKET, FIREBASE_MESSAGING_SENDER_ID, FIREBASE_APP_ID } from '@env';
-import  { AuthInfo } from '@/store/signedInState';
+import  { AuthInfo } from '@/store/authStore';
 import { getApp, initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { taxRatesStore } from '@/store/provincialTaxStore';

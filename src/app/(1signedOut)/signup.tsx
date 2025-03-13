@@ -48,10 +48,11 @@ export default function SignupScreen() {
                 try {
                     await setDoc(doc(db, "users", user.uid), {
                         // more user data here
-                        firstTime: true // flag for first time login
+                        firstTime: true ,// flag for first time login
+                        itemEntries: {},
+                        categories: {},
                     });
-                    await setDoc(doc(db, "users", user.uid, "categories", "list"), {});
-                    await setDoc(doc(db, "users", user.uid, "item-entries", "default"), {});
+
                 } catch (error: any) {
                     alert(error);
                 }
