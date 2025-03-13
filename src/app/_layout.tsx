@@ -8,7 +8,11 @@ import 'react-native-reanimated';
 import { useColorScheme } from '@/src/components/useColorScheme';
 import { useExpenseListStore } from '@/store/expenseListStore';
 import { generateExampleExpenses } from '@/src/components/generateExampleExpenses';
-import  { AuthInfo } from '@/store/signedInState';
+import  { AuthInfo } from '@/store/authStore';
+import auth, { getAuth, FirebaseAuthTypes } from '@react-native-firebase/auth';
+import { getApp } from "@react-native-firebase/app";
+import { View } from '../components/Themed';
+import { ActivityIndicator } from 'react-native';
 
 export {
     // Catch any errors thrown by the Layout component.
@@ -48,9 +52,16 @@ export default function RootLayout() {
 }
 
 function RootLayoutNav() {
+    const [initializing, setInitializing] = useState(true);
     const colorScheme = useColorScheme();
     const setExpenseList = useExpenseListStore(state => state.setExpenseList); // Get setExpenseList
     const router = useRouter();
+
+    const isSignedIn = AuthInfo((state) => state.signedIn);
+    const authUser = AuthInfo((state) => state.user);
+    const setUser = AuthInfo((state) => state.setUser);
+    
+    const firebaseAuthApp = getAuth(getApp());
 
     // Use useEffect to initialize the store *once* when the component mounts
     useEffect(() => {
@@ -59,20 +70,29 @@ function RootLayoutNav() {
     }, []); // Empty dependency array ensures this runs only once
 
     //todo: update this to firebase to store the auth state
-    const signedIn = AuthInfo((state) => state.signedIn);
-    useEffect(() => {
-        console.log('use Effect called!');
-        if (signedIn) {
-          router.replace('/(signedIn)');
+    const onAuthStateChanged = (user: FirebaseAuthTypes.User | null) => {
+        console.log('onAuthStateChanged callback', user?.email);
+        console.log(authUser)
+        if (initializing) setInitializing(false);
+        setUser(user);
+        if (isSignedIn) {
+            router.replace('/(signedIn)/(tabs)');
         } else {
-          router.replace('/(signedOut)');
+            router.replace('/(signedOut)');
         }
-      }, [signedIn]);
+    }
+    
+    useEffect(() => {
+        const subscriber =firebaseAuthApp.onAuthStateChanged(onAuthStateChanged);
+        return subscriber;
+      }, [isSignedIn]);
 
-
-  return (
-        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-            <Slot />
-        </ThemeProvider>
+    return (
+        (
+            <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+                <Slot />
+            </ThemeProvider>
+        )
+        
   );
 }

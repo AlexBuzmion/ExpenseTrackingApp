@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "887240321177",
+    "project_id": "ispend-48a01",
+    "storage_bucket": "ispend-48a01.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:887240321177:android:a32eade2a4f143c73fb008",
+        "android_client_info": {
+          "package_name": "com.finotech.iSpend"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "887240321177-uhfmn3l5s39q06dm8vvm0bl67i6pnrh5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.finotech.iSpend",
+            "certificate_hash": "73d524291afc5d3878bec68e702ad09646a56993"
+          }
+        },
+        {
+          "client_id": "887240321177-5s800gos61hq5hn80akm7j4mpuok2jeb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDTMSAnkasU-RhTaQF3RHBgN0wv4C0GkTY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "887240321177-2mmpr2s2ugc7e0a4nnmkfo4peb557f4u.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "887240321177-39lvfl3lmivsnvavk4eiuds9sji2sd4h.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.finotech.iSpend"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
