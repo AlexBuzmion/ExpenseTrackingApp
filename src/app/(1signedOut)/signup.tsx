@@ -23,14 +23,14 @@ export default function SignupScreen() {
 
     async function handleSignup(){
         setIsLoading(true);
-        if (checkPasswordValidity() != '') {
-            alert(checkPasswordValidity());
-            return;
-        }
-        if (checkEmailValidity() != '') {
-            alert(checkEmailValidity());
-            return;
-        }
+        // if (checkPasswordValidity() != '') {
+        //     alert(checkPasswordValidity());
+        //     return;
+        // }
+        // if (checkEmailValidity() != '') {
+        //     alert(checkEmailValidity());
+        //     return;
+        // }
         try {
             await createUserWithEmailAndPassword(firebaseAuth, email, password);
             const user = firebaseAuth.currentUser;
@@ -47,9 +47,11 @@ export default function SignupScreen() {
                 }
                 try {
                     await setDoc(doc(db, "users", user.uid), {
-                        firstTime: true
-                        // your user data here
+                        // more user data here
+                        firstTime: true // flag for first time login
                     });
+                    await setDoc(doc(db, "users", user.uid, "categories", "list"), {});
+                    await setDoc(doc(db, "users", user.uid, "item-entries", "default"), {});
                 } catch (error: any) {
                     alert(error);
                 }
