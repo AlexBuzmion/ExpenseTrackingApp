@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
         borderRadius: 8,
     },
     saveText: {
-        color: useThemeColor({}, 'text'),
+        // color: useThemeColor({}, 'text'), //! dont use hooks inside hooks/effects, this is not allowed and will throw errors 
         fontWeight: 'bold',
 
     },

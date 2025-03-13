@@ -1,40 +1,52 @@
 import { View, Text, InputText } from "@/src/components/Themed";
-import { StyleSheet, TouchableOpacity } from 'react-native';
-import { useRouter } from "expo-router";
+import { ActivityIndicator, StyleSheet, TouchableOpacity } from 'react-native';
 import Colors from "@/src/constants/Colors";
 import { Ionicons } from '@expo/vector-icons';
 import { useState } from "react";
 import { AuthInfo } from "@/store/signedInState";
+import {getApp} from "@firebase/app";
+import { getAuth , signInWithEmailAndPassword} from "firebase/auth";
 
 export default function LoginScreen() {
-    const router = useRouter();
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
     const [passwordVisibillity, setPasswordVisibillity] = useState(false);
-
+    const [isLoading, setIsLoading] = useState(false);
     const isSignedIn = AuthInfo(state => state.signedIn);
     const setSignedIn = AuthInfo((state) => state.setSignedIn);
+    const firebaseAuth = getAuth(getApp());
 
-    function handleLogin() {
-        setSignedIn(!isSignedIn);
+    async function handleLogin() {
+        setIsLoading(true);
+        try {
+            await signInWithEmailAndPassword(firebaseAuth, email, password);
+            setSignedIn(!isSignedIn);
+            console.log(firebaseAuth.currentUser);
+        } catch (error: any) {
+            alert(error.message);
+        } finally {
+            setIsLoading(false);
+        }
     };
+
     return (
         <View style={styles.container}>
 
             <Text>Username</Text>
             <View style={styles.inputtextcontainer}>
-                <InputText/>
+                <InputText onChangeText={setEmail} value={email} autoCapitalize="none"/>
             </View>
 
             <Text>Password</Text>
             <View style={styles.inputtextcontainer}>
-                <InputText style={{ flex: 1 }} secureTextEntry={!passwordVisibillity} />
+                <InputText style={{ flex: 1 }} secureTextEntry={!passwordVisibillity} onChangeText={setPassword} value={password} autoCapitalize="none"/>
                 <TouchableOpacity onPress={() => setPasswordVisibillity(!passwordVisibillity)}>
                     <Ionicons name={passwordVisibillity ? 'eye' : 'eye-off'} size={30} color={Colors.dark.tint} style={{ margin: 3}} />
                 </TouchableOpacity>
             </View>
 
-
-            <TouchableOpacity style={[styles.button, { borderWidth: 0, margin: 10 }]} onPress={handleLogin}>
-                <Text>Login</Text>
+            <TouchableOpacity style={[styles.button, { borderWidth: 0, margin: 10 }]} onPress={handleLogin} disabled={isLoading}>
+                {isLoading ? <ActivityIndicator /> : <Text>Login</Text>}
             </TouchableOpacity>
         </View>
     );

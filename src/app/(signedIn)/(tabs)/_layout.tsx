@@ -15,60 +15,45 @@ function TabBarIcon(props: {
 }
 
 export default function SignedInLayout() {
-  const colorScheme = useColorScheme();
+  	const colorScheme = useColorScheme();
 
-  return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors.dark.tint,
-        // Disable the static render of the header on web
-        // to prevent a hydration error in React Navigation v6.
-        headerShown: false,
-      }}>
-      <Tabs.Screen
-        name="index"
-        options={{
-            title: 'Tab One',
-            tabBarIcon: ({ color }) => <TabBarIcon name="list-alt" color={color} />,
-            // headerRight: () => (
-            //   <Link href="/modal" asChild>
-            //     <Pressable>
-            //       {({ pressed }) => (
-            //         <FontAwesome
-            //           name="info-circle"
-            //           size={25}
-            //           color={Colors[colorScheme ?? 'light'].text}
-            //           style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-            //         />
-            //       )}
-            //     </Pressable>
-            //   </Link>
-            // ),
-        }}
-      />
-        <Tabs.Screen
-                name="two"
-                options={{
-                title: 'Reports',
-                tabBarIcon: ({ color }) => <TabBarIcon name="file-text-o" color={color} />,
-                }}
-        />
+	return (
+		<Tabs
+			screenOptions={{
+				tabBarActiveTintColor: Colors.dark.tint,
+				headerShown: false,
+			}}
+		>
+		<Tabs.Screen
+			name="index"
+			options={{
+				title: 'Tab One',
+				tabBarIcon: ({ color }) => <TabBarIcon name="list-alt" color={color} />,
+			}}
+		/>
+			<Tabs.Screen
+				name="two"
+				options={{
+					title: 'Reports',
+					tabBarIcon: ({ color }) => <TabBarIcon name="file-text-o" color={color} />,
+				}}
+			/>
 
-        <Tabs.Screen
-                name="analytics"
-                options={{
-                title: 'Analytics',
-                tabBarIcon: ({ color }) => <TabBarIcon name="bar-chart" color={color} />,
-                }}
-        />
-{/* 
-        <Tabs.Screen
-                name="account"
-                options={{
-                title: 'Login',
-                tabBarIcon: ({ color }) => <TabBarIcon name="sign-in" color={color} />,
-                }}
-        /> */}
-        </Tabs> 
-    );
+			<Tabs.Screen
+				name="analytics"
+				options={{
+					title: 'Analytics',
+					tabBarIcon: ({ color }) => <TabBarIcon name="bar-chart" color={color} />,
+				}}
+			/>
+
+			<Tabs.Screen
+				name="profile"
+				options={{
+					title: 'Profile',
+					tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} />,
+				}}
+			/>
+		</Tabs> 
+	);
 }
