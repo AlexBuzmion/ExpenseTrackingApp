@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 import uuid from 'react-native-uuid';
+import { getAuth } from 'firebase/auth';
+import { doc, getFirestore, setDoc } from 'firebase/firestore';
 
 type CategoriesType = {
     [key: string]: string[];  // 
@@ -111,17 +113,37 @@ type ExpenseListStore = {
     renameSubcategory: (category: string, oldSubcategory: string, newSubcategory: string) => void;
 };
 
+const db = getFirestore();
+
+async function saveExpenseToFirestore(expense: ExpenseEntry) {
+    const user = getAuth().currentUser;
+    if (!user) {
+      throw new Error('no user signed in');
+    }
+    await setDoc(
+      doc(db, 'users', user.uid, 'item-entries', expense.id),
+      expense
+    );
+  }
+
 export const useExpenseListStore = create<ExpenseListStore>((set) => ({
     expenseList: [],
     categories,
     setExpenseList: (expenses) => set({ expenseList: expenses }),
-    addExpense: (expense) => set((state) => ({
-        expenseList: [
-            ...state.expenseList,
-            { ...expense, id: uuid.v4() as string }, 
-            // this is where the cloud storing happens
-        ],
-    })),
+    // addExpense: (expense) => set((state) => ({
+    //     expenseList: [
+    //         ...state.expenseList,
+    //         { ...expense, id: uuid.v4() as string }, 
+    //         // this is where the cloud storing happens
+    //     ],
+    // })),
+    addExpense: (expense) => set((state) => {
+        const newExpense = { ...expense, id: uuid.v4() as string };
+        saveExpenseToFirestore(newExpense).catch((err) => console.error(err));
+        return {
+          expenseList: [...state.expenseList, newExpense],
+        };
+    }),
     removeExpense: (id: string) => set((state) => ({
         expenseList: state.expenseList.filter(expense => expense.id !== id),
     })),

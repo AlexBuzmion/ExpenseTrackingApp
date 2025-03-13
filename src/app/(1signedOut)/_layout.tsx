@@ -1,8 +1,9 @@
-import { View, Text} from "@/src/components/Themed"
 import { Stack } from "expo-router"
 
+
+
 const SignedOutStack = () =>{
-    console.log('SignedOutStack');
+    
     return (
         <Stack screenOptions={{ headerShown: false }}>
             <Stack.Screen name="index" />
