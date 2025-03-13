@@ -12,6 +12,8 @@ import { FIREBASE_API_KEY, FIREBASE_AUTH_DOMAIN, FIREBASE_PROJECT_ID, FIREBASE_S
 import  { AuthInfo } from '@/store/signedInState';
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
+import { taxRatesStore } from '@/store/provincialTaxStore';
+import { doc, getDoc, getFirestore } from 'firebase/firestore';
 
 export {
     // Catch any errors thrown by the Layout component.
@@ -60,12 +62,13 @@ function RootLayoutNav() {
         appId: FIREBASE_APP_ID
     }
 
-    const app = initializeApp(firebaseConfig);
-    const firebaseAuth = getAuth(app);
-
+    const taxStore = taxRatesStore((state) => state.setTaxRates);
     const colorScheme = useColorScheme();
     const setExpenseList = useExpenseListStore(state => state.setExpenseList); // Get setExpenseList
     const router = useRouter();
+    const app = initializeApp(firebaseConfig);
+    const firebaseAuth = getAuth(app);
+    const db = getFirestore(app);
 
     // Use useEffect to initialize the store *once* when the component mounts
     useEffect(() => {

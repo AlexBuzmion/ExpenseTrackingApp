@@ -6,12 +6,14 @@ import { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import {getApp} from "@firebase/app";
 import { getAuth , createUserWithEmailAndPassword, updateProfile, sendEmailVerification} from "firebase/auth";
-
+import { getFirestore, doc, setDoc, collection, addDoc, getDoc } from "firebase/firestore";
+import { taxRatesStore } from "@/store/provincialTaxStore";
 
 
 export default function SignupScreen() {
     const router = useRouter();
     const firebaseAuth = getAuth(getApp());
+    const db = getFirestore(getApp());
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -43,6 +45,14 @@ export default function SignupScreen() {
                 } catch (error: any) {
                     alert(error.message);
                 }
+                try {
+                    await setDoc(doc(db, "users", user.uid), {
+                        firstTime: true
+                        // your user data here
+                    });
+                } catch (error: any) {
+                    alert(error);
+                }
             }
             alert("Please check your email to verify your account.");
             router.push('/(1signedOut)/login');
@@ -62,7 +72,7 @@ export default function SignupScreen() {
     function checkEmailValidity() {
         return 'Tiago, add email validation check';
     }
-    
+
     return (
         <View style={styles.container}>
             <Text>Username</Text>
@@ -90,6 +100,7 @@ export default function SignupScreen() {
             <TouchableOpacity style={[styles.button, { borderWidth: 0, margin: 10 }]} onPress={handleSignup} disabled={isLoading}>
                 {isLoading ? <ActivityIndicator /> : <Text>Sign Up</Text>}
             </TouchableOpacity>
+
         </View>
     );
 }
