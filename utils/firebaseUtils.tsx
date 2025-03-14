@@ -1,7 +1,8 @@
-import { taxRatesStore } from "@/store/provincialTaxStore";
+import { useCategories } from "@/store/catStore";
+import { useTaxStore } from "@/store/taxStore";
 import { getApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { doc, getDoc, getFirestore, updateDoc } from "firebase/firestore";
+import { arrayRemove, arrayUnion, deleteField, doc, getDoc, getFirestore, updateDoc } from "firebase/firestore";
 
 // generic helper functions
 function formatEntry(expense: any): Record<string, any> {
@@ -51,6 +52,92 @@ export async function saveExpenseToFirestore(expense: any) {
     }
 }
 
+export async function addCategoryToFB(category: string) {
+    console.log('adding category', category);
+    const user = getAuth().currentUser;
+    if (!user) {
+        throw new Error('no user signed in');
+    }
+    try {
+        await updateDoc(doc(getFirestore(), 'users', user.uid), {
+            [`categories.${category}`]: []
+        });
+        console.log('category added');
+    } catch (error: any) {
+        alert(error.message);
+        return error;
+    }
+}
+
+export async function removeCatFromFB(category: string) {
+    console.log('removing category', category);
+    const user = getAuth().currentUser;
+    if (!user) {
+        throw new Error('no user signed in');
+    }
+    try {
+        await updateDoc(doc(getFirestore(), 'users', user.uid), {
+            [`categories.${category}`]: deleteField()
+        });
+        console.log('category removed');
+    } catch (error: any) {
+        alert(error.message);
+        return error;
+    }
+}
+
+export async function addSubcategoryToFB(category: string, subcategory: string) {
+    console.log('adding subcategory', subcategory);
+    const user = getAuth().currentUser;
+    if (!user) {
+        throw new Error('no user signed in');
+    }
+    try {
+        await updateDoc(doc(getFirestore(), 'users', user.uid), {
+            [`categories.${category}`]: arrayUnion(subcategory)
+        });
+        console.log('subcategory added');
+    } catch (error: any) {
+        alert(error.message);
+        return error;
+    }
+}
+
+export async function editSubcatInFB(category: string, oldSubcategory: string, newSubcategory: string) {
+    console.log('editing subcategory', oldSubcategory, 'to', newSubcategory);
+    const user = getAuth().currentUser;
+    if (!user) {
+        throw new Error('no user signed in');
+    }
+    try {
+        await updateDoc(doc(getFirestore(), 'users', user.uid), {
+            [`categories.${category}`]: arrayRemove(oldSubcategory),
+            [`categories.${category}`]: arrayUnion(newSubcategory)
+        });
+        console.log('subcategory edited');
+    } catch (error: any) {
+        alert(error.message);
+        return error;
+    }
+}
+
+export async function removeSubcatFromFB(category: string, subcategory: string) {
+    console.log('removing subcategory', subcategory);
+    const user = getAuth().currentUser;
+    if (!user) {
+        throw new Error('no user signed in');
+    }
+    try {
+        await updateDoc(doc(getFirestore(), 'users', user.uid), {
+            [`categories.${category}`]: arrayRemove(subcategory)
+        });
+        console.log('subcategory removed');
+    } catch (error: any) {
+        alert(error.message);
+        return error;
+    }
+}
+
 // retrieves users(folder)->userid(folder)->ALL contents
 export async function getUserDataFromFirestore() {
     const user = getAuth().currentUser;
@@ -73,21 +160,4 @@ export async function getUserDataFromFirestore() {
     }
 }
 
-
-export async function fetchProvTaxRates() {
-        // create the doc ref, then get the doc
-        const docRef = doc(getFirestore(getApp()), "app-configs", "provincial-tax-rates");
-        let docSnap;
-        try {
-            // get the doc
-            docSnap = await getDoc(docRef);
-            if (docSnap?.exists()) {
-                const data = docSnap.data() as Record<string, { GST: number; HST: number; PST: number }>;
-                console.log(data);
-                return data;
-            }
-        } catch (error: any) {
-            alert(error.message);
-        }
-    }
 // fireauth specific functions 

@@ -1,13 +1,13 @@
 import { StyleSheet, TouchableOpacity } from 'react-native';
 import { Text, View } from '@/src/components/Themed';
-import { useExpenseListStore } from '@/store/expenseListStore';
+import { useEntriesStore } from '@/store/entriesStore';
 import { printToFileAsync } from "expo-print";
 import { shareAsync } from "expo-sharing";
 import { CrossPlatformDatePicker } from '@/src/components/CrossPlatformDatePicker';
 import { useState } from 'react';
 
 export default function TabTwoScreen() {
-    const listStore = useExpenseListStore();
+    const listStore = useEntriesStore();
     const allExpenses = listStore.expenseList;
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date());

@@ -7,7 +7,7 @@ import { Ionicons } from "@expo/vector-icons";
 import {getApp} from "@firebase/app";
 import { getAuth , createUserWithEmailAndPassword, updateProfile, sendEmailVerification} from "firebase/auth";
 import { getFirestore, doc, setDoc, collection, addDoc, getDoc } from "firebase/firestore";
-import { taxRatesStore } from "@/store/provincialTaxStore";
+import { useTaxStore } from "@/store/taxStore";
 
 
 export default function SignupScreen() {

@@ -1,7 +1,7 @@
 import { View, Text, InputText, useThemeColor } from '@/src/components/Themed';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { Alert, Pressable, StyleSheet, TouchableOpacity } from 'react-native';  
-import { useExpenseListStore } from '@/store/expenseListStore';
+import { useEntriesStore } from '@/store/entriesStore';
 import { Ionicons } from '@expo/vector-icons';
 import { opacity } from 'react-native-reanimated/lib/typescript/Colors';
 import { useEffect, useState } from 'react';
@@ -14,9 +14,9 @@ export default ItemDetails;
 function ItemDetails() {
     const router = useRouter();
     const { itemDetails } = useLocalSearchParams<{ itemDetails: string }>();
-    const itemList = useExpenseListStore().expenseList;
-    const updateExpense = useExpenseListStore((state) => state.updateExpense);
-    const removeExpense = useExpenseListStore((state) => state.removeExpense);
+    const itemList = useEntriesStore().expenseList;
+    const updateExpense = useEntriesStore((state) => state.updateExpense);
+    const removeExpense = useEntriesStore((state) => state.removeExpense);
 
     // Find the item using `id`
     const item = itemList.find((entry) => entry.id === itemDetails);

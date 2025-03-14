@@ -1,13 +1,22 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import { Text, View, InputText as TextInput } from '../../components/Themed';
-import { useExpenseListStore } from '@/store/expenseListStore';
+import { useEntriesStore } from '@/store/entriesStore';
 import { Feather } from '@expo/vector-icons';
 import Colors from '../../constants/Colors';
+import { useCategories } from '@/store/catStore';
 
 export default function CategoryModalScreen() {
-    const { categories, addCategory, addSubcategory, renameCategory, renameSubcategory } = useExpenseListStore();
-    
+
+    //! using the new category store
+    const categories = useCategories((state) => state.categories);
+    const addCategory = useCategories((state) => state.addCategory);
+    const deleteCategory = useCategories((state) => state.deleteCategory);
+    const editCategory = useCategories((state) => state.editCategory);
+    const addSubcategory = useCategories((state) => state.addSubcategory); 
+    const deleteSubcategory = useCategories((state) => state.deleteSubcategory);
+    const editSubcategory = useCategories((state) => state.editSubcategory);
+
     const [newCategory, setNewCategory] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('');
     const [newSubcategory, setNewSubcategory] = useState('');
@@ -18,8 +27,28 @@ export default function CategoryModalScreen() {
     const [editingSubcategory, setEditingSubcategory] = useState('');
     const [editedSubcategoryName, setEditedSubcategoryName] = useState('');
 
-    const [, setState] = useState({});
-    const forceUpdate = () => setState({});
+    function handleAddCategory() {
+        addCategory(newCategory);
+    }
+    function handleDeleteCat(){
+        deleteCategory('Test');   
+    }
+    function handleEditCat() {
+        editCategory('Test', 'NEW - Test');
+    }
+    function handleAddSubCat() {
+        addSubcategory('House', 'TestSubcategory');
+    }
+    function handleDeleteSubCat() {
+        deleteSubcategory('House', 'TestSubcategory');
+    }
+    function handleEditSubCat() {
+        editSubcategory('House', 'TestSubcategory', 'NEW - TestSubcategory');
+    }
+
+    useEffect(() => {
+        handleEditCat();
+    }, [editSubcategory])
 
     return (
         <View style={{ flex: 1 }}>
@@ -32,13 +61,7 @@ export default function CategoryModalScreen() {
                     onChangeText={setNewCategory}
                     style={styles.inputFieldContainer}
                 />
-
-                <TouchableOpacity style={styles.button} onPress={() => {
-                    if (newCategory.trim()) {
-                        addCategory(newCategory.trim());
-                        setNewCategory('');
-                    }
-                }}>
+                <TouchableOpacity style={styles.button} onPress={handleAddCategory}>
                     <Text>Add Category</Text>
                 </TouchableOpacity>
 
@@ -58,7 +81,7 @@ export default function CategoryModalScreen() {
                                     // onBlur is triggered when the input loses focus, usually when the user taps outside the input or presses the return key
                                     onBlur={() => {
                                         if (editedCategoryName.trim() && editedCategoryName !== category) {
-                                            renameCategory(category, editedCategoryName.trim());
+                                            // renameCategory(category, editedCategoryName.trim());
                                         }
                                         setIsEditing('');
                                     }}
@@ -94,12 +117,15 @@ export default function CategoryModalScreen() {
                                         onChangeText={setNewSubcategory}
                                         style={styles.inputFieldContainer}
                                     />
-                                    <TouchableOpacity style={styles.button} onPress={() => {
-                                        if (newSubcategory.trim()) {
-                                            addSubcategory(category, newSubcategory.trim());
-                                            setNewSubcategory('');
-                                        }
-                                    }}>
+                                    <TouchableOpacity style={styles.button} onPress={
+                                        // () => {
+                                            handleAddSubCat
+                                        // if (newSubcategory.trim()) {
+                                        //     addSubcategory(category, newSubcategory.trim());
+                                        //     setNewSubcategory('');
+                                        // }
+                                        // }
+                                    }>
                                         <Text>Add</Text>
                                     </TouchableOpacity> 
                                 </View>
@@ -114,7 +140,7 @@ export default function CategoryModalScreen() {
                                                 style={styles.inputFieldContainer}
                                                 onBlur={() => {
                                                     if (editedSubcategoryName.trim() && editedSubcategoryName !== sub) {
-                                                        renameSubcategory(category, sub, editedSubcategoryName.trim());
+                                                        // renameSubcategory(category, sub, editedSubcategoryName.trim());
                                                     }
                                                     setEditingSubcategory('');
                                                 }}

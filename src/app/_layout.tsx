@@ -6,14 +6,14 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 import { useColorScheme } from '@/src/components/useColorScheme';
-import { useExpenseListStore } from '@/store/expenseListStore';
+import { useEntriesStore } from '@/store/entriesStore';
 import { generateExampleExpenses } from '@/src/components/generateExampleExpenses';
 import { FIREBASE_API_KEY, FIREBASE_AUTH_DOMAIN, FIREBASE_PROJECT_ID, FIREBASE_STORAGE_BUCKET, FIREBASE_MESSAGING_SENDER_ID, FIREBASE_APP_ID } from '@env';
 import  { AuthInfo } from '@/store/authStore';
 import { getApp, initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-import { taxRatesStore } from '@/store/provincialTaxStore';
-import { doc, getDoc, getFirestore } from 'firebase/firestore';
+import { useTaxStore } from '@/store/taxStore';
+import { getFirestore } from 'firebase/firestore';
 
 export {
     // Catch any errors thrown by the Layout component.
@@ -27,6 +27,8 @@ export const unstable_settings = {
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
+
+
 
 export default function RootLayout() {
     const [loaded, error] = useFonts({
@@ -44,6 +46,11 @@ export default function RootLayout() {
     }
     const app = initializeApp(firebaseConfig);
 
+    // call init taxrates on mount 
+    useEffect(() => {
+        useTaxStore.getState().initTaxRates();
+    }, []);
+    
     // Expo Router uses Error Boundaries to catch errors in the navigation tree.
     useEffect(() => {
         if (error) throw error;
@@ -64,19 +71,11 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
     
-
-    const taxStore = taxRatesStore((state) => state.setTaxRates);
     const colorScheme = useColorScheme();
-    const setExpenseList = useExpenseListStore(state => state.setExpenseList); // Get setExpenseList
+
     const router = useRouter();
     const firebaseAuth = getAuth(getApp());
     const db = getFirestore(getApp());
-
-    // Use useEffect to initialize the store *once* when the component mounts
-    useEffect(() => {
-        const exampleExpenses = generateExampleExpenses(12); // Generate 20 example expenses
-        setExpenseList(exampleExpenses); // Set the expenses in the store
-    }, []); // Empty dependency array ensures this runs only once
 
     //todo: update this to firebase to store the auth state
     const signedIn = AuthInfo((state) => state.signedIn);

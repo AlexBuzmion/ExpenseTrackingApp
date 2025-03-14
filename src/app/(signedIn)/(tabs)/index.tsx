@@ -5,31 +5,31 @@ import { Text, View } from '@/src/components/Themed';
 import { Link, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '@/src/constants/Colors';
-import { useExpenseListStore } from '@/store/expenseListStore';
+import { useEntriesStore } from '@/store/entriesStore';
 import { format } from 'date-fns';
 import ItemEntry from '@/src/components/itemEntry';
 import FilterDropdown from '@/src/components/FilterDropdown';
 import { getUserDataFromFirestore, convertDBMap } from '@/utils/firebaseUtils';
+import { useCategories } from '@/store/catStore';
 
 export default function TabOneScreen() {
-    const listStore = useExpenseListStore().expenseList;
+    const listStore = useEntriesStore().expenseList;
     const [searchQuery, setSearchQuery] = useState(''); // Store the user's input
 	const scaleAnim = useRef(new Animated.Value(1)).current;
 	const [selectedFilter, setSelectedFilter] = useState('date'); // Track selected filter
-	
-	const setList = useExpenseListStore((state) => state.setExpenseList);
-	// async function fetchAndSetExpenses() {
-	// 	try {
-	// 		const itemEntries = await getUserDataFromFirestore();
-	// 		const array = convertDBMap(itemEntries);
-	// 		console.log('array: ', array);
-	// 		setList(array);
-	// 	} catch (error) {
-	// 		console.error('Error fetching expenses:', error);
-	// 	}
-	// }
 
-	// fetchAndSetExpenses();
+	const initCats = useCategories((state) => state.initCategories);
+	
+    // call init entries on mount 
+	const initExpenseList = useEntriesStore((state) => state.initExpenseList);
+	useEffect(() => {
+        initExpenseList();
+    }, [initExpenseList]);
+
+	useEffect(() => {
+		initCats();
+	}, []);
+
 	// Animate the add button if no expenses exist
 	useEffect(() => {
 		if (listStore.length === 0) {

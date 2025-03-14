@@ -1,28 +1,26 @@
 import { StatusBar } from 'expo-status-bar';
 import { Animated, Keyboard, Platform, StyleSheet, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
 import { Text, View, InputText } from '@/src/components/Themed';
-import { useEffect, useRef, useState} from 'react';
+import { useEffect, useMemo, useRef, useState} from 'react';
 import { CurrencyInputField } from '../../components/CurrencyInputField';
 import { CrossPlatformDatePicker } from '../../components/CrossPlatformDatePicker';
 import DropdownComponent from '../../components/DropdownComponent';
-import { useExpenseListStore } from '@/store/expenseListStore';
+import { useEntriesStore } from '@/store/entriesStore';
 import { useRouter, Link } from 'expo-router'; // Import Link!
 import { Dropdown } from 'react-native-element-dropdown';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '@/src/constants/Colors';
-import { taxRatesStore } from "@/store/provincialTaxStore";
+import { useTaxStore } from "@/store/taxStore";
+
 // import { getApp } from "firebase/app";
 // import { doc, getDoc, getFirestore } from "firebase/firestore";
-import { fetchProvTaxRates } from '@/utils/firebaseUtils';
+
 
 export default function ModalScreen() {
-	const taxStore = taxRatesStore((state) => state.setTaxRates);
-	// const taxData = fetchProvTaxRates as Record<string, { GST: number; HST: number; PST: number }>
-	
-	const listStore = useExpenseListStore();
 	const router = useRouter();
-	const { taxRates } = taxRatesStore();
-
+	const listStore = useEntriesStore();
+	const { taxRates } = useTaxStore();
+	
 	// track input values
 	const [itemName, setItemName] = useState("");
 	const [date, setDate] = useState(new Date());
@@ -39,6 +37,12 @@ export default function ModalScreen() {
 		subCategorySelected: false,
 	});
 	
+	// fetchProvTaxRates().then((data: Record<string, { GST: number; HST: number; PST: number }> | undefined) => {
+	// 	console.log('data from outside fetchProvTaxRates: ', data)
+	// 	useTaxStore().setTaxRates(data || {});
+	// }).finally(() => {
+	// 	console.log('useTaxStore: ', useTaxStore.getState().taxRates);
+	// });
 	// get tax rates from Store
 	const provinceTax = taxRates[province] || { GST: 0, HST: 0, PST: 0 };
 	const totalTaxRate = provinceTax.GST + provinceTax.HST + provinceTax.PST;
@@ -133,6 +137,7 @@ export default function ModalScreen() {
 					borderWidth: missingFields.itemName ? 2 : 1,
 				}]}
 			>
+				
 				<Text style={{ marginRight: 10, fontSize: 16 }}>Item:</Text>
 				<InputText 
 					style={styles.inputField} 
@@ -154,7 +159,7 @@ export default function ModalScreen() {
 				onCategoryChange={val => setCategorySelected(val) }
 				onSubcategoryChange={val => setSubCategorySelected(val)}
 			/>
-
+			
 			{/* Add Category Button */}
             <Link href="/categoryModal" asChild>
                 <TouchableOpacity style={styles.addCategoryButton}>
@@ -280,3 +285,7 @@ const styles = StyleSheet.create({
 		alignSelf: 'center',
 	},
 });
+
+function fetchProvTaxRates() {
+	throw new Error('Function not implemented.');
+}

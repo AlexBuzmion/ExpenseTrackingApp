@@ -1,14 +1,14 @@
 import React from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { Svg, Path, Text as SVGText, G } from 'react-native-svg';
-import { useExpenseListStore } from '@/store/expenseListStore';
+import { useEntriesStore } from '@/store/entriesStore';
 
 interface CategoryPieChartProps {
     // Add any other props if needed
 }
 
 const CategoryPieChart: React.FC<CategoryPieChartProps> = () => {
-    const { expenseList } = useExpenseListStore();
+    const { expenseList } = useEntriesStore();
 
     // Calculate total expenses per category
     const categoryTotals: Record<string, number> = {};

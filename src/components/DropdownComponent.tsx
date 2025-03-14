@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
-import { useExpenseListStore } from '@/store/expenseListStore';
+import { useEntriesStore } from '@/store/entriesStore';
 import Colors from '../constants/Colors';
+import { useCategories } from '@/store/catStore';
 
 type DropdownComponentProps = {
   category: string;
@@ -17,7 +18,7 @@ const DropdownComponent: React.FC<DropdownComponentProps> = ({
   onCategoryChange,
   onSubcategoryChange,
 }) => {
-  const { categories } = useExpenseListStore();  // Get categories directly from store
+  const categories = useCategories((state) => state.categories);
   const [isFocus, setIsFocus] = useState(false);
 
   // Generate category and subcategory data for the dropdowns
