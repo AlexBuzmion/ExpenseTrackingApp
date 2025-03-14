@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, Svg, SVGText, G} from '@/src/components/Themed';
 import { StyleSheet, Dimensions } from 'react-native';
 import { Path } from 'react-native-svg';
-import { useExpenseListStore } from '@/store/expenseListStore';
+import { useEntriesStore } from '@/store/entriesStore';
 import { isWithinInterval, parseISO } from 'date-fns';
 
 interface CategoryPieChartProps {
@@ -12,7 +12,7 @@ interface CategoryPieChartProps {
 }
 
 const CategoryPieChart: React.FC<CategoryPieChartProps> = ({startDate, endDate}) => {
-    const { expenseList } = useExpenseListStore();
+    const { expenseList } = useEntriesStore();
 
     // 1. Filter expenses based on date range
     const filteredExpenses = expenseList.filter(expense => {

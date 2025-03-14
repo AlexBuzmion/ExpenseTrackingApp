@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 import { View, Dropdown } from '@/src/components/Themed';
-import { useExpenseListStore } from '@/store/expenseListStore';
+import { useEntriesStore } from '@/store/entriesStore';
 import Colors from '../constants/Colors';
+import { useCategories } from '@/store/catStore';
 
 type DropdownComponentProps = {
     category: string;
@@ -17,8 +18,8 @@ const DropdownComponent: React.FC<DropdownComponentProps> = ({
     onCategoryChange,
     onSubcategoryChange,
 }) => {
-    const { categories } = useExpenseListStore();
-    const [isFocus, setIsFocus] = useState(false);
+  const categories = useCategories((state) => state.categories);
+  const [isFocus, setIsFocus] = useState(false);
 
     const categoryData = Object.keys(categories).map((cat) => ({
         label: cat,

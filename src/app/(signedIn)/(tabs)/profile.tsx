@@ -6,14 +6,12 @@ import { StyleSheet } from "react-native";
 import { getApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { useState } from "react";
-import { getUserDataFromFirestore, fetchProvTaxRates } from "@/utils/firebaseUtils";
 
 export default function ProfileScreen() {
     const setSignedIn = AuthInfo(state => state.setSignedIn);
     const [isLoading, setIsLoading] = useState(false);
     const firebaseAuth = getAuth(getApp());
     
-
     async function logOut() {
         try {
             await firebaseAuth.signOut() 
@@ -22,7 +20,6 @@ export default function ProfileScreen() {
         } catch (error: any) {
             alert(error.message);
         }
-
     }
 
     return (

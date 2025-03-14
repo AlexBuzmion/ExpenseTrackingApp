@@ -1,35 +1,44 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { SectionList, StyleSheet, TouchableOpacity, Animated, Easing} from 'react-native';
+import { SectionList, StyleSheet, TouchableOpacity, Animated, Easing, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text, View, InputText as TextInput } from '@/src/components/Themed';
 import { Link, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '@/src/constants/Colors';
-import { useExpenseListStore } from '@/store/expenseListStore';
+import { useEntriesStore } from '@/store/entriesStore';
 import { format } from 'date-fns';
 import ItemEntry from '@/src/components/itemEntry';
 import FilterDropdown from '@/src/components/FilterDropdown';
 import { getUserDataFromFirestore, convertDBMap } from '@/utils/firebaseUtils';
+import { useCategories } from '@/store/catStore';
 
 export default function TabOneScreen() {
-    const listStore = useExpenseListStore().expenseList;
+    const listStore = useEntriesStore().expenseList;
     const [searchQuery, setSearchQuery] = useState(''); // Store the user's input
 	const scaleAnim = useRef(new Animated.Value(1)).current;
 	const [selectedFilter, setSelectedFilter] = useState('date'); // Track selected filter
-	
-	const setList = useExpenseListStore((state) => state.setExpenseList);
-	// async function fetchAndSetExpenses() {
-	// 	try {
-	// 		const itemEntries = await getUserDataFromFirestore();
-	// 		const array = convertDBMap(itemEntries);
-	// 		console.log('array: ', array);
-	// 		setList(array);
-	// 	} catch (error) {
-	// 		console.error('Error fetching expenses:', error);
-	// 	}
-	// }
+	const [isLoading, setIsLoading] = useState(true);
 
-	// fetchAndSetExpenses();
+	const initCats = useCategories((state) => state.initCategories);
+
+    // call init entries on mount 
+	const initExpenseList = useEntriesStore((state) => state.initExpenseList);
+	useEffect(() => {
+		try {
+			initExpenseList();
+			setIsLoading(false);
+		}
+		catch (error) {
+			console.error('Error initializing expense list:', error);
+		} finally {
+			
+		}
+    }, [initExpenseList]);
+
+	useEffect(() => {
+		initCats();
+	}, []);
+
 	// Animate the add button if no expenses exist
 	useEffect(() => {
 		if (listStore.length === 0) {
@@ -130,23 +139,27 @@ export default function TabOneScreen() {
 				<FilterDropdown selectedFilter={selectedFilter} setSelectedFilter={setSelectedFilter} />
 
 				{/* Expense List */}
-				{filteredExpenses.length === 0 ? (
-					<Text style={styles.title}>No expenses found</Text>
-					) : (
-						<SectionList
-							sections={sections}
-							keyExtractor={(item, index) => item.id?.toString() ?? index.toString()} // Prevents crashes if item.id is undefined or null. If item.id is missing, it falls back to index.toString().
-							renderItem={({ item }) => (
-								<ItemEntry item={item} />
-							)}
-							renderSectionHeader={({ section: { title } }) => (
-								<View style={styles.headerContainer}>
-									<Text style={styles.headerText} lightColor={Colors.dark.tint} darkColor={Colors.light.tint}>{title}</Text>
-									<View style={styles.separator} lightColor={Colors.dark.tint} darkColor={Colors.light.tint} />
-								</View>
-								
-							)}
-						/>
+				{isLoading ? 
+					( <ActivityIndicator size="large" color="#0000ff" style={{ marginTop: 20 }} />) 
+					: 
+					( filteredExpenses.length === 0 ? (
+						<Text style={styles.title}>No expenses found</Text>
+						) : (
+							<SectionList
+								sections={sections}
+								keyExtractor={(item, index) => item.id?.toString() ?? index.toString()} // Prevents crashes if item.id is undefined or null. If item.id is missing, it falls back to index.toString().
+								renderItem={({ item }) => (
+									<ItemEntry item={item} />
+								)}
+								renderSectionHeader={({ section: { title } }) => (
+									<View style={styles.headerContainer}>
+										<Text style={styles.headerText} lightColor={Colors.dark.tint} darkColor={Colors.light.tint}>{title}</Text>
+										<View style={styles.separator} lightColor={Colors.dark.tint} darkColor={Colors.light.tint} />
+									</View>
+									
+								)}
+							/>
+						)
 					)
 				}
 

@@ -1,5 +1,5 @@
 import { format } from 'date-fns';
-import { categories } from '@/store/expenseListStore';
+import { categories } from '@/store/entriesStore';
 import uuid from 'react-native-uuid';
 
 type ExpenseEntry = {
