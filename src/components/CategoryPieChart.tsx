@@ -3,17 +3,26 @@ import { View, Text, Svg, SVGText, G} from '@/src/components/Themed';
 import { StyleSheet, Dimensions } from 'react-native';
 import { Path } from 'react-native-svg';
 import { useExpenseListStore } from '@/store/expenseListStore';
+import { isWithinInterval, parseISO } from 'date-fns';
 
 interface CategoryPieChartProps {
     // Add any other props if needed
+    startDate: Date;
+    endDate: Date;
 }
 
-const CategoryPieChart: React.FC<CategoryPieChartProps> = () => {
+const CategoryPieChart: React.FC<CategoryPieChartProps> = ({startDate, endDate}) => {
     const { expenseList } = useExpenseListStore();
 
-    // Calculate total expenses per category
+    // 1. Filter expenses based on date range
+    const filteredExpenses = expenseList.filter(expense => {
+        const expenseDate = parseISO(expense.date);
+        return isWithinInterval(expenseDate, { start: startDate, end: endDate });
+    });
+
+    // 2. Calculate total expenses per category USING FILTERED EXPENSES
     const categoryTotals: Record<string, number> = {};
-    expenseList.forEach(expense => {
+    filteredExpenses.forEach(expense => { // <--- Use filteredExpenses here
         categoryTotals[expense.category] = (categoryTotals[expense.category] || 0) + expense.total;
     });
 
@@ -27,12 +36,12 @@ const CategoryPieChart: React.FC<CategoryPieChartProps> = () => {
         );
     }
 
-    // Generate pie chart data
+    // 3. Generate pie chart data (using categoryTotals, which is based on filtered data)
     const data = Object.entries(categoryTotals).map(([category, total]) => ({
         category,
         total,
         percentage: (total / totalExpenses) * 100,
-        color: getRandomColor(), // Function to generate random colors (see below)
+        color: getRandomColor(),
     }));
 
     // Sort data by total, descending (largest slice first)
