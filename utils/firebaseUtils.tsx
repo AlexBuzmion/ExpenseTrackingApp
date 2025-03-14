@@ -3,6 +3,7 @@ import { useTaxStore } from "@/store/taxStore";
 import { getApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { arrayRemove, arrayUnion, deleteField, doc, getDoc, getFirestore, updateDoc } from "firebase/firestore";
+import { ExpenseEntry } from "@/store/entriesStore";
 
 // generic helper functions
 function formatEntry(expense: any): Record<string, any> {
@@ -35,17 +36,54 @@ export function convertDBMap(
   }
 
 // firestore specific functions 
-export async function saveExpenseToFirestore(expense: any) {
+export async function saveExpenseToFirestore(expense: ExpenseEntry) {
     const user = getAuth().currentUser;
     if (!user) {
       	throw new Error('no user signed in');
     }
     const formattedData = formatEntry(expense);
+    console.log('formattedData', formattedData);
     try {
         await updateDoc(doc(getFirestore(), 'users', user.uid), {
                 [`itemEntries.${expense.id}`]: formattedData
             }
         );
+    } catch (error: any) {
+        alert(error.message);
+        return error;
+    }
+}
+
+export async function editEntryDetailsInFB(expense: Partial<ExpenseEntry>) {
+    console.log('editing entry', expense.id);
+    const user = getAuth().currentUser;
+    if (!user) {
+        throw new Error('no user signed in');
+    }
+    const formattedData = formatEntry(expense);
+    console.log('formattedData', formattedData);
+    try {
+        await updateDoc(doc(getFirestore(), 'users', user.uid), {
+            [`itemEntries.${expense.id}`]: formattedData
+        });
+        console.log('entry edited');
+    } catch (error: any) {
+        alert(error.message);
+        return error;
+    }
+}
+
+export async function removeEntryFromFB(id: string) {
+    console.log('removing entry', id);
+    const user = getAuth().currentUser;
+    if (!user) {
+        throw new Error('no user signed in');
+    }
+    try {
+        await updateDoc(doc(getFirestore(), 'users', user.uid), {
+            [`itemEntries.${id}`]: deleteField()
+        });
+        console.log('entry removed');
     } catch (error: any) {
         alert(error.message);
         return error;
@@ -69,6 +107,23 @@ export async function addCategoryToFB(category: string) {
     }
 }
 
+export async function editCatInFB(oldcategory: string, newCategory: string) {
+    console.log('editing category', oldcategory);
+    const user = getAuth().currentUser;
+    if (!user) {
+        throw new Error('no user signed in');
+    }
+    try {    
+        await updateDoc(doc(getFirestore(), 'users', user.uid), {
+            [`categories.${oldcategory}`]: deleteField(),
+            [`categories.${newCategory}`]: []
+        });
+        console.log('category edited');
+    } catch (error: any) {
+        alert(error.message);
+        return error;
+    }
+}
 export async function removeCatFromFB(category: string) {
     console.log('removing category', category);
     const user = getAuth().currentUser;
@@ -81,7 +136,7 @@ export async function removeCatFromFB(category: string) {
         });
         console.log('category removed');
     } catch (error: any) {
-        alert(error.message);
+        throw new Error(error.message);
         return error;
     }
 }

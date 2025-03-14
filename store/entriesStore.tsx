@@ -2,12 +2,12 @@ import { create } from 'zustand';
 import uuid from 'react-native-uuid';
 // import { getAuth } from 'firebase/auth';
 // import { doc, getDoc, getFirestore, updateDoc } from 'firebase/firestore';
-import { convertDBMap, saveExpenseToFirestore } from '@/utils/firebaseUtils';
+import { convertDBMap, editEntryDetailsInFB, removeEntryFromFB, saveExpenseToFirestore } from '@/utils/firebaseUtils';
 import { doc, getDoc, getFirestore } from 'firebase/firestore';
 import { getApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 
-type ExpenseEntry = {
+export type ExpenseEntry = {
     id: string;
     name: string;
     date: string;
@@ -23,7 +23,7 @@ type ExpenseListStore = {
     expenseList: ExpenseEntry[];
     setExpenseList: (expenses: ExpenseEntry[]) => void;
     addExpense: (expense: Omit<ExpenseEntry, "id">) => void; 
-    removeExpense: (id: string) => void;
+    deleteExpense: (id: string) => void;
     updateExpense: (id: string, updatedFields: Partial<ExpenseEntry>) => void;
     initExpenseList: () => Promise<Record<string, ExpenseEntry>>;
 };
@@ -60,14 +60,21 @@ export const useEntriesStore = create<ExpenseListStore>((set) => ({
             return error;
         } return {};
     }, 
-    removeExpense: (id: string) => set((state) => ({
-        expenseList: state.expenseList.filter(expense => expense.id !== id),
-    })),
+    deleteExpense: (id: string) => set((state) => {
+        removeEntryFromFB(id).catch((err) => console.error(err));
+        return {
+            expenseList: state.expenseList.filter(expense => expense.id !== id),
+        }
+    }),
     updateExpense: (id: string, updatedFields: Partial<ExpenseEntry>) => 
-        set((state) => ({
-            expenseList: state.expenseList.map(expense =>
-                expense.id === id ? { ...expense, ...updatedFields } : expense
-            ),
-    })),
+        set((state) => {
+            console.log('editing entry', updatedFields);
+            editEntryDetailsInFB(updatedFields).catch((err) => console.error(err));
+            return {
+                expenseList: state.expenseList.map(expense =>
+                    expense.id === id ? { ...expense, ...updatedFields } : expense
+                ),
+            }
+    }),
 
 }));

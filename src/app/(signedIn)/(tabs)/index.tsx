@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { SectionList, StyleSheet, TouchableOpacity, Animated, Easing, TextInput } from 'react-native';
+import { SectionList, StyleSheet, TouchableOpacity, Animated, Easing, TextInput, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text, View } from '@/src/components/Themed';
 import { Link, Stack } from 'expo-router';
@@ -17,13 +17,22 @@ export default function TabOneScreen() {
     const [searchQuery, setSearchQuery] = useState(''); // Store the user's input
 	const scaleAnim = useRef(new Animated.Value(1)).current;
 	const [selectedFilter, setSelectedFilter] = useState('date'); // Track selected filter
+	const [isLoading, setIsLoading] = useState(true);
 
 	const initCats = useCategories((state) => state.initCategories);
-	
+
     // call init entries on mount 
 	const initExpenseList = useEntriesStore((state) => state.initExpenseList);
 	useEffect(() => {
-        initExpenseList();
+		try {
+			initExpenseList();
+			setIsLoading(false);
+		}
+		catch (error) {
+			console.error('Error initializing expense list:', error);
+		} finally {
+			
+		}
     }, [initExpenseList]);
 
 	useEffect(() => {
@@ -128,23 +137,27 @@ export default function TabOneScreen() {
 				<FilterDropdown selectedFilter={selectedFilter} setSelectedFilter={setSelectedFilter} />
 
 				{/* Expense List */}
-				{filteredExpenses.length === 0 ? (
-					<Text style={styles.title}>No expenses found</Text>
-					) : (
-						<SectionList
-							sections={sections}
-							keyExtractor={(item, index) => item.id?.toString() ?? index.toString()} // Prevents crashes if item.id is undefined or null. If item.id is missing, it falls back to index.toString().
-							renderItem={({ item }) => (
-								<ItemEntry item={item} />
-							)}
-							renderSectionHeader={({ section: { title } }) => (
-								<View style={styles.headerContainer}>
-									<Text style={styles.headerText} lightColor={Colors.dark.tint} darkColor={Colors.light.tint}>{title}</Text>
-									<View style={styles.separator} lightColor={Colors.dark.tint} darkColor={Colors.light.tint} />
-								</View>
-								
-							)}
-						/>
+				{isLoading ? 
+					( <ActivityIndicator size="large" color="#0000ff" style={{ marginTop: 20 }} />) 
+					: 
+					( filteredExpenses.length === 0 ? (
+						<Text style={styles.title}>No expenses found</Text>
+						) : (
+							<SectionList
+								sections={sections}
+								keyExtractor={(item, index) => item.id?.toString() ?? index.toString()} // Prevents crashes if item.id is undefined or null. If item.id is missing, it falls back to index.toString().
+								renderItem={({ item }) => (
+									<ItemEntry item={item} />
+								)}
+								renderSectionHeader={({ section: { title } }) => (
+									<View style={styles.headerContainer}>
+										<Text style={styles.headerText} lightColor={Colors.dark.tint} darkColor={Colors.light.tint}>{title}</Text>
+										<View style={styles.separator} lightColor={Colors.dark.tint} darkColor={Colors.light.tint} />
+									</View>
+									
+								)}
+							/>
+						)
 					)
 				}
 

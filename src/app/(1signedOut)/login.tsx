@@ -22,12 +22,8 @@ export default function LoginScreen() {
             await signInWithEmailAndPassword(firebaseAuth, email, password);
             const userVerified = getAuth().currentUser?.emailVerified;
             if(!userVerified) throw new Error('email not verified');
-            console.log('response from sign in: ',userVerified);
-            // if (!user?.emailVerified) {
-            //     throw new Error('email not verified');
-            // }
             setSignedIn(!isSignedIn);
-            console.log(firebaseAuth.currentUser);
+            // console.log(firebaseAuth.currentUser);
         } catch (error: any) {
             alert(error.message);
         } finally {

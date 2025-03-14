@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import { Text, View, InputText as TextInput } from '../../components/Themed';
-import { useEntriesStore } from '@/store/entriesStore';
 import { Feather } from '@expo/vector-icons';
 import Colors from '../../constants/Colors';
 import { useCategories } from '@/store/catStore';
@@ -28,27 +27,27 @@ export default function CategoryModalScreen() {
     const [editedSubcategoryName, setEditedSubcategoryName] = useState('');
 
     function handleAddCategory() {
-        addCategory(newCategory);
-    }
-    function handleDeleteCat(){
-        deleteCategory('Test');   
+        addCategory('Test');
     }
     function handleEditCat() {
         editCategory('Test', 'NEW - Test');
     }
-    function handleAddSubCat() {
-        addSubcategory('House', 'TestSubcategory');
+    function handleDeleteCat(){
+        deleteCategory('NEW - Test');   
     }
-    function handleDeleteSubCat() {
-        deleteSubcategory('House', 'TestSubcategory');
+    function handleAddSubCat() {
+        addSubcategory('Test', 'TestSubcategory');
     }
     function handleEditSubCat() {
-        editSubcategory('House', 'TestSubcategory', 'NEW - TestSubcategory');
+        editSubcategory('Test' , 'TestSubcategory' , 'NEW - TestSubcategory');
+    }
+    function handleDeleteSubCat() {
+        deleteSubcategory('Test', 'TestSubcategory');
     }
 
     useEffect(() => {
-        handleEditCat();
-    }, [editSubcategory])
+        handleEditSubCat()
+    }, [])
 
     return (
         <View style={{ flex: 1 }}>

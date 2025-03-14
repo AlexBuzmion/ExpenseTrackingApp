@@ -3,9 +3,7 @@ import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { Alert, Pressable, StyleSheet, TouchableOpacity } from 'react-native';  
 import { useEntriesStore } from '@/store/entriesStore';
 import { Ionicons } from '@expo/vector-icons';
-import { opacity } from 'react-native-reanimated/lib/typescript/Colors';
 import { useEffect, useState } from 'react';
-import { useTheme } from '@react-navigation/native';
 import Colors from '../../constants/Colors';
 
 
@@ -16,7 +14,7 @@ function ItemDetails() {
     const { itemDetails } = useLocalSearchParams<{ itemDetails: string }>();
     const itemList = useEntriesStore().expenseList;
     const updateExpense = useEntriesStore((state) => state.updateExpense);
-    const removeExpense = useEntriesStore((state) => state.removeExpense);
+    const removeExpense = useEntriesStore((state) => state.deleteExpense);
 
     // Find the item using `id`
     const item = itemList.find((entry) => entry.id === itemDetails);
@@ -44,24 +42,30 @@ function ItemDetails() {
     }, [name, category, subtotal, hst]);
 
     function handleDeleteItem(itemId: string) {
+        console.log('called')
         Alert.alert(
             `Confirm Deletion`, 
-            `Are you sure you want to delete: ${item?.name} - $${item?.total}?`,
+            `Are you sure you want to delete:\n\n${item?.name} - $${item?.total}?`,
             [
                 { text: "Cancel", style: "cancel" }, 
                 { text: "Yes", onPress: () => {
                     removeExpense(itemId);
                     router.back();
-                }}
-            ]
+                }},
+            ],
         );
     }
     function handleSaveChanges() {
-        if (!item) return;
-    
+        if (!item) {
+            //todo do something here to show a notification that there is no item to update
+            return;
+        }
         updateExpense(item.id, {
+            id: item.id,
             name,
+            date: item.date,
             category,
+            subcategory,
             subtotal: parseFloat(subtotal),
             hst: parseFloat(hst),
             total: parseFloat((parseFloat(subtotal) + parseFloat(hst)).toFixed(2)),

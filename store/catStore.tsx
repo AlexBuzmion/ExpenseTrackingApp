@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { getAuth } from "firebase/auth";
 import { doc, getDoc, getFirestore } from "firebase/firestore";
 import { getApp } from "firebase/app";
-import { addCategoryToFB, addSubcategoryToFB, removeCatFromFB, removeSubcatFromFB } from "@/utils/firebaseUtils";
+import { addCategoryToFB, addSubcategoryToFB, editCatInFB, editSubcatInFB, removeCatFromFB, removeSubcatFromFB } from "@/utils/firebaseUtils";
 
 type CategoriesType = {
     categories: Record<string, string[]>;  
@@ -59,8 +59,7 @@ export const useCategories = create<CategoriesType>((set) => ({
     }),
 
     editCategory: (oldCategory: string, newCategory: string) => set((state) => {
-        removeCatFromFB(oldCategory).catch((err) => console.error(err));
-        addCategoryToFB(newCategory).catch((err) => console.error(err));
+        editCatInFB(oldCategory, newCategory).catch((err) => console.error(err));
         const updated = { ...state.categories };
         updated[newCategory] = updated[oldCategory];
         delete updated[oldCategory];
@@ -78,8 +77,7 @@ export const useCategories = create<CategoriesType>((set) => ({
     }),
 
     editSubcategory: (category: string, oldSubcategory: string, newSubcategory: string) => set((state) => {
-        removeSubcatFromFB(category, oldSubcategory).catch((err) => console.error(err));
-        addSubcategoryToFB(category, newSubcategory).catch((err) => console.error(err));
+        editSubcatInFB(category, oldSubcategory, newSubcategory).catch((err) => console.error(err));
         return {
             categories: {
                 ...state.categories,
