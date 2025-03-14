@@ -13,8 +13,9 @@ export default function AnalyticsScreen() {
         <ScrollView contentContainerStyle={styles.scrollContainer}>
             <View style={styles.container}>
                 <Text style={styles.title}>Expense Analytics</Text>
+                <CategoryPieChart/>
 
-                {/* View Mode Selector */}
+                {/* View Mode Selector
                 <View style={styles.buttonContainer}>
                     <TouchableOpacity
                         style={[styles.button, viewMode === 'pie' && styles.activeButton]}
@@ -30,7 +31,7 @@ export default function AnalyticsScreen() {
                     </TouchableOpacity>
                 </View>
                 
-                {/* Time Period Selector (only shown for line chart) */}
+                {/* Time Period Selector (only shown for line chart)
                 {viewMode === 'line' && (
                     <View style={styles.buttonContainer}>
                         <TouchableOpacity
@@ -52,11 +53,11 @@ export default function AnalyticsScreen() {
                             <Text style={[styles.buttonText, timePeriod === 'month' && styles.activeButtonText]}>Month</Text>
                         </TouchableOpacity>
                     </View>
-                )}
+                )} */}
 
                 {/* Conditional Rendering of Charts */}
-                {viewMode === 'pie' && <CategoryPieChart />}
-                {viewMode === 'line' && <DateLineChart timePeriod={timePeriod} />}
+                {/* {viewMode === 'pie' && <CategoryPieChart />}
+                {viewMode === 'line' && <DateLineChart timePeriod={timePeriod} />} */}
 
             </View>
         </ScrollView>

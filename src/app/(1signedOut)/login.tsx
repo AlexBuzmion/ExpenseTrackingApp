@@ -39,20 +39,31 @@ export default function LoginScreen() {
         <View style={styles.container}>
 
             <Text>Username</Text>
-            <View style={styles.inputtextcontainer}>
-                <InputText onChangeText={setEmail} value={email} autoCapitalize="none"/>
+            <View style={styles.inputtextcontainer} lightColor="fff" darkColor="#222">
+                <InputText style={{ flex: 1 }} onChangeText={setEmail} value={email} autoCapitalize="none"
+                    lightColor="fff"
+                    darkColor="#222"
+                />
+                
             </View>
 
             <Text>Password</Text>
-            <View style={styles.inputtextcontainer}>
-                <InputText style={{ flex: 1 }} secureTextEntry={!passwordVisibillity} onChangeText={setPassword} value={password} autoCapitalize="none"/>
+            <View style={styles.inputtextcontainer} lightColor="fff" darkColor="#222">
+                <InputText style={{ flex: 1 }} 
+                    secureTextEntry={!passwordVisibillity} 
+                    onChangeText={setPassword} 
+                    value={password} 
+                    autoCapitalize="none"
+                    lightColor="fff"
+                    darkColor="#222"
+                />
                 <TouchableOpacity onPress={() => setPasswordVisibillity(!passwordVisibillity)}>
                     <Ionicons name={passwordVisibillity ? 'eye' : 'eye-off'} size={30} color={Colors.dark.tint} style={{ margin: 3}} />
                 </TouchableOpacity>
             </View>
 
             <TouchableOpacity style={[styles.button, { borderWidth: 0, margin: 10 }]} onPress={handleLogin} disabled={isLoading}>
-                {isLoading ? <ActivityIndicator /> : <Text>Login</Text>}
+                {isLoading ? <ActivityIndicator /> : <Text style={styles.buttonText}>Login</Text>}
             </TouchableOpacity>
         </View>
     );
@@ -83,6 +94,11 @@ const styles = StyleSheet.create({
         borderRadius: 8,  
         flexDirection: 'row',
         marginBottom: 10,
-        width: '60%' 
+        width: '60%',
+    },
+    buttonText: {
+        color: Colors.dark.tint,
+        fontSize: 16,
+        fontWeight: 'bold',
     }
 });

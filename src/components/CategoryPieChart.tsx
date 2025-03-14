@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
-import { Svg, Path, Text as SVGText, G } from 'react-native-svg';
+import { View, Text, Svg, SVGText, G} from '@/src/components/Themed';
+import { StyleSheet, Dimensions } from 'react-native';
+import { Path } from 'react-native-svg';
 import { useExpenseListStore } from '@/store/expenseListStore';
 
 interface CategoryPieChartProps {
@@ -83,10 +84,14 @@ const CategoryPieChart: React.FC<CategoryPieChartProps> = () => {
                     <SVGText
                         x={labelX}
                         y={labelY}
-                        fontSize="12"
-                        fill="white"
+                        fontSize="16"
+                        fill="#111"
                         textAnchor="middle"
                         alignmentBaseline="middle"
+                        strokeWidth={0.5}
+                        stroke="#222"
+                        lightColor='#000'
+                        darkColor='#000'
                     >
                         {`${percentage.toFixed(1)}%`}
                     </SVGText>

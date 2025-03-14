@@ -39,7 +39,7 @@ export default function CategoryModalScreen() {
                         setNewCategory('');
                     }
                 }}>
-                    <Text>Add Category</Text>
+                    <Text style={styles.buttonText}>Add Category</Text>
                 </TouchableOpacity>
 
                 <Text style={{ fontSize: 18, marginTop: 20 }}>Categories</Text>
@@ -100,7 +100,7 @@ export default function CategoryModalScreen() {
                                             setNewSubcategory('');
                                         }
                                     }}>
-                                        <Text>Add</Text>
+                                        <Text style={styles.buttonText}>Add</Text>
                                     </TouchableOpacity> 
                                 </View>
                                 
@@ -151,19 +151,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginLeft: 10
     },
-    button: {
-        backgroundColor: Colors.light.tint,
-        borderRadius: 20,
-        width: 100,
-        height: 40, 
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 4,
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        marginLeft: 10
-    },
     inputFieldContainer: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -175,6 +162,21 @@ const styles = StyleSheet.create({
         height: 40,
         marginTop: 10,
         marginBottom: 10
+    },
+    buttonText: {
+        color: Colors.dark.tint,
+        fontSize: 16,
+        fontWeight: 'bold'
+    },
+    button: {
+        backgroundColor: Colors.light.tint,
+        borderRadius: 20,
+        width: 120,
+        height: 40,
+        justifyContent: 'center',
+        alignItems: 'center',
+        alignSelf: 'center',
+        marginVertical: 10,
     },
 });
 

@@ -85,23 +85,30 @@ export default function SignupScreen() {
             <InputText style={styles.inputtextcontainer} onChangeText={setEmail} value={email} autoCapitalize="none"/>
 
             <Text>Password</Text>
-            <View style={styles.inputtextcontainer}>
-                <InputText style={{ flex: 1 }} secureTextEntry={!passwordVisibillity} onChangeText={setPassword} value={password} autoCapitalize="none"/>
+            <View style={styles.inputtextcontainer} lightColor="#fff" darkColor="#222">
+                <InputText style={{ flex: 1 }} 
+                    secureTextEntry={!passwordVisibillity} onChangeText={setPassword} value={password} autoCapitalize="none"
+                    lightColor="#fff" 
+                    darkColor="#222"
+                />
                 <TouchableOpacity onPress={() => setPasswordVisibillity(!passwordVisibillity)}>
                     <Ionicons name={passwordVisibillity ? 'eye' : 'eye-off'} size={30} color={Colors.dark.tint} style={{ margin: 3}} />
                 </TouchableOpacity>
             </View>
 
             <Text>Confirm Password</Text>
-            <View style={styles.inputtextcontainer}>
-                <InputText style={{ flex: 1 }} secureTextEntry={!passwordVisibillity} onChangeText={setConfirmPassword} value={confirmPassword} autoCapitalize="none"/>
+            <View style={styles.inputtextcontainer} lightColor="#fff" darkColor="#222">
+                <InputText style={{ flex: 1 }} secureTextEntry={!passwordVisibillity} onChangeText={setConfirmPassword} value={confirmPassword} autoCapitalize="none"
+                    lightColor="#fff" 
+                    darkColor="#222"
+                />
                 <TouchableOpacity onPress={() => setPasswordVisibillity(!passwordVisibillity)}>
                     <Ionicons name={passwordVisibillity ? 'eye' : 'eye-off'} size={30} color={Colors.dark.tint} style={{ margin: 3}} />
                 </TouchableOpacity>
             </View>
 
             <TouchableOpacity style={[styles.button, { borderWidth: 0, margin: 10 }]} onPress={handleSignup} disabled={isLoading}>
-                {isLoading ? <ActivityIndicator /> : <Text>Sign Up</Text>}
+                {isLoading ? <ActivityIndicator /> : <Text style={styles.buttonText}>Sign Up</Text>}
             </TouchableOpacity>
 
         </View>
@@ -134,5 +141,10 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         marginBottom: 10,
         width: '60%' 
+    },
+    buttonText: {
+        color: Colors.dark.tint,
+        fontSize: 16,
+        fontWeight: 'bold',
     }
 });

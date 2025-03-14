@@ -18,7 +18,7 @@ export default function AccountScreen() {
             <Text>- or -</Text>
 
             <TouchableOpacity style={[styles.signupButton, { borderWidth: 0, margin: 10 }]} onPress={() => router.navigate("/signup")}>
-                <Text>Sign Up</Text>
+                <Text style={styles.buttonText}>Sign Up</Text>
             </TouchableOpacity>
         </View>
     );
@@ -60,4 +60,9 @@ const styles = StyleSheet.create({
 		justifyContent: 'center', 
 		alignItems: 'center',
 	},
+    buttonText: {
+        color: Colors.dark.tint,
+        fontSize: 16,
+        fontWeight: 'bold',
+    }
 });

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { SectionList, StyleSheet, TouchableOpacity, Animated, Easing, TextInput } from 'react-native';
+import { SectionList, StyleSheet, TouchableOpacity, Animated, Easing} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Text, View } from '@/src/components/Themed';
+import { Text, View, InputText as TextInput } from '@/src/components/Themed';
 import { Link, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '@/src/constants/Colors';
@@ -114,7 +114,7 @@ export default function TabOneScreen() {
 			<View style={styles.container}>
 				<Stack.Screen options={{ title: 'Expenses' }} />
 				{/* Search Bar */}
-				<View style={styles.searchBar}>
+				<View style={styles.searchBar} lightColor="#fff" darkColor='#222'>
 					<Ionicons style={{ paddingHorizontal: 10 }} name="search" size={20} color={Colors.dark.tint} />
 					<TextInput
 						style={{ flex: 1, color: Colors.dark.tint }}
@@ -122,6 +122,8 @@ export default function TabOneScreen() {
 						placeholderTextColor="#999"
 						onChangeText={(text) => setSearchQuery(text.trimStart())}
 						value={searchQuery}
+						lightColor='#fff'
+						darkColor='#222'
 					/>
 				</View>
 
@@ -205,7 +207,6 @@ const styles = StyleSheet.create({
 		borderRadius: 8,
 		borderColor: '#ccc',
 		paddingHorizontal: 10,
-		backgroundColor: '#fff',
 		flexDirection: 'row', 
 		alignItems: 'center'
 	},

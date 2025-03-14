@@ -26,11 +26,11 @@ function ItemEntry({item}: ItemEntryProps) {
     return (
         <Link href={`/${item.id}`} asChild>
             <TouchableOpacity style={styles.mainContainer} >
-                <View style={styles.leftContainer}>
+                <View style={styles.leftContainer} lightColor="#fff" darkColor='#222'>
                     <Text style={styles.itemName}>{item.name}</Text>
                     <Text style={styles.itemCategory}>{item.category}</Text>    
                 </View>
-                <View style={styles.rightContainer}>
+                <View style={styles.rightContainer} lightColor="#fff" darkColor='#222'>
                     <Text style={styles.itemTotal}>- ${item.total}</Text>    
                 </View>
             </TouchableOpacity>
