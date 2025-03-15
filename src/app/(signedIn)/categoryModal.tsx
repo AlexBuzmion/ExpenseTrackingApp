@@ -3,6 +3,7 @@ import { TouchableOpacity, StyleSheet, FlatList } from 'react-native';
 import { Text, View, InputText as TextInput } from '../../components/Themed';
 import Colors from '../../constants/Colors';
 import { useCategories } from '@/store/catStore';
+import { set } from 'react-datepicker/dist/date_utils';
 
 export default function CategoryModalScreen() {
 
@@ -32,23 +33,34 @@ export default function CategoryModalScreen() {
             return;
         }
         addCategory(newCategory);
+        setNewCategory('');
     }
     function handleEditCat() {
         // we should have a reference to the category we want to edit
         // and the new name
         editCategory(selectedCategory, newCategory);
+        setSelectedCategory('');
+        setNewCategory('');
     }
     function handleDeleteCat(){
         deleteCategory(selectedCategory);   
+        setSelectedCategory('');
     }
     function handleAddSubCat() {
         addSubcategory(selectedCategory, newSubcategory);
+        setSelectedCategory('');
+        setNewSubcategory('');
     }
     function handleEditSubCat() {
         editSubcategory(selectedCategory , selectedSubcategory, newSubcategory);
+        setSelectedCategory('');
+        setSelectedSubcategory('');
+        setNewSubcategory('');
     }
     function handleDeleteSubCat() {
         deleteSubcategory(selectedCategory, selectedSubcategory);
+        setSelectedCategory('');
+        setSelectedSubcategory('');
     }
 
     useEffect(() => {
@@ -58,11 +70,24 @@ export default function CategoryModalScreen() {
     return (
         <View style={{ flex: 1 }}>
             {/* <ScrollView contentContainerStyle={{ padding: 20 }}> */}
-            <Text> {selectedCategory}</Text>
-            <Text> {selectedSubcategory}</Text>
-            <Text> {newSubcategory} </Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderWidth: 1, borderColor: 'gray', padding: 5}}>
+                <Text>Selected Cat: </Text>
+                <Text> {selectedCategory}</Text>
+            </View>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderWidth: 1, borderColor: 'gray', padding: 5}}>
+                <Text>New Cat Text: </Text>
+                <Text> {newCategory}</Text>
+            </View>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderWidth: 1, borderColor: 'gray', padding: 5}}>
+                <Text> Selected Subcat: </Text>
+                <Text> {selectedSubcategory}</Text>
+            </View>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderWidth: 1, borderColor: 'gray', padding: 5}}>
+                <Text> New Subcat Text: </Text>
+                <Text> {newSubcategory} </Text>
+            </View>
                 <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Create New Category</Text>
-                
+
                 <TextInput 
                     placeholder="Category name"
                     value={newCategory}

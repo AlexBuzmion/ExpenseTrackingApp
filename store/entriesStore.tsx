@@ -62,16 +62,18 @@ export const useEntriesStore = create<ExpenseListStore>((set) => ({
         return storageItemEntryList || {};
 
     }, 
+
     // use this as reference to follow to ensure a snappy update in UI and managing storage in the background 
-    addEntry: async (expense) => {
-        const newId = uuid.v4() as string;
+    addEntry: async (expense) => { // this function is set to be async in case we need to call await for setItem() or saveEntryToDB(). 
+        const newId = uuid.v4() as string; // create a unique id
         // 1. update the state.
-        set((state) => ({
-          itemEntryList: { ...state.itemEntryList, [newId]: expense },
-        }));
+        set((state) =>  { 
+            const updatedEntries = { ...state.itemEntryList, [newId]: expense }; // create an object literal getting all existing entries and adding the new entry
+            return { itemEntryList: updatedEntries }
+        });
         const updatedEntries = useEntriesStore.getState().itemEntryList;
         // 2. save to local storage.
-        await setItem(updatedEntries); // This function should persist the entire record.
+        setItem(updatedEntries); // This function should persist the entire record.
         // 3. push to cloud storage
         if (getAuth().currentUser) {
         //   await saveEntryToDB({ id: newId, ...expense });

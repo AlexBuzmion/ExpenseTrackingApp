@@ -9,8 +9,6 @@ import { useEntriesStore } from '@/store/entriesStore';
 import { format } from 'date-fns';
 import ItemEntry from '@/src/components/itemEntry';
 import FilterDropdown from '@/src/components/FilterDropdown';
-// import { getUserDataFromFirestore, convertDBMap } from '@/utils/firebaseUtils';
-import { getAuth } from 'firebase/auth';
 
 export default function TabOneScreen() {
     const listStore = useEntriesStore().itemEntryList;
@@ -33,7 +31,7 @@ export default function TabOneScreen() {
 		  	initExpenseList()
 			.then(() => setIsLoading(false))
 			.catch((error) => console.error('Error initializing expense list:', error));
-		 	 return () => {};
+			return () => {};
 		}, [initExpenseList])
 	);
 

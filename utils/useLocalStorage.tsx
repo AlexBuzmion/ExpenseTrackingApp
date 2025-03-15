@@ -13,7 +13,7 @@ export const useLocalStorage = (key: string) => {
         }
     }
 
-    const getItem = async (): Promise<Record<string,ExpenseEntry> | undefined> => {
+    const getItem = async <T = any>(): Promise<T | {} | undefined> => {
         try {
             const storeData = Platform.OS === 'web' 
             ? window.localStorage.getItem(key)
