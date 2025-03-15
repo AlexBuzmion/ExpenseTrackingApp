@@ -19,9 +19,6 @@ export default function SignedInLayout() {
 	const isSignedIn = AuthInfo(state => state.signedIn);
   	const colorScheme = useColorScheme();
 	
-	if (!isSignedIn) {
-		return null;
-	}
 	return (
 		<Tabs
 			screenOptions={{
@@ -32,7 +29,7 @@ export default function SignedInLayout() {
 		<Tabs.Screen
 			name="index"
 			options={{
-				title: 'Tab One',
+				title: 'Entry List',
 				tabBarIcon: ({ color }) => <TabBarIcon name="list-alt" color={color} />,
 			}}
 		/>

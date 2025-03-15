@@ -115,7 +115,7 @@ export async function generatePDF(expenseList: ExpenseEntry[], startDate: Date, 
     // Convert Date objects to comparable values
     const start = new Date(startDate).setHours(0, 0, 0, 0);
     const end = new Date(endDate).setHours(23, 59, 59, 999); // Include full day
-    // Filter expenses within the date range
+    // ✅ Filter expenses within the date range
     const filteredExpenses = expenseList.filter(expense => {
         const expenseDate = new Date(expense.date).setHours(0, 0, 0, 0);
         return expenseDate >= start && expenseDate <= end;

@@ -11,16 +11,14 @@ export default function AccountScreen() {
     const isSignedIn = AuthInfo(state => state.setSignedIn);
 
     async function handleAnonymousLogin() {
-        const auth = getAuth(getApp());
+        const auth = getAuth();
         try {
-            const response = signInAnonymously(auth).then(() => {
-                console.log(response)
-            })
-            isSignedIn(true);
+          const response = await signInAnonymously(auth);
+        //   console.log(response);
         } catch (error) {
-            console.log(error);
+          console.error(error);
         }
-    }
+      }
 
     const router = useRouter();
     return (

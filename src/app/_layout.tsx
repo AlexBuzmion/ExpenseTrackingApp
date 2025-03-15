@@ -1,19 +1,18 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { Slot, useRouter } from 'expo-router';
+import { Slot, usePathname, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 import { useColorScheme } from '@/src/components/useColorScheme';
-import { useEntriesStore } from '@/store/entriesStore';
-import { generateExampleExpenses } from '@/src/components/generateExampleExpenses';
 import { FIREBASE_API_KEY, FIREBASE_AUTH_DOMAIN, FIREBASE_PROJECT_ID, FIREBASE_STORAGE_BUCKET, FIREBASE_MESSAGING_SENDER_ID, FIREBASE_APP_ID } from '@env';
 import  { AuthInfo } from '@/store/authStore';
 import { getApp, initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { useTaxStore } from '@/store/taxStore';
 import { getFirestore } from 'firebase/firestore';
+
 
 export {
     // Catch any errors thrown by the Layout component.
@@ -60,32 +59,39 @@ export default function RootLayout() {
         }
     }, [loaded]);
 
-    if (!loaded) {
-        return null;
-  }
+    if (!loaded) { return null; }
 
-  return <RootLayoutNav />;
+    return <RootLayoutNav />;
 }
 
 function RootLayoutNav() {
-    
     const colorScheme = useColorScheme();
-
+    const signedInUser = AuthInfo(state => state.userId);
+    const setUser = AuthInfo(state => state.setUserId);
     const router = useRouter();
     const firebaseAuth = getAuth(getApp());
     const db = getFirestore(getApp());
-
+    
+    firebaseAuth.onAuthStateChanged(onAuthStateChanged);
+    function onAuthStateChanged(user: any) {
+        if (user) {
+            // user is signed in (either anonymous or not)
+            setUser(user.uid);
+        } else {
+          console.log("User is signed out.");
+        }
+      }
     //todo: update this to firebase to store the auth state
-    const signedIn = AuthInfo((state) => state.signedIn);
     useEffect(() => {
-        // console.log('use Effect called!');
-        if (signedIn) {
-          router.replace('/(signedIn)');
+        if (signedInUser !== '') {
+            console.log(`User is signed in as ${getAuth().currentUser?.isAnonymous ? 'Anonymous' : 'Not anonymous'} with uid ${signedInUser}`);
+            router.replace('/(signedIn)');
         } else {
           router.replace('/(1signedOut)');
         }
-      }, [signedIn]);
-
+      }, [signedInUser]);
+      const segments = useSegments();
+      console.log("Current route segments:", segments);
 
   return (
         <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>

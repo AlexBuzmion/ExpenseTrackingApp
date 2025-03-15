@@ -1,22 +1,22 @@
 import { View, Text } from "@/src/components/Themed";
 import Colors from "@/src/constants/Colors";
 import { AuthInfo } from "@/store/authStore";
-import { TouchableOpacity } from "react-native";
+import { ActivityIndicator, TouchableOpacity } from "react-native";
 import { StyleSheet } from "react-native";
 import { getApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { useState } from "react";
 
 export default function ProfileScreen() {
-    const setSignedIn = AuthInfo(state => state.setSignedIn);
+    const setUser = AuthInfo(state => state.setUserId);
     const [isLoading, setIsLoading] = useState(false);
     const firebaseAuth = getAuth(getApp());
     
     async function logOut() {
         try {
             await firebaseAuth.signOut() 
-            setIsLoading(false);
-            setSignedIn(false);
+            setIsLoading(false)
+            setUser('');
         } catch (error: any) {
             alert(error.message);
         }
@@ -25,7 +25,7 @@ export default function ProfileScreen() {
     return (
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
             <TouchableOpacity style={[styles.loginButton, { borderWidth: 1.5, margin: 10}]} onPress={logOut}>
-                <Text>LogOut</Text>
+                {isLoading? <ActivityIndicator /> : <Text>LogOut</Text>}
             </TouchableOpacity>
         </View>
     );
