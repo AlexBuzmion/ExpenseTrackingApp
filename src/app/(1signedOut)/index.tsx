@@ -3,8 +3,25 @@ import { StyleSheet, TouchableOpacity } from 'react-native';
 import { useRouter } from "expo-router";
 import { Button } from "react-native";
 import Colors from "@/src/constants/Colors";
+import { getAuth, signInAnonymously } from "firebase/auth";
+import { getApp } from "firebase/app";
+import { AuthInfo } from "@/store/authStore";
 
 export default function AccountScreen() {
+    const isSignedIn = AuthInfo(state => state.setSignedIn);
+
+    async function handleAnonymousLogin() {
+        const auth = getAuth(getApp());
+        try {
+            const response = signInAnonymously(auth).then(() => {
+                console.log(response)
+            })
+            isSignedIn(true);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     const router = useRouter();
     return (
         <View style={styles.container}>
@@ -19,6 +36,10 @@ export default function AccountScreen() {
 
             <TouchableOpacity style={[styles.signupButton, { borderWidth: 0, margin: 10 }]} onPress={() => router.navigate("/signup")}>
                 <Text>Sign Up</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={[ { borderWidth: 0, margin: 10, position: 'absolute', bottom: 200 }]} onPress={handleAnonymousLogin}>
+                <Text>continue as guest</Text>
             </TouchableOpacity>
         </View>
     );

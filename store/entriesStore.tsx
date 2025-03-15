@@ -2,13 +2,17 @@ import { create } from 'zustand';
 import uuid from 'react-native-uuid';
 // import { getAuth } from 'firebase/auth';
 // import { doc, getDoc, getFirestore, updateDoc } from 'firebase/firestore';
-import { convertDBMap, editEntryDetailsInFB, removeEntryFromFB, saveExpenseToFirestore } from '@/utils/firebaseUtils';
+// import { convertDBMap, editEntryDetailsInFB, removeEntryFromFB, saveExpenseToFirestore } from '@/utils/firebaseUtils';
 import { doc, getDoc, getFirestore } from 'firebase/firestore';
 import { getApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
+import { useLocalStorage } from '@/utils/useLocalStorage';
+import { useFirebaseUtils } from '@/utils/useFirebaseUtils';
+
+const { setItem, getItem } = useLocalStorage('itemEntries');
+const { saveEntryToDB } = useFirebaseUtils();
 
 export type ExpenseEntry = {
-    id: string;
     name: string;
     date: string;
     category: string;
@@ -20,61 +24,87 @@ export type ExpenseEntry = {
 };
 
 type ExpenseListStore = {
-    expenseList: ExpenseEntry[];
-    setExpenseList: (expenses: ExpenseEntry[]) => void;
-    addExpense: (expense: Omit<ExpenseEntry, "id">) => void; 
-    deleteExpense: (id: string) => void;
-    updateExpense: (id: string, updatedFields: Partial<ExpenseEntry>) => void;
+    itemEntryList: Record<string, ExpenseEntry> ;
+    setExpenseList: (expenses: Record<string, ExpenseEntry>) => void;
+    addEntry: (expense: ExpenseEntry) => void; 
+    deleteEntry: (id: string) => void;
+    updateEntry: (id: string, updatedFields: Partial<ExpenseEntry>) => void;
     initExpenseList: () => Promise<Record<string, ExpenseEntry>>;
 };
 
-
 export const useEntriesStore = create<ExpenseListStore>((set) => ({
-    expenseList: [],
-    setExpenseList: (expenses) => set({ expenseList: expenses }),
-    addExpense: (expense) => set((state) => {
-        const newExpense = { ...expense, id: uuid.v4() as string };
-        saveExpenseToFirestore(newExpense).catch((err) => console.error(err));
-        return {
-          expenseList: [...state.expenseList, newExpense],
-        };
-    }),
+    itemEntryList: {},
+    setExpenseList: (expenses) => set({ itemEntryList: expenses }),
+    
     initExpenseList: async () => {
+        // get local user storage first 
+        const storageItemEntryList = await getItem();
         const user = getAuth().currentUser;
-        if (!user) {
-            throw new Error('no user signed in');
+        //todo add a check for user signed in before running firebase function 
+        if (user) {
+        // try {
+        //     const docRef = doc(getFirestore(), 'users', user.uid);
+        //     const docSnap = await getDoc(docRef);
+        //     if (docSnap.exists()) {
+        //         const data = docSnap.data();
+        //         const itemEntries = data.itemEntries;
+        //         set ({ itemEntryList: itemEntries });
+        //         return itemEntries;
+        //     }
+        // } catch (error: any) {
+        //     alert(error.message);
+        //     return error;
+        // } 
         }
-        console.log('fetching expenses');
-        try {
-            const docRef = doc(getFirestore(), 'users', user.uid);
-            const docSnap = await getDoc(docRef);
-            if (docSnap.exists()) {
-                const data = docSnap.data();
-                const itemEntries = data.itemEntries;
-                const convertedList = convertDBMap(itemEntries);
-                set({ expenseList: convertedList });
-                return itemEntries;
-            }
-        } catch (error: any) {
-            alert(error.message);
-            return error;
-        } return {};
+       
+        // console.log('No user signed in; using local storage data.');
+        set({ itemEntryList: storageItemEntryList || {} });
+        return storageItemEntryList || {};
+
     }, 
-    deleteExpense: (id: string) => set((state) => {
-        removeEntryFromFB(id).catch((err) => console.error(err));
-        return {
-            expenseList: state.expenseList.filter(expense => expense.id !== id),
+    // use this as reference to follow to ensure a snappy update in UI and managing storage in the background 
+    addEntry: async (expense) => {
+        const newId = uuid.v4() as string;
+        // 1. update the state.
+        set((state) => ({
+          itemEntryList: { ...state.itemEntryList, [newId]: expense },
+        }));
+        const updatedEntries = useEntriesStore.getState().itemEntryList;
+        // 2. save to local storage.
+        await setItem(updatedEntries); // This function should persist the entire record.
+        // 3. push to cloud storage
+        if (getAuth().currentUser) {
+        //   await saveEntryToDB({ id: newId, ...expense });
         }
-    }),
-    updateExpense: (id: string, updatedFields: Partial<ExpenseEntry>) => 
+    },
+    
+    deleteEntry: async (id: string) => {
         set((state) => {
-            console.log('editing entry', updatedFields);
-            editEntryDetailsInFB(updatedFields).catch((err) => console.error(err));
-            return {
-                expenseList: state.expenseList.map(expense =>
-                    expense.id === id ? { ...expense, ...updatedFields } : expense
-                ),
-            }
-    }),
+            const newItemEntryList = { ...state.itemEntryList };
+            delete newItemEntryList[id];
+            return { itemEntryList: newItemEntryList };
+        });
+        const updatedEntries = useEntriesStore.getState().itemEntryList;
+        await setItem(updatedEntries);
+        if (getAuth().currentUser) {
+            // await deleteEntry(id);
+        }
+    },
+
+    updateEntry: async (id: string, updatedFields: Partial<ExpenseEntry>) => {
+        set((state) => {
+            const updatedExpense = { ...state.itemEntryList[id], ...updatedFields };
+            const newItemEntryList = { ...state.itemEntryList, [id]: updatedExpense };
+            return { itemEntryList: newItemEntryList };
+        });
+        const updatedEntries = useEntriesStore.getState().itemEntryList;
+        await setItem(updatedEntries);
+        const user = getAuth().currentUser;
+        if (user) {
+            // await editEntryDetailsInFB({ id, ...updatedFields }).catch((err) =>
+            //     console.error("Error updating entry in Firebase:", err)
+            // );
+        }
+    },
 
 }));

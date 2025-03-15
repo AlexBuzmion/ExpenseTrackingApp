@@ -12,12 +12,13 @@ export default ItemDetails;
 function ItemDetails() {
     const router = useRouter();
     const { itemDetails } = useLocalSearchParams<{ itemDetails: string }>();
-    const itemList = useEntriesStore().expenseList;
-    const updateExpense = useEntriesStore((state) => state.updateExpense);
-    const removeExpense = useEntriesStore((state) => state.deleteExpense);
+    const itemList = useEntriesStore().itemEntryList;
+    const updateExpense = useEntriesStore((state) => state.updateEntry);
+    const removeExpense = useEntriesStore((state) => state.deleteEntry);
 
     // Find the item using `id`
-    const item = itemList.find((entry) => entry.id === itemDetails);
+    // const item = itemList.find((entry) => entry.id === itemDetails);
+    const item = itemList[itemDetails];
 
     // State to track editable fields
     const [name, setName] = useState(item?.name || '');
@@ -41,27 +42,31 @@ function ItemDetails() {
         }
     }, [name, category, subtotal, hst]);
 
-    function handleDeleteItem(itemId: string) {
+    async function handleDeleteItem() {
         console.log('called')
         Alert.alert(
             `Confirm Deletion`, 
             `Are you sure you want to delete:\n\n${item?.name} - $${item?.total}?`,
             [
                 { text: "Cancel", style: "cancel" }, 
-                { text: "Yes", onPress: () => {
-                    removeExpense(itemId);
-                    router.back();
-                }},
+                { text: "Yes", 
+                    onPress: async () => {
+                        await removeExpense(itemDetails);  
+                        router.back();
+                    }
+                },
             ],
         );
     }
-    function handleSaveChanges() {
+
+    async function handleSaveChanges() {
         if (!item) {
             //todo do something here to show a notification that there is no item to update
             return;
         }
-        updateExpense(item.id, {
-            id: item.id,
+
+        await updateExpense(itemDetails, {
+            // id: item.id,
             name,
             date: item.date,
             category,
@@ -70,7 +75,7 @@ function ItemDetails() {
             hst: parseFloat(hst),
             total: parseFloat((parseFloat(subtotal) + parseFloat(hst)).toFixed(2)),
         });
-    
+        
         setHasChanges(false);
         router.back();
     }
@@ -119,7 +124,7 @@ function ItemDetails() {
                 <Text style={styles.dateText}>Created on {new Date(item.creationDate).toLocaleDateString(
                     'en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
                 </Text>
-                <Pressable onPress={() => handleDeleteItem(item.id)}>
+                <Pressable onPress={() => handleDeleteItem()}>
                     <Ionicons name="trash-outline" size={40} color="#ccc" />
                 </Pressable>
             </View>

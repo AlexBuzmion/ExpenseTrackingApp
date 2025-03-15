@@ -18,7 +18,7 @@ const formatDateLabel = (date: Date, timePeriod: 'day' | 'week' | 'month'): stri
 };
 
 const DateLineChart: React.FC<DateLineChartProps> = ({ timePeriod }) => {
-    const { expenseList } = useEntriesStore();
+    const { itemEntryList: expenseList } = useEntriesStore();
     const [tooltip, setTooltip] = useState<{ x: number; y: number; date: string; total: number } | null>(null);
 
     const aggregatedData = expenseList.reduce<Record<string, number>>((acc, expense) => {

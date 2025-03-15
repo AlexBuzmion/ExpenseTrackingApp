@@ -37,7 +37,7 @@ export default function SignedInLayout() {
 			}}
 		/>
 			<Tabs.Screen
-				name="two"
+				name="reports"
 				options={{
 					title: 'Reports',
 					tabBarIcon: ({ color }) => <TabBarIcon name="file-text-o" color={color} />,

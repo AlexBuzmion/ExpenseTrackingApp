@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
-import { ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
+import { TouchableOpacity, StyleSheet, FlatList } from 'react-native';
 import { Text, View, InputText as TextInput } from '../../components/Themed';
-import { Feather } from '@expo/vector-icons';
 import Colors from '../../constants/Colors';
 import { useCategories } from '@/store/catStore';
 
@@ -19,6 +18,7 @@ export default function CategoryModalScreen() {
     const [newCategory, setNewCategory] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('');
     const [newSubcategory, setNewSubcategory] = useState('');
+    const [selectedSubcategory, setSelectedSubcategory] = useState('');
     const [isEditing, setIsEditing] = useState('');
     const [editedCategoryName, setEditedCategoryName] = useState('');
 
@@ -27,31 +27,40 @@ export default function CategoryModalScreen() {
     const [editedSubcategoryName, setEditedSubcategoryName] = useState('');
 
     function handleAddCategory() {
-        addCategory('Test');
+        if (newCategory === '') {
+            alert('Please enter a category name');
+            return;
+        }
+        addCategory(newCategory);
     }
     function handleEditCat() {
-        editCategory('Test', 'NEW - Test');
+        // we should have a reference to the category we want to edit
+        // and the new name
+        editCategory(selectedCategory, newCategory);
     }
     function handleDeleteCat(){
-        deleteCategory('NEW - Test');   
+        deleteCategory(selectedCategory);   
     }
     function handleAddSubCat() {
-        addSubcategory('Test', 'TestSubcategory');
+        addSubcategory(selectedCategory, newSubcategory);
     }
     function handleEditSubCat() {
-        editSubcategory('Test' , 'TestSubcategory' , 'NEW - TestSubcategory');
+        editSubcategory(selectedCategory , selectedSubcategory, newSubcategory);
     }
     function handleDeleteSubCat() {
-        deleteSubcategory('Test', 'TestSubcategory');
+        deleteSubcategory(selectedCategory, selectedSubcategory);
     }
 
     useEffect(() => {
-        handleEditSubCat()
+        // handleEditSubCat()
     }, [])
 
     return (
         <View style={{ flex: 1 }}>
-            <ScrollView contentContainerStyle={{ padding: 20 }}>
+            {/* <ScrollView contentContainerStyle={{ padding: 20 }}> */}
+            <Text> {selectedCategory}</Text>
+            <Text> {selectedSubcategory}</Text>
+            <Text> {newSubcategory} </Text>
                 <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Create New Category</Text>
                 
                 <TextInput 
@@ -60,107 +69,71 @@ export default function CategoryModalScreen() {
                     onChangeText={setNewCategory}
                     style={styles.inputFieldContainer}
                 />
-                <TouchableOpacity style={styles.button} onPress={handleAddCategory}>
-                    <Text>Add Category</Text>
-                </TouchableOpacity>
+                <View style={{ flexDirection: 'row' }}>
+                    <TouchableOpacity style={styles.button} onPress={handleAddCategory}>
+                        <Text>Add</Text>
+                    </TouchableOpacity>
+                    
+                    <TouchableOpacity style={styles.button} onPress={handleEditCat}>
+                        <Text>Edit</Text>
+                    </TouchableOpacity>
 
+                    <TouchableOpacity style={styles.button} onPress={handleDeleteCat}>
+                        <Text>Delete</Text>
+                    </TouchableOpacity>
+                </View>
                 <Text style={{ fontSize: 18, marginTop: 20 }}>Categories</Text>
-                
-                {/* Object.keys() returns an array of keys from the categories object */}
-                {Object.keys(categories)
-                .sort()
-                .map((category) => (
-                    <View key={category} style={{ marginVertical: 10 }}>
-                        <View style={styles.categoryHeader}>
-                            {isEditing === category ? (
-                                <TextInput
-                                    value={editedCategoryName}
-                                    onChangeText={setEditedCategoryName}
-                                    style={styles.inputFieldContainer}
-                                    // onBlur is triggered when the input loses focus, usually when the user taps outside the input or presses the return key
-                                    onBlur={() => {
-                                        if (editedCategoryName.trim() && editedCategoryName !== category) {
-                                            // renameCategory(category, editedCategoryName.trim());
-                                        }
-                                        setIsEditing('');
-                                    }}
-                                />
-                            ) : (
-                                <Text 
-                                    onPress={() => setSelectedCategory(category)}
-                                    style={{
-                                        fontSize: 16, fontWeight: 'bold',
-                                        textDecorationLine: selectedCategory === category ? 'underline' : 'none'
-                                    }}>
-                                    {category}
-                                </Text>
-                            )}
+                <FlatList
+                    data={Object.keys(categories).map((cat) => cat)}
+                    renderItem={({ item }) => (
+                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderWidth: 1, borderColor: 'gray', padding: 10 }}>
+                            
                             <TouchableOpacity onPress={() => {
-                                if (isEditing === category) {
-                                    setIsEditing('');
-                                } else {
-                                    setIsEditing(category);
-                                    setEditedCategoryName(category);
-                                }
+                                setSelectedCategory(item)
                             }}>
-                                <Feather name="edit" size={18} color="gray" />
+                                <Text style={{ fontSize: 16, fontWeight: 'bold' }}>{item}</Text>
                             </TouchableOpacity>
                         </View>
+                    )}
+                />
+                <Text style={{ fontSize: 18, marginTop: 20 }}>Sub categories</Text>
+                <Text style={{ fontSize: 20, fontWeight: 'bold' }}>New SubCategory</Text>
+                
+                <TextInput 
+                    placeholder="SubCategory name"
+                    value={newSubcategory}
+                    onChangeText={setNewSubcategory}
+                    style={styles.inputFieldContainer}
+                />
+                <View style={{ flexDirection: 'row' }}>
+                    <TouchableOpacity style={styles.button} onPress={handleAddSubCat}>
+                        <Text>Add</Text>
+                    </TouchableOpacity>
+                    
+                    <TouchableOpacity style={styles.button} onPress={handleEditSubCat}>
+                        <Text>Edit</Text>
+                    </TouchableOpacity>
 
-                        {isEditing === category && (
-                            <View>
-                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                    <TextInput 
-                                        placeholder="Subcategory name"
-                                        value={newSubcategory}
-                                        onChangeText={setNewSubcategory}
-                                        style={styles.inputFieldContainer}
-                                    />
-                                    <TouchableOpacity style={styles.button} onPress={
-                                        // () => {
-                                            handleAddSubCat
-                                        // if (newSubcategory.trim()) {
-                                        //     addSubcategory(category, newSubcategory.trim());
-                                        //     setNewSubcategory('');
-                                        // }
-                                        // }
-                                    }>
-                                        <Text>Add</Text>
-                                    </TouchableOpacity> 
-                                </View>
-                                
-                                {/* categories[category].map() iterates over the array and renders each subcategory. */}
-                                {categories[category].map((sub, index) => (
-                                    <View key={index} style={styles.subcategoryContainer}>
-                                        {editingSubcategory === sub ? (
-                                            <TextInput
-                                                value={editedSubcategoryName}
-                                                onChangeText={setEditedSubcategoryName}
-                                                style={styles.inputFieldContainer}
-                                                onBlur={() => {
-                                                    if (editedSubcategoryName.trim() && editedSubcategoryName !== sub) {
-                                                        // renameSubcategory(category, sub, editedSubcategoryName.trim());
-                                                    }
-                                                    setEditingSubcategory('');
-                                                }}
-                                            />
-                                        ) : (
-                                            <Text style={{ color: 'gray' }}>- {sub}</Text>
-                                        )}
-                                        <TouchableOpacity onPress={() => {
-                                            setEditingSubcategory(sub);
-                                            setEditedSubcategoryName(sub);
-                                        }}>
-                                            <Feather name="edit" size={14} color="gray" />
-                                        </TouchableOpacity>
-                                    </View>
-                                ))}
-                            </View>
-                        )}
-                    </View>
-                ))}
+                    <TouchableOpacity style={styles.button} onPress={handleDeleteSubCat}>
+                        <Text>Delete</Text>
+                    </TouchableOpacity>
+                </View>
+                <FlatList
+                    data={Object.values(categories).flat()} 
+                    renderItem={({ item }) => (
+                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderWidth: 1, borderColor: 'gray', padding: 10 }}>
+                            <TouchableOpacity onPress={() => {
+                                setSelectedSubcategory(item)
+                            }}>
+                                <Text style={{ fontSize: 16, fontWeight: 'bold' }}>{item}</Text>
+                            </TouchableOpacity>
+                        </View>
+                    )}
+                    />
+                {/* Object.keys() returns an array of keys from the categories object */}
+                
 
-            </ScrollView>
+            {/* </ScrollView> */}
         </View>
     );
 }

@@ -8,7 +8,7 @@ interface CategoryPieChartProps {
 }
 
 const CategoryPieChart: React.FC<CategoryPieChartProps> = () => {
-    const { expenseList } = useEntriesStore();
+    const { itemEntryList: expenseList } = useEntriesStore();
 
     // Calculate total expenses per category
     const categoryTotals: Record<string, number> = {};
