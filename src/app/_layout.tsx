@@ -1,7 +1,7 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { Slot, usePathname, useRouter, useSegments } from 'expo-router';
+import { Slot, useRouter, usePathname, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
@@ -42,7 +42,7 @@ if (!getApps().length) {
 } else {
     app = getApp(); 
 }
-
+//! turning this off now to ensure the user auth is not stored locally while working on the app
 // export const auth = initializeAuth(app, {
 //     persistence: getReactNativePersistence(ReactNativeAsyncStorage)
 // });
@@ -85,7 +85,7 @@ function RootLayoutNav() {
             // user is signed in (either anonymous or not)
             // setUser(user.uid);
             if (useAuthStore.getState().firstTimeUser ) {
-                router.replace('/(signedIn)/onboarding');
+                router.replace('/(onboarding)/onboarding');
             } else {
                 router.replace('/(signedIn)');
             }
@@ -93,12 +93,12 @@ function RootLayoutNav() {
             console.log("User is signed out.");
             router.replace('/(1signedOut)');
         }
-      }
+    }
     //todo: update this to firebase to store the auth state
 
-  return (
+    return (
         <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
             <Slot />
         </ThemeProvider>
-  );
+    );
 }
