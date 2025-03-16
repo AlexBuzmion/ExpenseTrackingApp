@@ -12,7 +12,7 @@ const CategoryPieChart: React.FC<CategoryPieChartProps> = () => {
 
     // Calculate total expenses per category
     const categoryTotals: Record<string, number> = {};
-    expenseList.forEach(expense => {
+    Object.values(expenseList).forEach(expense => {
         categoryTotals[expense.category] = (categoryTotals[expense.category] || 0) + expense.total;
     });
 
@@ -33,7 +33,7 @@ const CategoryPieChart: React.FC<CategoryPieChartProps> = () => {
         percentage: (total / totalExpenses) * 100,
         color: getRandomColor(), // Function to generate random colors (see below)
     }));
-
+    
     // Sort data by total, descending (largest slice first)
     data.sort((a, b) => b.total - a.total);
 

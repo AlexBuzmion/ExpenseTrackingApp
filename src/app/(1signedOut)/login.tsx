@@ -3,17 +3,17 @@ import { ActivityIndicator, StyleSheet, TouchableOpacity } from 'react-native';
 import Colors from "@/src/constants/Colors";
 import { Ionicons } from '@expo/vector-icons';
 import { useState } from "react";
-import { AuthInfo } from "@/store/authStore";
+import { useAuthStore } from "@/store/authStore";
 import {getApp} from "@firebase/app";
-import { getAuth , signInAnonymously, signInWithEmailAndPassword} from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword} from "firebase/auth";
 
 export default function LoginScreen() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [passwordVisibillity, setPasswordVisibillity] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const isSignedIn = AuthInfo(state => state.signedIn);
-    const setSignedIn = AuthInfo((state) => state.setSignedIn);
+    const isSignedIn = useAuthStore(state => state.signedIn);
+    const setSignedIn = useAuthStore((state) => state.setSignedIn);
     const firebaseAuth = getAuth(getApp());
 
     async function handleLogin() {

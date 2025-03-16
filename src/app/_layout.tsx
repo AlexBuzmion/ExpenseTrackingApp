@@ -7,12 +7,12 @@ import { useEffect } from 'react';
 import 'react-native-reanimated';
 import { useColorScheme } from '@/src/components/useColorScheme';
 import { FIREBASE_API_KEY, FIREBASE_AUTH_DOMAIN, FIREBASE_PROJECT_ID, FIREBASE_STORAGE_BUCKET, FIREBASE_MESSAGING_SENDER_ID, FIREBASE_APP_ID } from '@env';
-import  { AuthInfo } from '@/store/authStore';
-import { getApp, initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+import  { useAuthStore } from '@/store/authStore';
+import { getApp, getApps, initializeApp } from 'firebase/app';
+import { getAuth, initializeAuth, getReactNativePersistence } from 'firebase/auth';
 import { useTaxStore } from '@/store/taxStore';
 import { getFirestore } from 'firebase/firestore';
-
+import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 
 export {
     // Catch any errors thrown by the Layout component.
@@ -27,21 +27,31 @@ export const unstable_settings = {
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
+const firebaseConfig = { 
+    apiKey: FIREBASE_API_KEY,
+    authDomain: FIREBASE_AUTH_DOMAIN,
+    projectId: FIREBASE_PROJECT_ID,
+    storageBucket: FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: FIREBASE_MESSAGING_SENDER_ID,
+    appId: FIREBASE_APP_ID
+}
+
+let app;
+if (!getApps().length) {
+    app = initializeApp(firebaseConfig);
+} else {
+    app = getApp(); 
+}
+
+// export const auth = initializeAuth(app, {
+//     persistence: getReactNativePersistence(ReactNativeAsyncStorage)
+// });
+
 export default function RootLayout() {
     const [loaded, error] = useFonts({
         SpaceMono: require('../../assets/fonts/SpaceMono-Regular.ttf'),
         ...FontAwesome.font,
     });
-
-    const firebaseConfig = { 
-        apiKey: FIREBASE_API_KEY,
-        authDomain: FIREBASE_AUTH_DOMAIN,
-        projectId: FIREBASE_PROJECT_ID,
-        storageBucket: FIREBASE_STORAGE_BUCKET,
-        messagingSenderId: FIREBASE_MESSAGING_SENDER_ID,
-        appId: FIREBASE_APP_ID
-    }
-    const app = initializeApp(firebaseConfig);
 
     // call init taxrates on mount 
     useEffect(() => {
@@ -66,32 +76,25 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
     const colorScheme = useColorScheme();
-    const signedInUser = AuthInfo(state => state.userId);
-    const setUser = AuthInfo(state => state.setUserId);
     const router = useRouter();
-    const firebaseAuth = getAuth(getApp());
     const db = getFirestore(getApp());
     
-    firebaseAuth.onAuthStateChanged(onAuthStateChanged);
+    getAuth().onAuthStateChanged(onAuthStateChanged);
     function onAuthStateChanged(user: any) {
         if (user) {
             // user is signed in (either anonymous or not)
-            setUser(user.uid);
+            // setUser(user.uid);
+            if (useAuthStore.getState().firstTimeUser ) {
+                router.replace('/(signedIn)/onboarding');
+            } else {
+                router.replace('/(signedIn)');
+            }
         } else {
-          console.log("User is signed out.");
+            console.log("User is signed out.");
+            router.replace('/(1signedOut)');
         }
       }
     //todo: update this to firebase to store the auth state
-    useEffect(() => {
-        if (signedInUser !== '') {
-            console.log(`User is signed in as ${getAuth().currentUser?.isAnonymous ? 'Anonymous' : 'Not anonymous'} with uid ${signedInUser}`);
-            router.replace('/(signedIn)');
-        } else {
-          router.replace('/(1signedOut)');
-        }
-      }, [signedInUser]);
-      const segments = useSegments();
-      console.log("Current route segments:", segments);
 
   return (
         <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>

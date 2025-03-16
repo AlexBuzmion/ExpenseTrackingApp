@@ -1,31 +1,30 @@
 import { View, Text, InputText } from "@/src/components/Themed";
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import { ActivityIndicator, StyleSheet, TouchableOpacity } from 'react-native';
 import { useRouter } from "expo-router";
-import { Button } from "react-native";
 import Colors from "@/src/constants/Colors";
 import { getAuth, signInAnonymously } from "firebase/auth";
-import { getApp } from "firebase/app";
-import { AuthInfo } from "@/store/authStore";
+import { useState } from "react";
+
 
 export default function AccountScreen() {
-    const isSignedIn = AuthInfo(state => state.setSignedIn);
-
+    const [isLoading, setIsLoading] = useState(false);
     async function handleAnonymousLogin() {
+        setIsLoading(true);
         const auth = getAuth();
         try {
-          const response = await signInAnonymously(auth);
-        //   console.log(response);
+            const response = await signInAnonymously(auth);
+            setIsLoading(false);
+            //   console.log(response);
         } catch (error) {
-          console.error(error);
+            console.error(error);
         }
-      }
+    }
 
     const router = useRouter();
     return (
         <View style={styles.container}>
-
+            
             <Text style={styles.title}>Welcome</Text>
-
             <TouchableOpacity style={[styles.loginButton, { borderWidth: 1.5, margin: 10}]} onPress={() => router.navigate("/login")}>
                 <Text>Login</Text>
             </TouchableOpacity>
@@ -36,9 +35,10 @@ export default function AccountScreen() {
                 <Text>Sign Up</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={[ { borderWidth: 0, margin: 10, position: 'absolute', bottom: 200 }]} onPress={handleAnonymousLogin}>
+            <TouchableOpacity style={[ { borderWidth: 0, margin: 10, position: 'absolute', bottom: 200 }]} onPress={handleAnonymousLogin} disabled={isLoading}>
                 <Text>continue as guest</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> 
+            
         </View>
     );
 }
