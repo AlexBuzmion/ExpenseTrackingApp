@@ -66,7 +66,7 @@ export const InputText = forwardRef<DefaultTextInput, TextInputProps>((props, re
             {...otherProps}
         />
     );
-}
+});
 
 // --- SVG Components ---
 
