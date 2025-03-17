@@ -11,13 +11,13 @@ export default function OnboardingPaginator({data, scrollX }: any) {
 
                 const dotWidth = scrollX.interpolate({
                     inputRange,
-                    outputRange: [10, 20, 10],
+                    outputRange: [10, 30, 10],
                     extrapolate: 'clamp',
                 });
 
                 const opacity = scrollX.interpolate({
                     inputRange,
-                    outputRange: [0.3, 1, 0.3],
+                    outputRange: [0.1, 1, 0.1],
                     extrapolate: 'clamp',
                 })
 

@@ -1,8 +1,8 @@
 import { View, Text, InputText } from "@/src/components/Themed";
-import { ActivityIndicator, StyleSheet, TouchableOpacity } from 'react-native';
+import { ActivityIndicator, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import { useRouter } from "expo-router";
 import Colors from "@/src/constants/Colors";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import {getApp} from "@firebase/app";
 import { getAuth , createUserWithEmailAndPassword, updateProfile, sendEmailVerification} from "firebase/auth";
@@ -20,6 +20,10 @@ export default function SignupScreen() {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [passwordVisibillity, setPasswordVisibillity] = useState(false);
+
+    const refToEmail = useRef<TextInput>(null); 
+    const refToPass = useRef<TextInput>(null);
+    const refToConfirmPass = useRef<TextInput>(null);
 
     async function handleSignup(){
         setIsLoading(true);
@@ -79,24 +83,61 @@ export default function SignupScreen() {
     return (
         <View style={styles.container}>
             <Text>Username</Text>
-            <InputText style={styles.inputtextcontainer} onChangeText={setUsername} value={username} autoCapitalize="none"/>
+            <InputText 
+                style={styles.inputtextcontainer} 
+                onChangeText={setUsername} 
+                value={username} 
+                placeholder="Username"
+                autoCapitalize="none"
+                autoFocus 
+                returnKeyType="next" 
+                onSubmitEditing={() => refToEmail.current?.focus()}
+            />
 
             <Text>Email address</Text>
-            <InputText style={styles.inputtextcontainer} onChangeText={setEmail} value={email} autoCapitalize="none"/>
+            <InputText 
+                style={styles.inputtextcontainer} 
+                onChangeText={setEmail} 
+                value={email} 
+                placeholder="Email address"
+                keyboardType="email-address"
+                autoCapitalize="none" 
+                ref={refToEmail}
+                returnKeyType="next" 
+                onSubmitEditing={() => refToPass.current?.focus()}
+            />
 
             <Text>Password</Text>
             <View style={styles.inputtextcontainer}>
-                <InputText style={{ flex: 1 }} secureTextEntry={!passwordVisibillity} onChangeText={setPassword} value={password} autoCapitalize="none"/>
+                <InputText 
+                    style={{ flex: 1 }} 
+                    secureTextEntry={!passwordVisibillity} 
+                    onChangeText={setPassword} 
+                    value={password} 
+                    placeholder="Password"
+                    autoCapitalize="none"
+                    ref={refToPass}
+                    returnKeyType="next" 
+                    onSubmitEditing={() => refToConfirmPass.current?.focus()}
+                />
                 <TouchableOpacity onPress={() => setPasswordVisibillity(!passwordVisibillity)}>
-                    <Ionicons name={passwordVisibillity ? 'eye' : 'eye-off'} size={30} color={Colors.dark.tint} style={{ margin: 3}} />
+                    <Ionicons name={passwordVisibillity ? 'eye' : 'eye-off'} size={24} color={Colors.dark.tint} style={{ paddingRight: 6, paddingTop: 6}} />
                 </TouchableOpacity>
             </View>
 
             <Text>Confirm Password</Text>
             <View style={styles.inputtextcontainer}>
-                <InputText style={{ flex: 1 }} secureTextEntry={!passwordVisibillity} onChangeText={setConfirmPassword} value={confirmPassword} autoCapitalize="none"/>
+                <InputText 
+                    style={{ flex: 1 }} 
+                    secureTextEntry={!passwordVisibillity} 
+                    onChangeText={setConfirmPassword} 
+                    value={confirmPassword} 
+                    placeholder="Confirm Password"
+                    autoCapitalize="none"
+                    ref={refToConfirmPass}
+                />
                 <TouchableOpacity onPress={() => setPasswordVisibillity(!passwordVisibillity)}>
-                    <Ionicons name={passwordVisibillity ? 'eye' : 'eye-off'} size={30} color={Colors.dark.tint} style={{ margin: 3}} />
+                    {/* <Ionicons name={passwordVisibillity ? 'eye' : 'eye-off'} size={30} color={Colors.dark.tint} style={{ margin: 3}} /> */}
                 </TouchableOpacity>
             </View>
 
@@ -111,8 +152,8 @@ export default function SignupScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        alignItems: 'flex-start',
-        justifyContent: 'flex-start',
+        alignItems: 'center',
+        justifyContent: 'center',
         padding: 10,
     },
     button: {

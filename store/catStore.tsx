@@ -22,7 +22,10 @@ type CategoriesType = {
 export const useCategories = create<CategoriesType>((set) => ({
     categories: {},
 
-    setCategories: (newCategories) => set({ categories: newCategories }),
+    setCategories: (newCategories) => {
+        setItem(newCategories);
+        set({ categories: newCategories })
+    },
 
     initCategories: async () => {
         console.log('initializing categories');

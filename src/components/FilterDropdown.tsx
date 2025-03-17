@@ -18,18 +18,17 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({ selectedFilter, setSele
     <View style={styles.container}>
       <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 5}}>
         <Ionicons name='filter-sharp' size={24} color="black" />
-        <Text>Filter</Text>
+        <Dropdown
+          data={filterOptions}
+          labelField="label"
+          valueField="value"
+          value={selectedFilter}
+          onChange={(item) => setSelectedFilter(item.value)}
+          style={styles.dropdown}
+          placeholder="Select Filter"
+        />
       </View>
-      <Dropdown
-        data={filterOptions}
-        labelField="label"
-        valueField="value"
-        value={selectedFilter}
-        onChange={(item) => setSelectedFilter(item.value)}
-        style={styles.dropdown}
-        placeholder="Select Filter"
-      />
-    </View>
+      </View>
   );
 };
 
@@ -40,10 +39,13 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   dropdown: {
+    height: 36,
+    width: '90%',
     borderWidth: 1,
     borderRadius: 8,
     paddingHorizontal: 10,
     backgroundColor: '#fff',
+    marginLeft : 10
   },
 });
 

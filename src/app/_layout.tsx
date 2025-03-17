@@ -43,9 +43,9 @@ if (!getApps().length) {
     app = getApp(); 
 }
 //! turning this off now to ensure the user auth is not stored locally while working on the app
-// export const auth = initializeAuth(app, {
-//     persistence: getReactNativePersistence(ReactNativeAsyncStorage)
-// });
+export const auth = initializeAuth(app, {
+    persistence: getReactNativePersistence(ReactNativeAsyncStorage)
+});
 
 export default function RootLayout() {
     const [loaded, error] = useFonts({
@@ -58,6 +58,9 @@ export default function RootLayout() {
         useTaxStore.getState().initTaxRates();
     }, []);
     
+    useEffect(() => {
+        console.log(`first time user? ${useAuthStore.getState().firstTimeUser}`)
+    }, [useAuthStore.getState().firstTimeUser]);
     // Expo Router uses Error Boundaries to catch errors in the navigation tree.
     useEffect(() => {
         if (error) throw error;
@@ -80,7 +83,9 @@ function RootLayoutNav() {
     const db = getFirestore(getApp());
     
     getAuth().onAuthStateChanged(onAuthStateChanged);
-    function onAuthStateChanged(user: any) {
+    async function onAuthStateChanged(user: any) {
+        console.log("user", user);
+        const FTU = await useAuthStore.getState().initFirstTimeUser();
         if (user) {
             // user is signed in (either anonymous or not)
             // setUser(user.uid);

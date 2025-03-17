@@ -8,11 +8,12 @@ import { useState } from "react";
 
 export default function AccountScreen() {
     const [isLoading, setIsLoading] = useState(false);
+
     async function handleAnonymousLogin() {
         setIsLoading(true);
         const auth = getAuth();
         try {
-            const response = await signInAnonymously(auth);
+            await signInAnonymously(auth);
             setIsLoading(false);
             //   console.log(response);
         } catch (error) {

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Pressable, StyleSheet, useWindowDimensions } from 'react-native';
 import { View, Text } from '@/src/components/Themed';
+import { useFocusEffect } from 'expo-router';
 
 interface QuestionItemProps {
     id: number;                   // question ID
@@ -28,7 +29,7 @@ export default function QuestionItem({
     return (
         <View style={[styles.container, { width }]}>
         <Text style={styles.questionText}>{question}</Text>
-        {answers.map((answer, index) => {
+        { answers.map((answer, index) => {
           const isSelected = selectedAnswer === answer;
           return (
             <Pressable

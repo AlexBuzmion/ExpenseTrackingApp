@@ -8,19 +8,30 @@ interface AuthState {
     setSignedIn: (signedIn: boolean) => void;
     firstTimeUser: boolean;
     setFirstTimeUser: (firstTimeUser: boolean) => void;
+    initFirstTimeUser: () => Promise<void>;
 }
 
-const { setItem } = useLocalStorage('auth');
+const { setItem, getItem } = useLocalStorage('auth');
 
 export const useAuthStore = create<AuthState>((set) => ({
+    
     userId: '',
-    setUserId: (userId: string) => set({ userId }),
+    setUserId: async (userId: string) => {
+        set({ userId })
+        await getItem()
+    },
     signedIn: false,
     setSignedIn: (signedIn: boolean) => set({ signedIn }),
+    
     firstTimeUser: true,
-    setFirstTimeUser: (firstTimeUser: boolean) => {
-        set({ firstTimeUser })
-        setItem({ firstTimeUser });
+    setFirstTimeUser: async (bfirstTimeUser: boolean) => {
+        console.log(`setting firstTimeUser to ${bfirstTimeUser}`);
+        set({ firstTimeUser: bfirstTimeUser })
+        await setItem({ firstTimeUser: bfirstTimeUser });
     },
-
+    initFirstTimeUser: async () => {
+        const storedData = await getItem();
+        const isFirstTime = storedData?.firstTimeUser ?? true;
+        set({ firstTimeUser: isFirstTime });
+    }
 }))

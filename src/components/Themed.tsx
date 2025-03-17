@@ -1,6 +1,7 @@
 import { Text as DefaultText, View as DefaultView, TextInput as DefaultTextInput } from 'react-native';
 import Colors from '@/src/constants/Colors';
 import { useColorScheme } from './useColorScheme';
+import { forwardRef } from 'react';
 
 type ThemeProps = {
   lightColor?: string;
@@ -31,17 +32,19 @@ export function View(props: ViewProps) {
   return <DefaultView style={[{ backgroundColor }, style]} {...otherProps} />;
 }
 
-export function InputText(props: TextInputProps) {
+export const InputText = forwardRef<DefaultTextInput, TextInputProps>((props, ref) => {
   const { style, lightColor, darkColor, placeholderTextColor, ...otherProps } = props;
   const textColor = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
   const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'background');
   const placeholderColor = useThemeColor({ light: '#888', dark: '#bbb' }, 'text');
 
+  // comment: pass the ref through to the underlying native text input
   return (
     <DefaultTextInput
+      ref={ref}
       style={[{ color: textColor, backgroundColor, padding: 10, borderRadius: 8 }, style]}
       placeholderTextColor={placeholderTextColor ?? placeholderColor}
       {...otherProps}
     />
   );
-}
+});

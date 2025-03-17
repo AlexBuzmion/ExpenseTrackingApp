@@ -6,7 +6,6 @@ export default [
             "A. To track personal expenses (e.g., groceries, rent, bills)",
             "B. To manage small business finances (e.g., consulting, retail, services)",
             "C. A mix of personal and business expense tracking",
-            "D. Other (please specify)"
         ],
         // image: require("../assets/images/Onboarding1.png")
     }, 
@@ -17,7 +16,6 @@ export default [
             "A. Freelance / Consulting (e.g., creative work, software dev, professional services)",
             "B. Retail or e-Commerce",
             "C. Real Estate (e.g., agent, brokerage)",
-            "D. Other (please specify)"
         ],
         // image: require("../assets/images/Onboarding2.png")
     },
@@ -25,7 +23,7 @@ export default [
         "id": 3,
         "question": "How detailed do you want your expense tracking to be?",
         "answers": [
-            "A. Basic: Just a few broad categories (Food, Rent, Income, Bills, etc.).",
+            "A. Basic: Just a few broad categories (Food, Rent, Utilities, etc.).",
             "B. Intermediate: A moderate number of categories to differentiate various expense types.",
             "C. Advanced: Many categories/subcategories for granular breakdowns."
         ],
