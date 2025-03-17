@@ -12,16 +12,20 @@ import { useRouter, Link } from 'expo-router'; // Import Link!
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '@/src/constants/Colors';
 import { useTaxStore } from "@/store/taxStore";
-
-// import { getApp } from "firebase/app";
-// import { doc, getDoc, getFirestore } from "firebase/firestore";
-
+import { useCategories } from '@/store/catStore';
 
 export default function ModalScreen() {
+
 	const router = useRouter();
 	const listStore = useEntriesStore();
 	const { taxRates } = useTaxStore();
 	
+	// call init categories on mount
+	const initCats = useCategories((state) => state.initCategories);
+	useEffect(() => {
+		initCats();
+	}, []);
+
 	// track input values
 	const [itemName, setItemName] = useState("");
 	const [date, setDate] = useState(new Date());
@@ -38,13 +42,6 @@ export default function ModalScreen() {
 		subCategorySelected: false,
 	});
 	
-	// fetchProvTaxRates().then((data: Record<string, { GST: number; HST: number; PST: number }> | undefined) => {
-	// 	console.log('data from outside fetchProvTaxRates: ', data)
-	// 	useTaxStore().setTaxRates(data || {});
-	// }).finally(() => {
-	// 	console.log('useTaxStore: ', useTaxStore.getState().taxRates);
-	// });
-	// get tax rates from Store
 	const provinceTax = taxRates[province] || { GST: 0, HST: 0, PST: 0 };
 	const totalTaxRate = provinceTax.GST + provinceTax.HST + provinceTax.PST;
 
@@ -105,8 +102,8 @@ export default function ModalScreen() {
 			alert("Please fill out all required fields before saving.");
 			return;
 		}
-
-		listStore.addExpense({
+		console.log("Saving entry...");
+		listStore.addEntry({
 			name: itemName,
 			date: date.toISOString(),
 			category: categorySelected,

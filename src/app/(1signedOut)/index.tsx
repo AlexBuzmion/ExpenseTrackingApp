@@ -1,16 +1,31 @@
 import { View, Text, InputText } from "@/src/components/Themed";
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import { ActivityIndicator, StyleSheet, TouchableOpacity } from 'react-native';
 import { useRouter } from "expo-router";
-import { Button } from "react-native";
 import Colors from "@/src/constants/Colors";
+import { getAuth, signInAnonymously } from "firebase/auth";
+import { useState } from "react";
+
 
 export default function AccountScreen() {
+    const [isLoading, setIsLoading] = useState(false);
+
+    async function handleAnonymousLogin() {
+        setIsLoading(true);
+        const auth = getAuth();
+        try {
+            await signInAnonymously(auth);
+            setIsLoading(false);
+            //   console.log(response);
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
     const router = useRouter();
     return (
         <View style={styles.container}>
-
+            
             <Text style={styles.title}>Welcome</Text>
-
             <TouchableOpacity style={[styles.loginButton, { borderWidth: 1.5, margin: 10}]} onPress={() => router.navigate("/login")}>
                 <Text>Login</Text>
             </TouchableOpacity>
@@ -20,6 +35,11 @@ export default function AccountScreen() {
             <TouchableOpacity style={[styles.signupButton, { borderWidth: 0, margin: 10 }]} onPress={() => router.navigate("/signup")}>
                 <Text style={styles.buttonText}>Sign Up</Text>
             </TouchableOpacity>
+
+            <TouchableOpacity style={[ { borderWidth: 0, margin: 10, position: 'absolute', bottom: 200 }]} onPress={handleAnonymousLogin} disabled={isLoading}>
+                <Text>continue as guest</Text>
+            </TouchableOpacity> 
+            
         </View>
     );
 }

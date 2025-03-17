@@ -4,6 +4,7 @@ import { Svg as DefaultSvg, Path as DefaultPath, Text as DefaultSVGText, G as De
 import Colors from '@/src/constants/Colors';
 import { useColorScheme } from './useColorScheme';
 import { TextStyle, ViewStyle, StyleProp } from 'react-native';
+import { forwardRef } from 'react';
 
 type ThemeProps = {
     lightColor?: string;
@@ -52,11 +53,11 @@ export function View(props: ViewProps) {
     return <DefaultView style={[{ backgroundColor }, style]} {...otherProps} />;
 }
 
-export function InputText(props: TextInputProps) {
-    const { style, lightColor, darkColor, placeholderTextColor, ...otherProps } = props;
-    const textColor = useThemeColor({ light: lightColor, dark: "#fff" }, 'text');
-    const backgroundColor = useThemeColor({ light: lightColor, dark: '#222' }, 'background');
-    const placeholderColor = useThemeColor({ light: '#fff', dark: '#888' }, 'text');
+export const InputText = forwardRef<DefaultTextInput, TextInputProps>((props, ref) => {
+  const { style, lightColor, darkColor, placeholderTextColor, ...otherProps } = props;
+  const textColor = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
+  const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'background');
+  const placeholderColor = useThemeColor({ light: '#888', dark: '#bbb' }, 'text');
 
     return (
         <DefaultTextInput

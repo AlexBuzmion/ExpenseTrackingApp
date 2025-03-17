@@ -6,19 +6,19 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css'; // Import styles for web
 
 type CrossPlatformDatePickerProps = {
-    value?: Date
+    value: Date
     onChange?: (date: Date) => void
 }
 
 export function CrossPlatformDatePicker({ value, onChange }: CrossPlatformDatePickerProps){
-    const [date, setDate] = useState(value || new Date());
+    const [date, setDate] = useState(value);
     const [dateVisibility, setDateVisibility] = useState(false);
 
     function toggleDatePickerVisibility() {
         setDateVisibility(!dateVisibility);
     }
 
-    // ✅ Sync state with parent
+    // Sync state with parent
     useEffect(() => {
         if (value && value.getTime() !== date.getTime()) {
             setDate(value);

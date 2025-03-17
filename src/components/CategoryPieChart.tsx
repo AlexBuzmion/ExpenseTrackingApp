@@ -11,8 +11,8 @@ interface CategoryPieChartProps {
     endDate: Date;
 }
 
-const CategoryPieChart: React.FC<CategoryPieChartProps> = ({startDate, endDate}) => {
-    const { expenseList } = useEntriesStore();
+const CategoryPieChart: React.FC<CategoryPieChartProps> = ({ startDate, endDate }) => {
+    const { itemEntryList: expenseList } = useEntriesStore();
 
     // 1. Filter expenses based on date range
     const filteredExpenses = expenseList.filter(expense => {
@@ -22,7 +22,7 @@ const CategoryPieChart: React.FC<CategoryPieChartProps> = ({startDate, endDate})
 
     // 2. Calculate total expenses per category USING FILTERED EXPENSES
     const categoryTotals: Record<string, number> = {};
-    filteredExpenses.forEach(expense => { // <--- Use filteredExpenses here
+    Object.values(expenseList).forEach(expense => {
         categoryTotals[expense.category] = (categoryTotals[expense.category] || 0) + expense.total;
     });
 
@@ -43,7 +43,7 @@ const CategoryPieChart: React.FC<CategoryPieChartProps> = ({startDate, endDate})
         percentage: (total / totalExpenses) * 100,
         color: getRandomColor(),
     }));
-
+    
     // Sort data by total, descending (largest slice first)
     data.sort((a, b) => b.total - a.total);
 
