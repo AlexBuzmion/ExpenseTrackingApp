@@ -18,6 +18,9 @@ export const useTaxStore = create<TaxRatesStore>((set) => ({
             const docSnap = await getDoc(docRef);
             if (docSnap.exists()) {
                 const data = docSnap.data() as Record<string, { GST: number; HST: number; PST: number }>;
+                // Object.entries(data).forEach((item) => {
+
+                // })
                 set({ taxRates: data });
                 return data;
             }

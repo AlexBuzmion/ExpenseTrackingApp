@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { StyleSheet, ScrollView, View, Text } from 'react-native';
 import CategoryPieChart from '@/src/components/CategoryPieChart';
 import { CrossPlatformDatePicker } from '@/src/components/CrossPlatformDatePicker';
-import { endOfDay } from 'date-fns';
+import { endOfDay, startOfDay } from 'date-fns';
 
 export default function AnalyticsScreen() {
-    const [startDate, setStartDate] = useState(new Date()); // Initial start date
-    const [endDate, setEndDate] = useState(new Date());     // Initial end date
+    const [startDate, setStartDate] = useState(startOfDay(new Date())); // Initial start date
+    const [endDate, setEndDate] = useState(endOfDay(new Date()));     // Initial end date
 
     return (
         <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -16,7 +16,7 @@ export default function AnalyticsScreen() {
                 <View style={styles.datePickerContainer}>
                     <CrossPlatformDatePicker
                         value={startDate}
-                        onChange={(date) => setStartDate(date)}
+                        onChange={(date) => setStartDate(startOfDay(date))}
                     />
                     <CrossPlatformDatePicker
                         value={endDate}

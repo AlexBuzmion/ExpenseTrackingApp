@@ -12,17 +12,19 @@ interface CategoryPieChartProps {
 }
 
 const CategoryPieChart: React.FC<CategoryPieChartProps> = ({ startDate, endDate }) => {
-    const { itemEntryList: expenseList } = useEntriesStore();
+    const expenseList= useEntriesStore().itemEntryList;
 
     // 1. Filter expenses based on date range
-    const filteredExpenses = expenseList.filter(expense => {
+    const filteredExpenses = Object.values(expenseList).filter(expense => {
         const expenseDate = parseISO(expense.date);
+        console.log(`startDate: ${startDate}, endDate: ${endDate}, expenseDate: ${expenseDate}`);
         return isWithinInterval(expenseDate, { start: startDate, end: endDate });
     });
 
     // 2. Calculate total expenses per category USING FILTERED EXPENSES
     const categoryTotals: Record<string, number> = {};
-    Object.values(expenseList).forEach(expense => {
+    filteredExpenses.forEach(expense => {
+        console.log(`expense: ${expense.category}, total: ${expense.total} for expense ${expense.name} , date: ${expense.date}`);
         categoryTotals[expense.category] = (categoryTotals[expense.category] || 0) + expense.total;
     });
 

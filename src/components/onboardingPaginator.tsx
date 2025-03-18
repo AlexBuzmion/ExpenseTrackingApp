@@ -17,7 +17,7 @@ export default function OnboardingPaginator({data, scrollX }: any) {
 
                 const opacity = scrollX.interpolate({
                     inputRange,
-                    outputRange: [0.1, 1, 0.1],
+                    outputRange: [0.4, 1, 0.4],
                     extrapolate: 'clamp',
                 })
 

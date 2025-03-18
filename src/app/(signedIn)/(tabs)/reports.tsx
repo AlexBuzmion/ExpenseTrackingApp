@@ -4,12 +4,13 @@ import { useEntriesStore } from '@/store/entriesStore';
 import { CrossPlatformDatePicker } from '@/src/components/CrossPlatformDatePicker';
 import { useState } from 'react';
 import { generateCSV, generatePDF } from '@/utils/exportUtils';
+import { endOfDay, startOfDay } from 'date-fns';
 
 export default function TabTwoScreen() {
     const listStore = useEntriesStore();
     const allExpenses =Object.entries(listStore.itemEntryList).map(([id, expense]) => ({ id, ...expense }));
-    const [startDate, setStartDate] = useState(new Date());
-    const [endDate, setEndDate] = useState(new Date());
+    const [startDate, setStartDate] = useState(startOfDay(new Date()));
+    const [endDate, setEndDate] = useState(endOfDay(new Date()));
     const [csvIsLoading, setCSVIsLoading] = useState(false);
     const [pdfIsLoading, setPDFIsLoading] = useState(false);
 
@@ -41,12 +42,12 @@ export default function TabTwoScreen() {
                 <View style={{marginRight: 10}}>
                     <CrossPlatformDatePicker 
                         value={startDate}
-                        onChange={val => setStartDate(val)}
+                        onChange={val => setStartDate(startOfDay(val))}
                     />
                 </View>
                 <CrossPlatformDatePicker 
                     value={endDate}
-                    onChange={val => setEndDate(val)}
+                    onChange={val => setEndDate(endOfDay(val))}
                 />
             </View>
             <Text style={styles.title}>Export Lists</Text>

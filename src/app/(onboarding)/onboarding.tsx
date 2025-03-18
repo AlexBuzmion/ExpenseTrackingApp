@@ -44,9 +44,9 @@ export default function AccountSetupScreen() {
     // require 50% scroll on the screen before moving to the next question
     const viewConfig = useRef({viewAreaCoveragePercentThreshold: 50 }).current; 
     const onboardingRef = useRef<FlatList>(null);
-
+    
     const scrollTo = () => {
-        if (currentIndex < onboardingQuestions.length - 1) {
+        if (currentIndex < questions.length - 1) {
             onboardingRef.current?.scrollToIndex({ index: currentIndex + 1 });
             setCurrentIndex(currentIndex + 1);
         } else {
@@ -95,7 +95,7 @@ export default function AccountSetupScreen() {
                     : null
                 }
             </View>
-                {/* <NextButton percentage={(currentIndex + 1) * (100 / onboardingQuestions.length)} scrollTo={scrollTo} /> */}
+                <NextButton percentage={(currentIndex + 1) * (100 / onboardingQuestions.length)} scrollTo={scrollTo} />
         </View>
     );
 }

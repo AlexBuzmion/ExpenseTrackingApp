@@ -14,7 +14,11 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.finotech.iSpend",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -41,6 +45,7 @@
       "eas": {
         "projectId": "c1b384ea-1e79-4fa8-9571-7edbb5b1e77e"
       }
-    }
+    },
+    "owner": "ispend"
   }
 }
