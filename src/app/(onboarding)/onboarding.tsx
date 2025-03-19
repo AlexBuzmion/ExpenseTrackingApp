@@ -1,10 +1,7 @@
 import { View } from '@/src/components/Themed';
 import { useState, useRef, useEffect } from 'react';
-import { Text, StyleSheet, FlatList, Animated, Pressable, TouchableOpacity } from 'react-native';
+import { StyleSheet, FlatList, Animated} from 'react-native';
 import onboardingQuestions from '@/utils/onboardingQuestions';
-import NextButton from '@/src/components/nextButton';
-import QuestionItem from '@/src/components/questionItem';
-import OnboardingPaginator from '@/src/components/onboardingPaginator';
 import { useRouter } from 'expo-router';
 import QuestionnaireSection from '@/src/components/Questionnaire';
 
@@ -59,47 +56,6 @@ export default function AccountSetupScreen() {
         <View style={{ flex: 1 }}>
             <QuestionnaireSection onCategoriesGenerated={handleGenerateCats}/>
         </View>
-        // <View style={{ flex: 1 }}>
-        //     <View style={{ flex: 1.5 }}>
-        //         <FlatList
-        //             data={questions}
-        //             keyExtractor={(item) => item.id.toString()}
-        //             renderItem={({ item }) => (
-        //                 <QuestionItem
-        //                 id={item.id}
-        //                 question={item.question}
-        //                 answers={item.answers}
-        //                 onAnswerSelect={handleSetAnswer}
-        //                 />
-        //             )}
-        //             horizontal
-        //             showsHorizontalScrollIndicator={false}
-        //             pagingEnabled
-        //             bounces={false}
-        //             onScroll={Animated.event(
-        //                 [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-        //                 { useNativeDriver: false }
-        //             )}
-        //             onViewableItemsChanged={viewableItemsChanged}
-        //             viewabilityConfig={viewConfig}
-        //             scrollEventThrottle={32}
-        //             ref={onboardingRef}
-        //         />
-        //     </View>
-        //     <OnboardingPaginator data={questions} scrollX={scrollX} />
-        //     <View style={{ flex: .2, position: 'relative', justifyContent: 'center', alignItems: 'center', marginBottom: 20}}>
-        //         { currentIndex + 1  === questions.length  && ( Object.entries(answers).length === questions.length )
-        //             ? (<TouchableOpacity 
-        //                     style={styles.nextButton}
-        //                     onPress={handleGenerateCats} 
-        //                 >
-        //                     <Text>   Continue   </Text> 
-        //                 </TouchableOpacity>) 
-        //             : null
-        //         }
-        //     </View>
-        //         <NextButton percentage={(currentIndex + 1) * (100 / onboardingQuestions.length)} scrollTo={scrollTo} />
-        // </View>
     );
 }
 

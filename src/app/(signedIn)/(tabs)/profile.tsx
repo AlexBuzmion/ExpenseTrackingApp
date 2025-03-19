@@ -8,7 +8,6 @@ import { getAuth } from "firebase/auth";
 import { useState } from "react";
 import { useRouter } from "expo-router";
 import QuestionnaireSection from "@/src/components/Questionnaire";
-import onboardingQuestions from "@/utils/onboardingQuestions";
 
 export default function ProfileScreen() {
     const setUser = useAuthStore(state => state.setUserId);
@@ -42,30 +41,42 @@ export default function ProfileScreen() {
                 : ( getAuth().currentUser?.isAnonymous
                     ? (
                         <View style={styles.container}>
-                            <Text style={{ width: 200, textAlign: 'center', marginBottom: 10}}>Lets unlock all your features! </Text>
-                            <TouchableOpacity style={[styles.loginButton, { borderWidth: 1.5, margin: 10}]} onPress={() => router.navigate("/login")}>
-                                <Text>Login</Text>
-                            </TouchableOpacity>
-                
-                            <Text>- or -</Text>
-                
-                            <TouchableOpacity style={[styles.signupButton, { borderWidth: 0, margin: 10 }]} onPress={() => router.navigate("/signup")}>
-                                <Text>Sign Up</Text>
+                            {!showQuestionnaire && (<View style={{ alignItems: 'center'}}>
+                                <Text style={{ width: 200, textAlign: 'center', marginBottom: 10}}>Lets unlock all your features! </Text>
+                                <TouchableOpacity style={[styles.loginButton, { borderWidth: 1.5, margin: 10}]} onPress={() => router.navigate("/login")}>
+                                    <Text>Login</Text>
+                                </TouchableOpacity>
+                    
+                                <Text>- or -</Text>
+                    
+                                <TouchableOpacity style={[styles.signupButton, { borderWidth: 0, margin: 10 }]} onPress={() => router.navigate("/signup")}>
+                                    <Text>Sign Up</Text>
+                                </TouchableOpacity>
+                            </View>)}
+                            
+
+                            <TouchableOpacity 
+                                style={[styles.questionsButton, { borderWidth: 0, margin: 10 }]} 
+                            onPress={() => setShowQuestionnaire(!showQuestionnaire)} 
+                            >
+                                <Text>{showQuestionnaire ? "Close questions" : "Review questions"}</Text>
                             </TouchableOpacity>
                         </View>
                     )
-                    :<Text>LogOut</Text>
+                    :<View>
+                        <Text>LogOut</Text>
+                        {/* Button to toggle the Questions section */}
+                        <TouchableOpacity 
+                            style={[styles.questionsButton, { borderWidth: 0, margin: 10 }]} 
+                            onPress={() => setShowQuestionnaire(!showQuestionnaire)} 
+                        >
+                            <Text>{showQuestionnaire ? "Close questions" : "Review questions"}</Text>
+                        </TouchableOpacity>
+                    </View>
+                    
                 )
                 
                 }
-            </TouchableOpacity>
-
-            {/* Button to toggle the Questions section */}
-            <TouchableOpacity 
-                style={[styles.questionsButton, { borderWidth: 0, margin: 10 }]} 
-                onPress={() => setShowQuestionnaire(!showQuestionnaire)} 
-            >
-                <Text>{showQuestionnaire ? "Close questions" : "Review questions"}</Text>
             </TouchableOpacity>
 
             {/* Conditionally render the Questions section */}
@@ -74,6 +85,7 @@ export default function ProfileScreen() {
                     <QuestionnaireSection onCategoriesGenerated={handleGenerateCats}/>
                 </View>
             )}
+            
         </View>
     );
 }
