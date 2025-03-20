@@ -1,272 +1,240 @@
+// CategoryEditor.tsx
 import { Ionicons } from "@expo/vector-icons";
 import { StyleSheet, ActivityIndicator, SectionList, TouchableOpacity, Modal, Alert } from "react-native";
-import { InputText, View, Text } from "./Themed";
+import { InputText, View, Text } from "./Themed"; // Ensure Themed components exist
 import { useAuthStore } from "@/store/authStore";
 import { useCategories } from "@/store/catStore";
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import Colors from "../constants/Colors";
 
 export default function CategoryEditor() {
-
     const router = useRouter();
     const setFirstTimeUser = useAuthStore((state) => state.setFirstTimeUser);
-    // selection state: each category has a checked flag and each subcategory a boolean
-    const [selectedCategories, setSelectedCategories] = useState<Record<string, { checked: boolean; subcategories: Record<string, boolean> }>>({});
 
-    // modal state for adding a new category
+    const { categories, addCategory, deleteCategory, editCategory, addSubcategory, deleteSubcategory, editSubcategory, initCategories } = useCategories();
+
+    const [loading, setLoading] = useState(true);
     const [showCategoryModal, setShowCategoryModal] = useState(false);
     const [newCategoryName, setNewCategoryName] = useState('');
-
-    // modal state for adding a new subcategory
     const [showSubcategoryModal, setShowSubcategoryModal] = useState(false);
     const [newSubcategoryName, setNewSubcategoryName] = useState('');
     const [currentCategoryForSub, setCurrentCategoryForSub] = useState('');
 
-    // toggle an entire category, affecting all its subcategories
-    const toggleCategory = (category: string) => {
-        setSelectedCategories((prev) => {
-            const newState = { ...prev };
-            const current = newState[category].checked;
-            newState[category].checked = !current;
-            Object.keys(newState[category].subcategories).forEach((sub) => {
-                newState[category].subcategories[sub] = !current;
-            });
-            return newState;
-        });
-    };
+    useEffect(() => {
+        const initialize = async () => {
+            await initCategories();
+            setLoading(false);
+        };
+        initialize();
+    }, [initCategories]);
 
-    // toggle a subcategory; uncheck the category only if none remain checked
-    const toggleSubcategory = (category: string, subcat: string) => {
-        setSelectedCategories((prev) => {
-            const newState = { ...prev };
-            newState[category].subcategories[subcat] = !newState[category].subcategories[subcat];
-            const anyChecked = Object.values(newState[category].subcategories).some((val) => val);
-            newState[category].checked = anyChecked;
-            return newState;
-        });
-    };
-
-    // prompt user to add a new category by showing the modal
     const promptAddCategory = () => {
         setNewCategoryName('');
         setShowCategoryModal(true);
     };
 
-    // confirm adding a new category using the typed name
-    const confirmAddCategory = () => {
+    const confirmAddCategory = async () => {
         if (newCategoryName.trim() === '') {
-            alert("Enter category name");
+            Alert.alert("Error", "Enter category name");
             return;
         }
-        if (selectedCategories[newCategoryName]) {
-            alert(`${newCategoryName} already exists!`);
+        if (categories[newCategoryName]) {
+            Alert.alert("Error", `${newCategoryName} already exists!`);
             return;
         }
-        setSelectedCategories((prev) => ({
-            ...prev,
-            [newCategoryName]: {
-                checked: true,
-                subcategories: {},
-            },
-        }));
+        await addCategory(newCategoryName);
         setShowCategoryModal(false);
     };
 
-    // prompt user to add a new subcategory by showing the modal
     const promptAddSubcategory = (category: string) => {
         setCurrentCategoryForSub(category);
         setNewSubcategoryName('');
         setShowSubcategoryModal(true);
     };
 
-    // confirm adding a new subcategory using the typed name
-    const confirmAddSubcategory = () => {
+    const confirmAddSubcategory = async () => {
         if (newSubcategoryName.trim() === '') {
-            alert("Enter a subcategory name");
+            Alert.alert("Error", "Enter a subcategory name");
             return;
         }
-        setSelectedCategories((prev) => {
-            const newState = { ...prev };
-            if (newState[currentCategoryForSub].subcategories[newSubcategoryName]) {
-                alert(`${newSubcategoryName} already exists!`);
-                return newState;
-            }
-            newState[currentCategoryForSub].subcategories[newSubcategoryName] = true;
-            newState[currentCategoryForSub].checked = true;
-            return newState;
-        });
+        if (categories[currentCategoryForSub]?.includes(newSubcategoryName)) {
+            Alert.alert("Error", `${newSubcategoryName} already exists!`);
+            return;
+        }
+        await addSubcategory(currentCategoryForSub, newSubcategoryName);
         setShowSubcategoryModal(false);
     };
 
-    // process final selections when confirm is pressed
     const handleConfirm = () => {
-        const finalSelections: Record<string, string[]> = {};
-        Object.entries(selectedCategories).forEach(([cat, info]) => {
-            const selectedSubs = Object.entries(info.subcategories)
-                .filter(([_, checked]) => checked)
-                .map(([sub]) => sub);
-            if (selectedSubs.length > 0) {
-                finalSelections[cat] = selectedSubs;
-            }
-        });
-        // use finalSelections as your final categories; JSON.stringify is optional
         Alert.alert(
-            `Saving..`,
-            `Happy with your selections? `,
+            "Saving..",
+            "Happy with your selections?",
             [
                 { text: "Cancel" },
                 {
                     text: "Confirm",
                     onPress: async () => {
-                        //await saveCategories(finalSelections);
                         await setFirstTimeUser(false);
                         router.replace('/(signedIn)');
                     }
                 },
             ],
         );
-
     };
 
-    // prepare sections for the SectionList based on the selection state
-    const sections = Object.entries(selectedCategories).map(([cat, info]) => ({
+    const sections = Object.entries(categories).map(([cat, subcats]) => ({
         title: cat,
-        data: Object.entries(info.subcategories).map(([sub, checked]) => ({
-            name: sub,
-            checked,
-            category: cat,
-        })),
-        checked: info.checked,
+        data: subcats.map((sub) => ({ name: sub, category: cat })),
     }));
 
+    if (loading) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <ActivityIndicator size="large" />
+            </View>
+        );
+    }
+
     return (
-        <View style={{ flex: 1, padding: 16 }}>
+        <View style={{ flex: 1, padding: 16 }} lightColor="#fff" darkColor="#222">
             <Text style={{ fontWeight: 'bold', fontSize: 20, padding: 10 }}>
-                Here's a list of suggested categories for you:
+                Here are your categories:
             </Text>
+
             <SectionList
                 sections={sections}
-                keyExtractor={(item, index) => index.toString()}
-                renderSectionHeader={({ section: { title, checked } }) => (
-                    <TouchableOpacity onPress={() => toggleCategory(title)}>
-                        <View
-                            style={{
-                                flexDirection: 'row',
-                                justifyContent: 'space-between',
-                                alignItems: 'center',
-                                marginTop: 10,
-                                borderWidth: 1,
-                                padding: 5,
-                                marginBottom: 5,
-                                backgroundColor: checked ? '#ccc' : 'lightgray',
-                            }}
-                        >
-                            <Text style={{ fontWeight: 'bold', color: checked ? 'black' : 'lightgray' }}>
-                                {title}
-                            </Text>
-                            {checked ? (
-                                <Ionicons name="checkbox" size={24} color={checked ? 'green' : 'lightgray'} />
-                            ) : (
-                                <Ionicons name="checkbox-outline" size={24} color={checked ? 'green' : 'lightgray'} />
-                            )
-                            }
+                keyExtractor={(item, index) => item.category + item.name + index}
+                renderSectionHeader={({ section: { title } }) => (
+                    // Category Item
+                    <View style={styles.categoryItem} lightColor="#eee" darkColor="#333">
+                        <Text style={ styles.catTitle }>{title}</Text>
+                        <View style={{ flexDirection: 'row', backgroundColor: 'transparent'}}>
+                            <TouchableOpacity
+                                onPress={() => {
+                                    //console.log(title);
+                                    Alert.prompt(
+                                        "Edit Category",
+                                        "Enter new category name:",
+                                        [
+                                            { text: "Cancel", style: "cancel" },
+                                            {
+                                                text: "OK",
+                                                onPress: async (newCatName) => {
+                                                    if (newCatName !== null && newCatName !== undefined) {
+                                                        if (newCatName.trim() !== "" && newCatName !== title) {
+                                                            await editCategory(title, newCatName);
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        ],
+                                        "plain-text",
+                                        title
+                                    );
+                                }}
+                            >
+                                <Ionicons name="pencil" size={24} color="#65beff" style={{ marginRight: 10 }} />
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => { 
+                                Alert.alert("Delete Category", 
+                                `Are you sure you want to delete "${title}" and all its subcategories?`, 
+                                [{ text: "Cancel", style: "cancel" }, 
+                                { text: "Delete", style: "destructive", 
+                                onPress: () => deleteCategory(title) }]); 
+                            }}>
+                                <Ionicons name="trash" size={24} color="red" />
+                            </TouchableOpacity>
                         </View>
-                    </TouchableOpacity>
+                    </View>
                 )}
+                
                 renderItem={({ item }) => (
-                    <TouchableOpacity onPress={() => toggleSubcategory(item.category, item.name)}>
-                        <View
-                            style={{
-                                flexDirection: 'row',
-                                justifyContent: 'space-between',
-                                alignItems: 'center',
-                                marginLeft: 30,
-                                borderWidth: 1,
-                                borderColor: 'gray',
-                                padding: 5,
-                                marginBottom: 5,
-                                backgroundColor: item.checked ? 'white' : '#f0f0f0',
-                            }}
-                        >
-                            <Text style={{ color: item.checked ? 'black' : 'lightgray' }}>{item.name}</Text>
-                            {item.checked ? (
-                                <Ionicons name="checkbox" size={24} color={item.checked ? 'green' : 'lightgray'} />
-                            ) : (
-                                <Ionicons name="checkbox-outline" size={24} color={item.checked ? 'green' : 'lightgray'} />
-                            )
-                            }
-
+                    // Subcategory Item
+                    <View style={styles.subcategoryItem} lightColor="#ccc" darkColor="#444">
+                        <Text style={styles.subcatTitle}>{item.name}</Text>
+                        <View style={{ flexDirection: 'row' , backgroundColor: 'transparent'}}>
+                            <TouchableOpacity
+                                onPress={() => {
+                                    Alert.prompt(
+                                        "Edit Subcategory",
+                                        "Enter new subcategory name:",
+                                        [
+                                            { text: "Cancel", style: "cancel" },
+                                            {
+                                                text: "OK",
+                                                onPress: async (newSubName) => {
+                                                    if (newSubName != null) {
+                                                        if (newSubName.trim() !== "" && newSubName !== item.name) {
+                                                            await editSubcategory(item.category, item.name, newSubName);
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        ],
+                                        "plain-text",
+                                        item.name
+                                    );
+                                }}
+                            >
+                                <Ionicons name="pencil" size={24} color="#65beff" style={{ marginRight: 10 }} />
+                            </TouchableOpacity>
+                            
+                            <TouchableOpacity onPress={() => { 
+                                Alert.alert("Delete Subcategory", 
+                                `Are you sure you want to delete "${item.name}"?`, 
+                                [{ text: "Cancel", style: "cancel" }, 
+                                { text: "Delete", style: "destructive", 
+                                onPress: () => deleteSubcategory(item.category, item.name) }]); 
+                            }}>
+                                <Ionicons name="trash" size={24} color="red" />
+                            </TouchableOpacity>
                         </View>
-                    </TouchableOpacity>
+                    </View>
                 )}
-                // footer for each section to allow adding a new subcategory
                 renderSectionFooter={({ section: { title } }) => (
                     <TouchableOpacity onPress={() => promptAddSubcategory(title)} style={{ marginLeft: 10, padding: 5 }}>
-                        <Text style={{ color: '#ccc' }}>add more subcategory for {title}</Text>
+                        <Text style={styles.addSubCategoryButtonText} lightColor='blue' darkColor='#65beff'>Add subcategory for {title}</Text>
                     </TouchableOpacity>
                 )}
-                // footer for the entire list to allow adding a new category
                 ListFooterComponent={
-                    <TouchableOpacity
-                        onPress={promptAddCategory}
-                        style={{ padding: 10, backgroundColor: '#ccc', alignItems: 'center', marginTop: 10 }}
-                    >
-                        <Text>Add Category</Text>
+                    <TouchableOpacity onPress={promptAddCategory} style={styles.addCategoryButton}>
+                        <Text style={styles.addCategoryButtonText}>Add Category</Text>
                     </TouchableOpacity>
                 }
                 style={{ flex: 1 }}
             />
 
-            <View style={{ flex: .12, alignItems: 'center', justifyContent: 'center' }}>
-                <TouchableOpacity
-                    onPress={handleConfirm}
-                    style={styles.button}
-                >
-                    <Text>Confirm Categories</Text>
+            {/*Confirm Categories*/}
+            <View style={{ alignItems: 'center', justifyContent: 'center', marginVertical: 20 }} lightColor="#fff" darkColor="#222">
+                <TouchableOpacity onPress={handleConfirm} style={styles.confirmButton}>
+                    <Text style={{ color: 'white', fontWeight: 'bold' }}>Confirm Categories</Text>
                 </TouchableOpacity>
             </View>
-
-            {/* Modal for adding a new category */}
+            
+            {/*Adding a New Category*/}
             <Modal visible={showCategoryModal} transparent animationType="slide">
-                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.5)' }}>
-                    <View style={{ width: '80%', backgroundColor: 'white', padding: 20, borderRadius: 10 }}>
-                        <Text>enter new category name:</Text>
-                        <InputText
-                            value={newCategoryName}
-                            onChangeText={setNewCategoryName}
-                            placeholder="category name"
-                            style={{ borderWidth: 1, borderColor: 'gray', marginVertical: 10, padding: 5 }}
-                        />
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                            <TouchableOpacity onPress={() => setShowCategoryModal(false)}>
-                                <Text style={{ color: 'blue' }}>cancel</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={confirmAddCategory}>
-                                <Text style={{ color: 'blue' }}>confirm</Text>
-                            </TouchableOpacity>
+                <View style={styles.promptBackgroundView}>
+                    <View style={styles.inputFieldBackgroundView}>
+                        <Text style={{ fontWeight: 'bold' }}>Enter new category name:</Text>
+                        <InputText value={newCategoryName} onChangeText={setNewCategoryName} placeholder="Category name" style={styles.inputField} />
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
+                            <TouchableOpacity onPress={() => setShowCategoryModal(false)}><Text style={{ color: 'blue' }}>Cancel</Text></TouchableOpacity>
+                            <TouchableOpacity onPress={confirmAddCategory}><Text style={{ color: 'blue' }}>Confirm</Text></TouchableOpacity>
                         </View>
                     </View>
                 </View>
             </Modal>
 
-            {/* Modal for adding a new subcategory */}
+            {/*Adding a New Subcategory*/}
             <Modal visible={showSubcategoryModal} transparent animationType="slide">
-                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.5)' }}>
-                    <View style={{ width: '80%', backgroundColor: 'white', padding: 20, borderRadius: 10 }}>
-                        <Text>enter new subcategory name for {currentCategoryForSub}:</Text>
-                        <InputText
-                            value={newSubcategoryName}
-                            onChangeText={setNewSubcategoryName}
-                            placeholder="subcategory name"
-                            style={{ borderWidth: 1, borderColor: 'gray', marginVertical: 10, padding: 5 }}
-                        />
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                            <TouchableOpacity onPress={() => setShowSubcategoryModal(false)}>
-                                <Text style={{ color: 'blue' }}>cancel</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={confirmAddSubcategory}>
-                                <Text style={{ color: 'blue' }}>confirm</Text>
-                            </TouchableOpacity>
+                <View style={styles.promptBackgroundView}>
+                    <View style={styles.inputFieldBackgroundView}>
+                        <Text style={{ fontWeight: 'bold' }}>Enter new subcategory name for {currentCategoryForSub}:</Text>
+                        <InputText value={newSubcategoryName} onChangeText={setNewSubcategoryName} placeholder="Subcategory name" style={styles.inputField} />
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
+                            <TouchableOpacity onPress={() => setShowSubcategoryModal(false)}><Text style={{ color: 'blue' }}>Cancel</Text></TouchableOpacity>
+                            <TouchableOpacity onPress={confirmAddSubcategory}><Text style={{ color: 'blue' }}>Confirm</Text></TouchableOpacity>
                         </View>
                     </View>
                 </View>
@@ -276,25 +244,71 @@ export default function CategoryEditor() {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    title: {
-        fontSize: 20,
-        fontWeight: 'bold',
-    },
-    separator: {
-        marginVertical: 30,
-        height: 1,
-        width: '80%',
-    },
-    button: {
+    confirmButton: {
         backgroundColor: '#5a3286',
         borderRadius: 100,
-        padding: 15.2,
-
+        padding: 15
+    },
+    categoryItem: {
+        height: 45,
+        borderRadius: 8,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginTop: 10,
+        padding: 5,
+        marginBottom: 5,
+    },
+    subcategoryItem: {
+        height: 35,
+        borderRadius: 8,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center', 
+        marginLeft: 30, 
+        padding: 5, 
+        marginBottom: 5, 
+    },
+    catTitle: {
+        fontWeight: 'bold', 
+        fontSize: 16,
+        marginLeft: 5
+    },
+    subcatTitle: {
+        marginLeft: 5
+    },
+    addCategoryButton: {
+        padding: 10, 
+        backgroundColor: '#e6cff2', 
+        borderRadius: 8,
+        alignItems: 'center', 
+        marginTop: 10 
+    },
+    addCategoryButtonText: {
+        fontWeight: 'bold',
+        fontSize: 12,
+        color: Colors.dark.tint
+    },
+    addSubCategoryButtonText: {
+        fontWeight: 'bold',
+        fontSize: 12,
+    },
+    inputField: {
+        borderWidth: 1, 
+        borderColor: 'gray', 
+        marginVertical: 10,
+        padding: 10
+    },
+    promptBackgroundView: {
+        flex: 1, 
+        justifyContent: 'center', 
+        alignItems: 'center',
+        backgroundColor: 'rgba(0,0,0,0.5)'
+    },
+    inputFieldBackgroundView: {
+        width: '80%', 
+        backgroundColor: 'white', 
+        padding: 20, 
+        borderRadius: 10 
     },
 });
