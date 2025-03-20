@@ -22,7 +22,7 @@ export default function SignedInLayout() {
 	return (
 		<Tabs
 			screenOptions={{
-				tabBarActiveTintColor: Colors.dark.tint,
+				tabBarActiveTintColor: useColorScheme() === 'light' ? Colors.light.tint : Colors.dark.tint,
 				headerShown: false,
 			}}
 		>

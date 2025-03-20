@@ -7,80 +7,71 @@ import { getApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { useState } from "react";
 import { useRouter } from "expo-router";
+import CustomButton from "@/src/components/CustomButton";
 
 export default function ProfileScreen() {
+    const router = useRouter();
     const setUser = useAuthStore(state => state.setUserId);
     const [isLoading, setIsLoading] = useState(false);
     const firebaseAuth = getAuth(getApp());
-    const router = useRouter();
     async function logOut() {
+        console.log(`user: ${firebaseAuth.currentUser}`);
         try {
             await firebaseAuth.signOut() 
             setIsLoading(false)
             setUser('');
+            router.replace('/(1signedOut)');
         } catch (error: any) {
             alert(error.message);
         }
     }
 
     return (
-        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-            <TouchableOpacity style={[styles.loginButton, { borderWidth: 1.5, margin: 10}]} onPress={logOut}>
-                {isLoading
+        <View style={ styles.container }>
+            {isLoading
                 ? <ActivityIndicator /> 
-                : ( getAuth().currentUser?.isAnonymous
+                : ( getAuth().currentUser?.isAnonymous || getAuth().currentUser === null
                     ? (
-                        <View style={styles.container}>
-                            <Text style={{ width: 200, textAlign: 'center', marginBottom: 10}}>Lets unlock all your features! </Text>
-                            <TouchableOpacity style={[styles.loginButton, { borderWidth: 1.5, margin: 10}]} onPress={() => router.navigate("/login")}>
-                                <Text>Login</Text>
-                            </TouchableOpacity>
-                
-                            <Text>- or -</Text>
-                
-                            <TouchableOpacity style={[styles.signupButton, { borderWidth: 0, margin: 10 }]} onPress={() => router.navigate("/signup")}>
-                                <Text>Sign Up</Text>
-                            </TouchableOpacity>
-                        </View>
+                            <>
+                            <Text style={{ width: 200, textAlign: 'center', marginBottom: 10, fontSize: 20}}>Lets unlock all your features! </Text>
+                                <CustomButton
+                                    title="Login"
+                                    onPressFunc={() => router.navigate("/login")}
+                                    variant="primary"
+                                    borderWidth={1.5}
+                                    margin={10}
+                                />
+                    
+                                <CustomButton
+                                    title="Sign Up"
+                                    onPressFunc={() => router.navigate("/signup")}
+                                    variant="secondary"
+                                    borderWidth={1.5}
+                                    margin={10}
+                                />
+                            </>
+                        )
+                    : (
+                        <CustomButton
+                            title="Logout"
+                            onPressFunc={logOut}
+                            variant="primary"
+                            borderWidth={1.5}
+                            margin={10}
+                        />
                     )
-                    :<Text>LogOut</Text>
-                )
-                
-                }
-            </TouchableOpacity>
+                ) 
+            }
         </View>
     );
 }
 
 const styles = StyleSheet.create({
-    loginButton: {
-        borderColor: Colors.light.tint, 
-        borderRadius: 20,
-        width: 100,
-        height: 40, 
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 4,
-        justifyContent: 'center', 
-        alignItems: 'center',
-    },
-    signupButton: {
-        backgroundColor: Colors.light.tint,
-        borderRadius: 20,
-        width: 100,
-        height: 40, 
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 4,
-        justifyContent: 'center', 
-        alignItems: 'center',
-    },
+
     container: {
         alignItems: 'center',
         justifyContent: 'center',
-        margin: 10
+        flex: 1,
     },
 
 })

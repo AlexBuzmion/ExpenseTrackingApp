@@ -1,13 +1,18 @@
 import { View, Text, InputText } from "@/src/components/Themed";
-import { ActivityIndicator, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import { ActivityIndicator, Platform, SafeAreaView, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import Colors from "@/src/constants/Colors";
 import { Ionicons } from '@expo/vector-icons';
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAuthStore } from "@/store/authStore";
 import {getApp} from "@firebase/app";
 import { getAuth, signInWithEmailAndPassword} from "firebase/auth";
+import CustomButton from "@/src/components/CustomButton";
+import DismissKeyboardView from "@/src/components/DismissKeyboardView";
+import { InputTextField } from "@/src/components/InputTextField";
+import { useRouter } from "expo-router";
 
 export default function LoginScreen() {
+    const router = useRouter();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [passwordVisibillity, setPasswordVisibillity] = useState(false);
@@ -17,6 +22,7 @@ export default function LoginScreen() {
     const firebaseAuth = getAuth(getApp());
 
     const refToPass = useRef<TextInput>(null);
+
     async function handleLogin() {
         setIsLoading(true);
         try {
@@ -24,6 +30,7 @@ export default function LoginScreen() {
             const userVerified = getAuth().currentUser?.emailVerified;
             if(!userVerified) throw new Error('email not verified');
             setSignedIn(!isSignedIn);
+            alert(`Hello! ${firebaseAuth.currentUser?.displayName}`);
             // console.log(firebaseAuth.currentUser);
         } catch (error: any) {
             alert(error.message);
@@ -33,81 +40,67 @@ export default function LoginScreen() {
     };
 
     return (
-        <View style={styles.container}>
-
-            <Text>Email Address</Text>
-            <View style={styles.inputtextcontainer}>
-                <InputText 
-                    style={{ flex: 1 }} 
-                    onChangeText={setEmail} 
-                    value={email} 
+        <DismissKeyboardView>
+            <View style={styles.container}>
+                <InputTextField
+                    headerTitle='Email'
+                    value={email}
+                    onChangeText={setEmail}
+                    placeholder='Enter email'
                     autoCapitalize="none"
-                    keyboardType="email-address"    
-                    placeholder="email address"
+                    keyboardType="email-address"
                     returnKeyType="next"
                     onSubmitEditing={() => refToPass.current?.focus()}
-                    lightColor="fff"
-                    darkColor="#222"
                 />
-            </View>
-
-            <Text>Password</Text>
-            <View style={styles.inputtextcontainer}>
-                <InputText 
-                    style={{ flex: 1 }} 
-                    secureTextEntry={!passwordVisibillity} 
-                    onChangeText={setPassword} 
-                    value={password} 
+                <InputTextField
+                    headerTitle='Password'
+                    secureTextEntry
+                    value={password}
+                    onChangeText={setPassword}
+                    placeholder='Enter password'
                     autoCapitalize="none"
-                    placeholder="password"
                     ref={refToPass}
-                    lightColor="fff"
-                    darkColor="#222"
                 />
-                <TouchableOpacity onPress={() => setPasswordVisibillity(!passwordVisibillity)}>
-                    <Ionicons name={passwordVisibillity ? 'eye' : 'eye-off'} size={24} color={Colors.dark.tint} style={{ paddingRight: 6, paddingTop: 6 }} />
-                </TouchableOpacity>
+                    
+                {isLoading 
+                    ? <ActivityIndicator />
+                    : (
+                        <>
+                            <CustomButton
+                                title="Login"
+                                onPressFunc={handleLogin}
+                                variant="primary-inverted"
+                                borderWidth={1}
+                                margin={10}
+                                disabled={isLoading}
+                                buttonStyle={{ alignItems: 'center' }}
+                            />
+                            <CustomButton
+                                title="Cancel"
+                                onPressFunc={() =>router.navigate('/(signedIn)/(tabs)/profile')}
+                                variant="secondary-inverted"
+                            />
+                        </>
+                    )
+                }
+
             </View>
-
-            <TouchableOpacity style={[styles.button, { borderWidth: 0, margin: 10 }]} onPress={handleLogin} disabled={isLoading}>
-                {isLoading ? <ActivityIndicator /> : <Text style={styles.buttonText}>Login</Text>}
-            </TouchableOpacity>
-
-
-        </View>
+        </DismissKeyboardView>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        alignItems: 'center',
         justifyContent: 'center',
-        padding: 10,
-    },
-    button: {
-        backgroundColor: Colors.light.tint,
-        borderRadius: 20,
-        width: 100,
-        height: 40, 
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 4,
-        justifyContent: 'center', 
-        alignItems: 'center', 
+        alignContent: 'center',
     },
     inputtextcontainer: {
-        borderColor: '#ccc', 
-        borderWidth: 1, 
-        borderRadius: 8,  
+        alignSelf: 'center',
+        justifyContent: 'center',
         flexDirection: 'row',
         marginBottom: 10,
-        width: '60%',
+        width: '90%',
+        height: Platform.OS === 'ios' ? '7.5%' : '8%'
     },
-    buttonText: {
-        color: Colors.dark.tint,
-        fontSize: 16,
-        fontWeight: 'bold',
-    }
 });
