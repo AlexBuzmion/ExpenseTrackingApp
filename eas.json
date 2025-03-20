@@ -5,8 +5,11 @@
 	},
 	"build": {
 		"development": {
-		"developmentClient": true,
-		"distribution": "internal"
+			"developmentClient": true,
+			"distribution": "internal",
+			"env": {
+				"APP_VARIANT": "development"
+			}
 		},
 		"ios-simulator": {
 			"extends": "development",
@@ -15,7 +18,10 @@
 			}
 		},
 		"preview": {
-		"distribution": "internal"
+			"distribution": "internal",
+			"env": {
+				"APP_VARIANT": "preview"	
+			}
 		},
 		"production": {
 		"autoIncrement": true
