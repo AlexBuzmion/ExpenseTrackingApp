@@ -215,12 +215,12 @@ export default function CategoryEditor() {
             {/*Adding a New Category*/}
             <Modal visible={showCategoryModal} transparent animationType="slide">
                 <View style={styles.promptBackgroundView}>
-                    <View style={styles.inputFieldBackgroundView}>
+                    <View style={styles.inputFieldBackgroundView}  lightColor="#fff" darkColor="#222">
                         <Text style={{ fontWeight: 'bold' }}>Enter new category name:</Text>
                         <InputText value={newCategoryName} onChangeText={setNewCategoryName} placeholder="Category name" style={styles.inputField} />
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
-                            <TouchableOpacity onPress={() => setShowCategoryModal(false)}><Text style={{ color: 'blue' }}>Cancel</Text></TouchableOpacity>
-                            <TouchableOpacity onPress={confirmAddCategory}><Text style={{ color: 'blue' }}>Confirm</Text></TouchableOpacity>
+                        <View style={styles.promptButtonView}>
+                            <TouchableOpacity onPress={() => setShowCategoryModal(false)}><Text lightColor="blue" darkColor='#65beff'>Cancel</Text></TouchableOpacity>
+                            <TouchableOpacity onPress={confirmAddCategory}><Text lightColor="blue" darkColor='#65beff'>Confirm</Text></TouchableOpacity>
                         </View>
                     </View>
                 </View>
@@ -229,12 +229,12 @@ export default function CategoryEditor() {
             {/*Adding a New Subcategory*/}
             <Modal visible={showSubcategoryModal} transparent animationType="slide">
                 <View style={styles.promptBackgroundView}>
-                    <View style={styles.inputFieldBackgroundView}>
+                    <View style={styles.inputFieldBackgroundView} lightColor="#fff" darkColor="#222">
                         <Text style={{ fontWeight: 'bold' }}>Enter new subcategory name for {currentCategoryForSub}:</Text>
                         <InputText value={newSubcategoryName} onChangeText={setNewSubcategoryName} placeholder="Subcategory name" style={styles.inputField} />
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
-                            <TouchableOpacity onPress={() => setShowSubcategoryModal(false)}><Text style={{ color: 'blue' }}>Cancel</Text></TouchableOpacity>
-                            <TouchableOpacity onPress={confirmAddSubcategory}><Text style={{ color: 'blue' }}>Confirm</Text></TouchableOpacity>
+                        <View style={styles.promptButtonView}>
+                            <TouchableOpacity onPress={() => setShowSubcategoryModal(false)}><Text lightColor="blue" darkColor='#65beff'>Cancel</Text></TouchableOpacity>
+                            <TouchableOpacity onPress={confirmAddSubcategory}><Text lightColor="blue" darkColor='#65beff'>Confirm</Text></TouchableOpacity>
                         </View>
                     </View>
                 </View>
@@ -244,6 +244,11 @@ export default function CategoryEditor() {
 }
 
 const styles = StyleSheet.create({
+    promptButtonView: {
+        flexDirection: 'row', 
+        justifyContent: 'space-around', 
+        backgroundColor: 'transparent'
+    },
     confirmButton: {
         backgroundColor: '#5a3286',
         borderRadius: 100,
@@ -307,8 +312,9 @@ const styles = StyleSheet.create({
     },
     inputFieldBackgroundView: {
         width: '80%', 
-        backgroundColor: 'white', 
         padding: 20, 
-        borderRadius: 10 
+        borderRadius: 10,
+        borderWidth: 1, 
+        borderColor: 'gray'
     },
 });
