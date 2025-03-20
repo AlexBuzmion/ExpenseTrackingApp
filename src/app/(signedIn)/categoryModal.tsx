@@ -4,6 +4,7 @@ import { Text, View, InputText as TextInput } from '../../components/Themed';
 import Colors from '../../constants/Colors';
 import { useCategories } from '@/store/catStore';
 import { set } from 'react-datepicker/dist/date_utils';
+import CategoryEditor from '@/src/components/CategoryEditor';
 
 export default function CategoryModalScreen() {
 
@@ -69,8 +70,9 @@ export default function CategoryModalScreen() {
 
     return (
         <View style={{ flex: 1 }}>
+            <CategoryEditor></CategoryEditor>
             {/* <ScrollView contentContainerStyle={{ padding: 20 }}> */}
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderWidth: 1, borderColor: 'gray', padding: 5}}>
+            {/* <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderWidth: 1, borderColor: 'gray', padding: 5}}>
                 <Text>Selected Cat: </Text>
                 <Text> {selectedCategory}</Text>
             </View>
@@ -154,7 +156,7 @@ export default function CategoryModalScreen() {
                             </TouchableOpacity>
                         </View>
                     )}
-                    />
+                    /> */}
                 {/* Object.keys() returns an array of keys from the categories object */}
                 
 
