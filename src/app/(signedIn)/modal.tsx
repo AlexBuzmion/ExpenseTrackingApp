@@ -1,21 +1,30 @@
 import { StatusBar } from 'expo-status-bar';
 import { Animated, Keyboard, Platform, StyleSheet, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
-import { Text, View, InputText } from '@/src/components/Themed';
-import { useEffect, useRef, useState} from 'react';
-import { CurrencyInputField } from '../components/CurrencyInputField';
-import { CrossPlatformDatePicker } from '../components/CrossPlatformDatePicker';
-import DropdownComponent from '../components/DropdownComponent';
-import { useExpenseListStore } from '@/store/expenseListStore';
+
+import { Text, View, InputText, Dropdown, AnimatedView} from '@/src/components/Themed';
+
+import { useEffect, useMemo, useRef, useState} from 'react';
+import { CurrencyInputField } from '../../components/CurrencyInputField';
+import { CrossPlatformDatePicker } from '../../components/CrossPlatformDatePicker';
+import DropdownComponent from '../../components/DropdownComponent';
+import { useEntriesStore } from '@/store/entriesStore';
 import { useRouter, Link } from 'expo-router'; // Import Link!
-import { useTaxRatesStore } from '@/store/provincialTaxStore';
-import { Dropdown } from 'react-native-element-dropdown';
 import { Ionicons } from '@expo/vector-icons';
-import Colors from '../constants/Colors';
+import Colors from '@/src/constants/Colors';
+import { useTaxStore } from "@/store/taxStore";
+import { useCategories } from '@/store/catStore';
 
 export default function ModalScreen() {
-	const listStore = useExpenseListStore();
+
 	const router = useRouter();
-	const { taxRates } = useTaxRatesStore();
+	const listStore = useEntriesStore();
+	const { taxRates } = useTaxStore();
+	
+	// call init categories on mount
+	const initCats = useCategories((state) => state.initCategories);
+	useEffect(() => {
+		initCats();
+	}, []);
 
 	// track input values
 	const [itemName, setItemName] = useState("");
@@ -33,7 +42,6 @@ export default function ModalScreen() {
 		subCategorySelected: false,
 	});
 	
-	// get tax rates from Store
 	const provinceTax = taxRates[province] || { GST: 0, HST: 0, PST: 0 };
 	const totalTaxRate = provinceTax.GST + provinceTax.HST + provinceTax.PST;
 
@@ -94,8 +102,8 @@ export default function ModalScreen() {
 			alert("Please fill out all required fields before saving.");
 			return;
 		}
-
-		listStore.addExpense({
+		console.log("Saving entry...");
+		listStore.addEntry({
 			name: itemName,
 			date: date.toISOString(),
 			category: categorySelected,
@@ -117,16 +125,21 @@ export default function ModalScreen() {
 			onPress={Platform.OS !== 'web' ? () => Keyboard.dismiss() : undefined}
 			style={styles.container}
 		>
-			<View style={[styles.container, {padding: 14}]}>
-			<Animated.View 
-				style={[styles.inputFieldContainer, {
-					borderColor: itemBorderAnim.interpolate({
-						inputRange: [0, 2],
-						outputRange: ["#ccc", "red"],
-					}),
-					borderWidth: missingFields.itemName ? 2 : 1,
-				}]}
+			<View style={[styles.container]}>
+			<AnimatedView
+				style={[styles.inputFieldContainer,
+					{
+						borderColor: itemBorderAnim.interpolate({
+							inputRange: [0, 2],
+							outputRange: ['#ccc', 'red'],
+						}),
+						borderWidth: missingFields.itemName ? 2 : 1,
+					},
+				]}
+				lightColor="#fff"  // Set light/dark colors
+				darkColor="#222"
 			>
+				
 				<Text style={{ marginRight: 10, fontSize: 16 }}>Item:</Text>
 				<InputText 
 					style={styles.inputField} 
@@ -134,9 +147,9 @@ export default function ModalScreen() {
 					placeholder="Enter item name"
 					placeholderTextColor="#888"
 				/>
-			</Animated.View>
+			</AnimatedView>
 
-			<View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
+			<View style={styles.separator} lightColor="#fff" darkColor="#222" />
 				<CrossPlatformDatePicker 
 					onChange={ val => setDate(val)}
 					value={date}
@@ -148,11 +161,11 @@ export default function ModalScreen() {
 				onCategoryChange={val => setCategorySelected(val) }
 				onSubcategoryChange={val => setSubCategorySelected(val)}
 			/>
-
+			
 			{/* Add Category Button */}
             <Link href="/categoryModal" asChild>
                 <TouchableOpacity style={styles.addCategoryButton}>
-                    <Text>Edit Categories</Text>
+                    <Text style={styles.addCategoryButtonText}>Edit Categories</Text>
                 </TouchableOpacity>
             </Link>
 			
@@ -173,7 +186,7 @@ export default function ModalScreen() {
 				/>
 			</View>
 					
-			<View style={styles.inputWrapper}>
+			<View >
 				<Dropdown
 					style={styles.provinceDropdown}
 					data={provinceList}
@@ -183,12 +196,15 @@ export default function ModalScreen() {
 					value={province}
 					onChange={item => setProvince(item.value)}
 					renderLeftIcon={() => (
-						<Ionicons name="filter" size={20} color="#555" style={{ marginRight: 8 }} />
+						<Ionicons name="filter" size={20} color="#ccc" style={{ marginRight: 8 }} />
 					)}
+					iconColor="#ccc"
+					lightColor="#fff" 
+					darkColor="#222"
 				/>
 			</View>
 
-			<View style={styles.inputFieldContainer}>
+			<View style={styles.inputFieldContainer} lightColor="#fff" darkColor="#222">
 				<Text style={[styles.currencySymbol]}>Total </Text>
 				<Text style={[styles.currencySymbol]}>
 					${getTotal()}
@@ -200,7 +216,7 @@ export default function ModalScreen() {
 				<TouchableOpacity 
 					style={[styles.button,{ borderWidth: 1, margin: 10,}]} 
 					onPress={() => {trySaveEntry()}}>
-					<Text>Save</Text>
+					<Text style={styles.saveButtonText}>Save</Text>
 				</TouchableOpacity>
 			</View>
 		</TouchableWithoutFeedback>
@@ -210,6 +226,7 @@ export default function ModalScreen() {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
+		padding: 14
 	},
 	title: {
 		fontSize: 20,
@@ -236,7 +253,6 @@ const styles = StyleSheet.create({
 		paddingHorizontal: 10,
 		maxWidth: '100%',
 		height: 50,
-		backgroundColor: 'white',
 		marginVertical: 10
 	},	
 	currencySymbol: {
@@ -244,6 +260,7 @@ const styles = StyleSheet.create({
 
 	},
 	button: {
+		backgroundColor: Colors.light.tint,
 		borderRadius: 20,
 		width: 100,
 		height: 40, 
@@ -260,9 +277,9 @@ const styles = StyleSheet.create({
 		marginVertical: 10
 	},
 	inputWrapper: {
-		height: 45, 
-		justifyContent: 'center'
-	},
+		 justifyContent: 'center',
+		 marginVertical: 10,
+	 },
 	addCategoryButton: {
 		backgroundColor: Colors.light.tint,
 		borderRadius: 20,
@@ -270,7 +287,16 @@ const styles = StyleSheet.create({
 		height: 40,
 		justifyContent: 'center',
 		alignItems: 'center',
-		marginVertical: 10,
 		alignSelf: 'center',
+		marginVertical: 10,
 	},
+	addCategoryButtonText: {
+		color: Colors.dark.tint,
+		fontWeight: 'bold',
+	},
+	saveButtonText: {
+		color: Colors.dark.tint,
+		fontSize: 16,
+		fontWeight: 'bold',
+	}
 });

@@ -1,18 +1,30 @@
 import React from 'react';
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
-import { Svg, Path, Text as SVGText, G } from 'react-native-svg';
-import { useExpenseListStore } from '@/store/expenseListStore';
+import { View, Text, Svg, SVGText, G} from '@/src/components/Themed';
+import { StyleSheet, Dimensions } from 'react-native';
+import { Path } from 'react-native-svg';
+import { useEntriesStore } from '@/store/entriesStore';
+import { isWithinInterval, parseISO } from 'date-fns';
 
 interface CategoryPieChartProps {
     // Add any other props if needed
+    startDate: Date;
+    endDate: Date;
 }
 
-const CategoryPieChart: React.FC<CategoryPieChartProps> = () => {
-    const { expenseList } = useExpenseListStore();
+const CategoryPieChart: React.FC<CategoryPieChartProps> = ({ startDate, endDate }) => {
+    const expenseList= useEntriesStore().itemEntryList;
 
-    // Calculate total expenses per category
+    // 1. Filter expenses based on date range
+    const filteredExpenses = Object.values(expenseList).filter(expense => {
+        const expenseDate = parseISO(expense.date);
+        console.log(`startDate: ${startDate}, endDate: ${endDate}, expenseDate: ${expenseDate}`);
+        return isWithinInterval(expenseDate, { start: startDate, end: endDate });
+    });
+
+    // 2. Calculate total expenses per category USING FILTERED EXPENSES
     const categoryTotals: Record<string, number> = {};
-    expenseList.forEach(expense => {
+    filteredExpenses.forEach(expense => {
+        console.log(`expense: ${expense.category}, total: ${expense.total} for expense ${expense.name} , date: ${expense.date}`);
         categoryTotals[expense.category] = (categoryTotals[expense.category] || 0) + expense.total;
     });
 
@@ -26,14 +38,14 @@ const CategoryPieChart: React.FC<CategoryPieChartProps> = () => {
         );
     }
 
-    // Generate pie chart data
+    // 3. Generate pie chart data (using categoryTotals, which is based on filtered data)
     const data = Object.entries(categoryTotals).map(([category, total]) => ({
         category,
         total,
         percentage: (total / totalExpenses) * 100,
-        color: getRandomColor(), // Function to generate random colors (see below)
+        color: getRandomColor(),
     }));
-
+    
     // Sort data by total, descending (largest slice first)
     data.sort((a, b) => b.total - a.total);
 
@@ -83,10 +95,14 @@ const CategoryPieChart: React.FC<CategoryPieChartProps> = () => {
                     <SVGText
                         x={labelX}
                         y={labelY}
-                        fontSize="12"
-                        fill="white"
+                        fontSize="16"
+                        fill="#111"
                         textAnchor="middle"
                         alignmentBaseline="middle"
+                        strokeWidth={0.5}
+                        stroke="#222"
+                        lightColor='#000'
+                        darkColor='#000'
                     >
                         {`${percentage.toFixed(1)}%`}
                     </SVGText>

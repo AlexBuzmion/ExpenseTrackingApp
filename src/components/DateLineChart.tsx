@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Dimensions, Platform } from 'react-native';
 import { Svg, Polyline, Line, Text as SVGText, Circle, G, Rect } from 'react-native-svg';
-import { useExpenseListStore } from '@/store/expenseListStore';
+import { useEntriesStore } from '@/store/entriesStore';
 import {
     format, eachDayOfInterval, startOfWeek, endOfWeek, eachWeekOfInterval, eachMonthOfInterval, startOfMonth, endOfMonth, isSameDay
 } from 'date-fns';
@@ -18,7 +18,7 @@ const formatDateLabel = (date: Date, timePeriod: 'day' | 'week' | 'month'): stri
 };
 
 const DateLineChart: React.FC<DateLineChartProps> = ({ timePeriod }) => {
-    const { expenseList } = useExpenseListStore();
+    const { itemEntryList: expenseList } = useEntriesStore();
     const [tooltip, setTooltip] = useState<{ x: number; y: number; date: string; total: number } | null>(null);
 
     const aggregatedData = expenseList.reduce<Record<string, number>>((acc, expense) => {

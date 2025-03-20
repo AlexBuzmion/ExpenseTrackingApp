@@ -1,7 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-import { Text, View, StyleSheet } from 'react-native';
-import { Dropdown } from 'react-native-element-dropdown';
+import { Text, View, Dropdown} from '@/src/components/Themed';
+import {StyleSheet } from 'react-native';
+import { DarkTheme } from '@react-navigation/native';
+//import { Dropdown } from 'react-native-element-dropdown';
 
 interface FilterDropdownProps {
   selectedFilter: string;
@@ -15,11 +17,7 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({ selectedFilter, setSele
   ];
 
   return (
-    <View style={styles.container}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 5}}>
-        <Ionicons name='filter-sharp' size={24} color="black" />
-        <Text>Filter</Text>
-      </View>
+    <View style={styles.container} lightColor='fff' darkColor='#fff'>
       <Dropdown
         data={filterOptions}
         labelField="label"
@@ -28,6 +26,12 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({ selectedFilter, setSele
         onChange={(item) => setSelectedFilter(item.value)}
         style={styles.dropdown}
         placeholder="Select Filter"
+        renderLeftIcon={() => (
+          <Ionicons name='filter-sharp' size={20} color="#ccc" style={{ marginRight: 8 }} />
+        )}
+        lightColor="fff"
+        darkColor="#222"
+        iconColor='#ccc'
       />
     </View>
   );
@@ -40,10 +44,12 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   dropdown: {
+    height: 36,
+    width: '90%',
     borderWidth: 1,
     borderRadius: 8,
     paddingHorizontal: 10,
-    backgroundColor: '#fff',
+    borderColor: '#ccc',
   },
 });
 
