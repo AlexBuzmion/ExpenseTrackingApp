@@ -97,6 +97,7 @@ interface CustomButtonProps {
     variant?: ButtonVariant;
     borderWidth?: number;
     width?: any;
+    height?: any;
     margin?: number;
     buttonStyle?: StyleProp<ViewStyle>;
     textStyle?: StyleProp<TextStyle>;
@@ -109,6 +110,7 @@ const CustomButton: FC<CustomButtonProps> = ({
     variant = 'primary',
     borderWidth,
     width,
+    height,
     margin = 10,
     buttonStyle,
     textStyle,
@@ -117,8 +119,16 @@ const CustomButton: FC<CustomButtonProps> = ({
     const mode = useColorScheme() || 'light'; 
     const variantStyles = getVariantStyles(variant, mode, borderWidth);
     const defaultWidth = '90%'; 
+    const defaultHeight = Platform.OS === 'ios' ? 70 : 60;
     // combine default styles with variant and any overrides
-    const combinedButtonStyle = [styles.button, { margin }, variantStyles.container, buttonStyle, width !== undefined ? { width } : { width: defaultWidth} ];
+    const combinedButtonStyle = [
+        styles.button, 
+        { margin }, 
+        variantStyles.container, 
+        buttonStyle, 
+        width !== undefined ? { width } : { width: defaultWidth},
+        height !== undefined ? { height } : { height: defaultHeight}
+    ];
     const combinedTextStyle = [styles.buttonText, variantStyles.text, textStyle];
 
     return (
@@ -135,7 +145,6 @@ const CustomButton: FC<CustomButtonProps> = ({
 const styles = StyleSheet.create({
     button: {
         borderRadius: 16,
-        height: Platform.OS === 'ios' ? 70 : 60,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.2,

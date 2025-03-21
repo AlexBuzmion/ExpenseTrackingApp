@@ -1,8 +1,9 @@
-import { Ionicons } from "@expo/vector-icons";
-import { StyleSheet, Alert, TouchableOpacity, Modal } from "react-native";
+import { AntDesign, Ionicons } from "@expo/vector-icons";
+import { StyleSheet, Alert, TouchableOpacity, Modal, useColorScheme } from "react-native";
 import { View, Text, InputText } from "./Themed";
 import { useCategories } from "@/store/catStore";
 import { useState } from "react";
+import Colors from "../constants/Colors";
 
 interface SubcategoryItemProps {
     subcategory: string;
@@ -32,7 +33,7 @@ const SubcategoryItem: React.FC<SubcategoryItemProps> = ({ subcategory, category
                         setShowSubcategoryModal(true);
                     }}
                 >
-                    <Ionicons name="pencil" size={24} color="#65beff" style={{ marginRight: 10 }} />
+                    <AntDesign name="edit" size={24} color={useColorScheme() === 'light' ? Colors.light.tint : Colors.dark.tint} style={{ marginRight: 10 }} />
                 </TouchableOpacity>
                 <TouchableOpacity
                     onPress={() => {

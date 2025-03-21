@@ -3,24 +3,52 @@ import { InputText, View, Text } from "./Themed";
 import { useAuthStore } from "@/store/authStore";
 import { useCategories } from "@/store/catStore";
 import { useRouter } from "expo-router";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Colors from "../constants/Colors";
 import CategoryItem from "./CategoyItem";
 import SubcategoryItem from "./SubcategoryItem";
 import CustomButton from "./CustomButton";
+import { transformCatsToSectionData } from "@/utils/iSpendUtils";
+
+export interface SectionData {
+    title: string;
+    data: Array<{ category: string, name: string }>
+    collapsed: boolean
+    showFooter: boolean;
+}
 
 export default function CategoryEditor() {
     const router = useRouter();
     const setFirstTimeUser = useAuthStore((state) => state.setFirstTimeUser);
-
     const { categories, addCategory, deleteCategory, editCategory, addSubcategory, deleteSubcategory, editSubcategory, initCategories } = useCategories();
-
+    
     const [loading, setLoading] = useState(true);
     const [showCategoryModal, setShowCategoryModal] = useState(false);
     const [newCategoryName, setNewCategoryName] = useState('');
     const [showSubcategoryModal, setShowSubcategoryModal] = useState(false);
     const [newSubcategoryName, setNewSubcategoryName] = useState('');
     const [currentCategoryForSub, setCurrentCategoryForSub] = useState('');
+    
+    //? this replaces the sections const, converts and stores the categories object from Record<string, string[]> to SectionData[]
+    //? SectionData interface above includes control for collapse and showFooter on top of cats and subcats stored
+    const [sectionData, setSectionData] = useState<SectionData[]>(transformCatsToSectionData(categories)); 
+
+    //? function to toggle collapse and showFooter for each section
+    const toggleSection = ( sectionTitle: string) => {
+        setSectionData(prevSections =>
+            prevSections.map(section =>
+              section.title === sectionTitle
+                ? { ...section, collapsed: !section.collapsed, showFooter: !section.showFooter }
+                : section
+            )
+        );
+    }
+    
+    // const sections = Object.entries(categories).map(([cat, subcats]) => ({
+    //     title: cat,
+    //     data: subcats.map((sub) => ({ name: sub, category: cat })),
+    //     collapsed: true 
+    // }));
 
     useEffect(() => {
         const initialize = async () => {
@@ -84,11 +112,6 @@ export default function CategoryEditor() {
         );
     };
 
-    const sections = Object.entries(categories).map(([cat, subcats]) => ({
-        title: cat,
-        data: subcats.map((sub) => ({ name: sub, category: cat })),
-    }));
-
     if (loading) {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -96,7 +119,6 @@ export default function CategoryEditor() {
             </View>
         );
     }
-
     return (
         <View style={{ flex: 1, padding: 16 }} lightColor="#fff" darkColor="#222">
             <Text style={{ fontWeight: 'bold', fontSize: 20, padding: 10 }}>
@@ -104,22 +126,40 @@ export default function CategoryEditor() {
             </Text>
 
             <SectionList
-                sections={sections}
+                sections={sectionData.map(section => ({
+                    ...section,
+                    data: section.collapsed ? [] : section.data,
+                }))}
                 keyExtractor={(item, index) => item.category + item.name + index}
-                renderSectionHeader={({ section: { title } }) => (
+                renderSectionHeader={({ section: { title, collapsed } }) => (
                     // Category Item
-                    <CategoryItem category={title}></CategoryItem>
+                    <CategoryItem 
+                        category={title} 
+                        onCollapseButtonPress={() =>toggleSection(title)}
+                        collapse= { collapsed }
+                    />
                 )}
                 
                 renderItem={({ item }) => (
                     // Subcategory Item
                     <SubcategoryItem category={item.category} subcategory={item.name}></SubcategoryItem>
                 )}
-                renderSectionFooter={({ section: { title } }) => (
-                    <TouchableOpacity onPress={() => promptAddSubcategory(title)} style={{ marginLeft: 10, padding: 5 }}>
-                        <Text style={styles.addSubCategoryButtonText} lightColor='blue' darkColor='#65beff'>Add subcategory for {title}</Text>
-                    </TouchableOpacity>
-                )}
+                renderSectionFooter={({ section: { title, showFooter } }) => 
+                    showFooter ? 
+                    (
+                        <CustomButton 
+                            title={`Add more types for ${title}`}
+                            onPressFunc={() => promptAddSubcategory(title)}
+                            variant="secondary-alternative"
+                            height={45}
+                            borderWidth={0}
+                        />
+                        // <TouchableOpacity onPress={() => promptAddSubcategory(title)} style={{ marginLeft: 10, padding: 10, borderWidth: 1 }}>
+                        //     <Text style={styles.addSubCategoryButtonText} lightColor='blue' darkColor='#65beff'>add more types for {title}</Text>
+                        // </TouchableOpacity>
+                    ) 
+                    : null
+                }
                 ListFooterComponent={
                     <CustomButton
                         title="Add Category"

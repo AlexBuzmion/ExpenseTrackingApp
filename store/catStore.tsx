@@ -7,7 +7,7 @@ import { useLocalStorage } from "@/utils/useLocalStorage";
 
 const { setItem, getItem } = useLocalStorage('categories');
 
-type CategoriesType = {
+export type CategoriesType = {
     categories: Record<string, string[]>;  
     setCategories: (categories: Record<string, string[]>) => void
     initCategories: () => Promise<Record<string, string[]>>
