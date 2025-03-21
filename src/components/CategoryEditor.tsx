@@ -1,6 +1,5 @@
-import { Ionicons } from "@expo/vector-icons";
 import { StyleSheet, ActivityIndicator, SectionList, TouchableOpacity, Modal, Alert } from "react-native";
-import { InputText, View, Text } from "./Themed"; // Ensure Themed components exist
+import { InputText, View, Text } from "./Themed";
 import { useAuthStore } from "@/store/authStore";
 import { useCategories } from "@/store/catStore";
 import { useRouter } from "expo-router";

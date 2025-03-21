@@ -1,8 +1,8 @@
-// SubcategoryItem.tsx (NEW FILE!)
 import { Ionicons } from "@expo/vector-icons";
-import { StyleSheet, Alert, TouchableOpacity } from "react-native";
-import { View, Text } from "./Themed";
+import { StyleSheet, Alert, TouchableOpacity, Modal } from "react-native";
+import { View, Text, InputText } from "./Themed";
 import { useCategories } from "@/store/catStore";
+import { useState } from "react";
 
 interface SubcategoryItemProps {
     subcategory: string;
@@ -11,6 +11,17 @@ interface SubcategoryItemProps {
 
 const SubcategoryItem: React.FC<SubcategoryItemProps> = ({ subcategory, category }) => {
     const { editSubcategory, deleteSubcategory } = useCategories();
+    const [showSubcategoryModal, setShowSubcategoryModal] = useState(false);
+    const [newSubcategoryName, setNewSubcategoryName] = useState('');
+
+    const confirmEditSubcategory = async () => {
+        if (newSubcategoryName.trim() === '') {
+            Alert.alert("Error", "Enter a subcategory name");
+            return;
+        }
+        await editSubcategory(category, subcategory, newSubcategoryName);
+        setShowSubcategoryModal(false);
+    };
 
     return (
         <View style={styles.subcategoryItem} lightColor="#ccc" darkColor="#444">
@@ -18,23 +29,7 @@ const SubcategoryItem: React.FC<SubcategoryItemProps> = ({ subcategory, category
             <View style={{ flexDirection: 'row', backgroundColor: 'transparent' }}>
                 <TouchableOpacity
                     onPress={() => {
-                        Alert.prompt(
-                            "Edit Subcategory",
-                            "Enter new subcategory name:",
-                            [
-                                { text: "Cancel", style: "cancel" },
-                                {
-                                    text: "OK",
-                                    onPress: async (newSubName) => {
-                                        if (newSubName !== null && newSubName !== undefined && newSubName.trim() !== "" && newSubName !== subcategory) {
-                                            await editSubcategory(category, subcategory, newSubName);
-                                        }
-                                    },
-                                },
-                            ],
-                            "plain-text",
-                            subcategory
-                        );
+                        setShowSubcategoryModal(true);
                     }}
                 >
                     <Ionicons name="pencil" size={24} color="#65beff" style={{ marginRight: 10 }} />
@@ -58,6 +53,21 @@ const SubcategoryItem: React.FC<SubcategoryItemProps> = ({ subcategory, category
                     <Ionicons name="trash" size={24} color="red" />
                 </TouchableOpacity>
             </View>
+
+            <Modal visible={showSubcategoryModal} transparent animationType="slide">
+                <View style={styles.promptBackgroundView}>
+                    <View style={styles.inputFieldBackgroundView} lightColor="#fff" darkColor="#222">
+                        <Text style={{ fontWeight: 'bold' }}>Enter new name for {subcategory}:</Text>
+                        <InputText value={newSubcategoryName} onChangeText={setNewSubcategoryName} placeholder="Subcategory name" style={styles.inputField} />
+                        <View style={styles.promptButtonView}>
+                            <TouchableOpacity onPress={() => setShowSubcategoryModal(false)}><Text lightColor="blue" darkColor='#65beff'>Cancel</Text></TouchableOpacity>
+                            <TouchableOpacity onPress={(event) => confirmEditSubcategory()}>
+                                <Text lightColor="blue" darkColor='#65beff'>Confirm</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
         </View>
     );
 };
@@ -74,6 +84,30 @@ const styles = StyleSheet.create({
     },
     subcatTitle: {
         marginLeft: 5
+    },
+    promptButtonView: {
+        flexDirection: 'row', 
+        justifyContent: 'space-around', 
+        backgroundColor: 'transparent'
+    },
+    inputField: {
+        borderWidth: 1, 
+        borderColor: 'gray', 
+        marginVertical: 10,
+        padding: 10
+    },
+    promptBackgroundView: {
+        flex: 1, 
+        justifyContent: 'center', 
+        alignItems: 'center',
+        backgroundColor: 'rgba(0,0,0,0.5)'
+    },
+    inputFieldBackgroundView: {
+        width: '80%', 
+        padding: 20, 
+        borderRadius: 10,
+        borderWidth: 1, 
+        borderColor: 'gray'
     },
 });
 
