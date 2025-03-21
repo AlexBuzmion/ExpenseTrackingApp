@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import Colors from "../constants/Colors";
 import CategoryItem from "./CategoyItem";
 import SubcategoryItem from "./SubcategoryItem";
+import CustomButton from "./CustomButton";
 
 export default function CategoryEditor() {
     const router = useRouter();
@@ -120,18 +121,25 @@ export default function CategoryEditor() {
                     </TouchableOpacity>
                 )}
                 ListFooterComponent={
-                    <TouchableOpacity onPress={promptAddCategory} style={styles.addCategoryButton}>
-                        <Text style={styles.addCategoryButtonText}>Add Category</Text>
-                    </TouchableOpacity>
+                    <CustomButton
+                        title="Add Category"
+                        onPressFunc={promptAddCategory}
+                        variant="secondary"
+                        borderWidth={1}
+                    />
                 }
                 style={{ flex: 1 }}
             />
 
             {/*Confirm Categories*/}
             <View style={{ alignItems: 'center', justifyContent: 'center', marginVertical: 20 }} lightColor="#fff" darkColor="#222">
-                <TouchableOpacity onPress={handleConfirm} style={styles.confirmButton}>
-                    <Text style={{ color: 'white', fontWeight: 'bold' }}>Confirm Categories</Text>
-                </TouchableOpacity>
+                <CustomButton
+                title="Confirm Categories"
+                onPressFunc={handleConfirm}
+                variant="primary"
+                width={200}
+                textStyle={{ fontSize: 18 }}
+                />
             </View>
             
             {/*Adding a New Category*/}
