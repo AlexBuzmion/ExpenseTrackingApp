@@ -1,4 +1,3 @@
-// CategoryEditor.tsx
 import { Ionicons } from "@expo/vector-icons";
 import { StyleSheet, ActivityIndicator, SectionList, TouchableOpacity, Modal, Alert } from "react-native";
 import { InputText, View, Text } from "./Themed"; // Ensure Themed components exist
@@ -7,6 +6,8 @@ import { useCategories } from "@/store/catStore";
 import { useRouter } from "expo-router";
 import { useState, useEffect } from "react";
 import Colors from "../constants/Colors";
+import CategoryItem from "./CategoyItem";
+import SubcategoryItem from "./SubcategoryItem";
 
 export default function CategoryEditor() {
     const router = useRouter();
@@ -107,90 +108,12 @@ export default function CategoryEditor() {
                 keyExtractor={(item, index) => item.category + item.name + index}
                 renderSectionHeader={({ section: { title } }) => (
                     // Category Item
-                    <View style={styles.categoryItem} lightColor="#eee" darkColor="#333">
-                        <Text style={ styles.catTitle }>{title}</Text>
-                        <View style={{ flexDirection: 'row', backgroundColor: 'transparent'}}>
-                            <TouchableOpacity
-                                onPress={() => {
-                                    //console.log(title);
-                                    Alert.prompt(
-                                        "Edit Category",
-                                        "Enter new category name:",
-                                        [
-                                            { text: "Cancel", style: "cancel" },
-                                            {
-                                                text: "OK",
-                                                onPress: async (newCatName) => {
-                                                    if (newCatName !== null && newCatName !== undefined) {
-                                                        if (newCatName.trim() !== "" && newCatName !== title) {
-                                                            await editCategory(title, newCatName);
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        ],
-                                        "plain-text",
-                                        title
-                                    );
-                                }}
-                            >
-                                <Ionicons name="pencil" size={24} color="#65beff" style={{ marginRight: 10 }} />
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={() => { 
-                                Alert.alert("Delete Category", 
-                                `Are you sure you want to delete "${title}" and all its subcategories?`, 
-                                [{ text: "Cancel", style: "cancel" }, 
-                                { text: "Delete", style: "destructive", 
-                                onPress: () => deleteCategory(title) }]); 
-                            }}>
-                                <Ionicons name="trash" size={24} color="red" />
-                            </TouchableOpacity>
-                        </View>
-                    </View>
+                    <CategoryItem category={title}></CategoryItem>
                 )}
                 
                 renderItem={({ item }) => (
                     // Subcategory Item
-                    <View style={styles.subcategoryItem} lightColor="#ccc" darkColor="#444">
-                        <Text style={styles.subcatTitle}>{item.name}</Text>
-                        <View style={{ flexDirection: 'row' , backgroundColor: 'transparent'}}>
-                            <TouchableOpacity
-                                onPress={() => {
-                                    Alert.prompt(
-                                        "Edit Subcategory",
-                                        "Enter new subcategory name:",
-                                        [
-                                            { text: "Cancel", style: "cancel" },
-                                            {
-                                                text: "OK",
-                                                onPress: async (newSubName) => {
-                                                    if (newSubName != null) {
-                                                        if (newSubName.trim() !== "" && newSubName !== item.name) {
-                                                            await editSubcategory(item.category, item.name, newSubName);
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        ],
-                                        "plain-text",
-                                        item.name
-                                    );
-                                }}
-                            >
-                                <Ionicons name="pencil" size={24} color="#65beff" style={{ marginRight: 10 }} />
-                            </TouchableOpacity>
-                            
-                            <TouchableOpacity onPress={() => { 
-                                Alert.alert("Delete Subcategory", 
-                                `Are you sure you want to delete "${item.name}"?`, 
-                                [{ text: "Cancel", style: "cancel" }, 
-                                { text: "Delete", style: "destructive", 
-                                onPress: () => deleteSubcategory(item.category, item.name) }]); 
-                            }}>
-                                <Ionicons name="trash" size={24} color="red" />
-                            </TouchableOpacity>
-                        </View>
-                    </View>
+                    <SubcategoryItem category={item.category} subcategory={item.name}></SubcategoryItem>
                 )}
                 renderSectionFooter={({ section: { title } }) => (
                     <TouchableOpacity onPress={() => promptAddSubcategory(title)} style={{ marginLeft: 10, padding: 5 }}>
