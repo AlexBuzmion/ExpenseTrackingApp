@@ -8,9 +8,12 @@ import {getApp} from "@firebase/app";
 import { getAuth , createUserWithEmailAndPassword, updateProfile, sendEmailVerification} from "firebase/auth";
 import { getFirestore, doc, setDoc, collection, addDoc, getDoc } from "firebase/firestore";
 import { useTaxStore } from "@/store/taxStore";
+import DismissKeyboardView from "@/src/components/DismissKeyboardView";
+import CustomButton from "@/src/components/CustomButton";
+import { InputTextField } from "@/src/components/InputTextField";
 
 
-export default function SignupScreen() {
+const  SignupScreen = () => {
     const router = useRouter();
     const firebaseAuth = getAuth(getApp());
     const db = getFirestore(getApp());
@@ -81,36 +84,33 @@ export default function SignupScreen() {
     }
 
     return (
-        <View style={styles.container}>
-            <Text>Username</Text>
-            <InputText 
-                style={styles.inputtextcontainer} 
-                onChangeText={setUsername} 
-                value={username} 
-                placeholder="Username"
-                autoCapitalize="none"
-                autoFocus 
-                returnKeyType="next" 
-                onSubmitEditing={() => refToEmail.current?.focus()}
-            />
+        <DismissKeyboardView>
+            <View style={styles.container}>
+                <InputTextField
+                    headerTitle='Username'
+                    onChangeText={setUsername} 
+                    value={username} 
+                    placeholder="Username"
+                    autoCapitalize="none"
+                    autoFocus 
+                    returnKeyType="next" 
+                    onSubmitEditing={() => refToEmail.current?.focus()}
+                />
 
-            <Text>Email address</Text>
-            <InputText 
-                style={styles.inputtextcontainer} 
-                onChangeText={setEmail} 
-                value={email} 
-                placeholder="Email address"
-                keyboardType="email-address"
-                autoCapitalize="none" 
-                ref={refToEmail}
-                returnKeyType="next" 
-                onSubmitEditing={() => refToPass.current?.focus()}
-            />
+                <InputTextField
+                    headerTitle='Email Address'
+                    onChangeText={setEmail} 
+                    value={email} 
+                    placeholder="Email address"
+                    keyboardType="email-address"
+                    autoCapitalize="none" 
+                    ref={refToEmail}
+                    returnKeyType="next" 
+                    onSubmitEditing={() => refToPass.current?.focus()}
+                />
 
-            <Text>Password</Text>
-            <View style={styles.inputtextcontainer}>
-                <InputText 
-                    style={{ flex: 1 }} 
+                <InputTextField
+                    headerTitle='Password'
                     secureTextEntry={!passwordVisibillity} 
                     onChangeText={setPassword} 
                     value={password} 
@@ -119,58 +119,48 @@ export default function SignupScreen() {
                     ref={refToPass}
                     returnKeyType="next" 
                     onSubmitEditing={() => refToConfirmPass.current?.focus()}
-                    lightColor="#fff"
-                    darkColor="#222"
                 />
-                <TouchableOpacity onPress={() => setPasswordVisibillity(!passwordVisibillity)}>
-                    <Ionicons name={passwordVisibillity ? 'eye' : 'eye-off'} size={24} color={Colors.dark.tint} style={{ paddingRight: 6, paddingTop: 6}} />
-                </TouchableOpacity>
-            </View>
-
-            <Text>Confirm Password</Text>
-            <View style={styles.inputtextcontainer}>
-                <InputText 
-                    style={{ flex: 1 }} 
+                <InputTextField
+                    headerTitle='Confirm Password'
                     secureTextEntry={!passwordVisibillity} 
                     onChangeText={setConfirmPassword} 
                     value={confirmPassword} 
                     placeholder="Confirm Password"
                     autoCapitalize="none"
                     ref={refToConfirmPass}
-                    lightColor="#fff"
-                    darkColor="#222"
                 />
-                <TouchableOpacity onPress={() => setPasswordVisibillity(!passwordVisibillity)}>
-                    {/* <Ionicons name={passwordVisibillity ? 'eye' : 'eye-off'} size={30} color={Colors.dark.tint} style={{ margin: 3}} /> */}
-                </TouchableOpacity>
+
+
+                {isLoading 
+                ? <ActivityIndicator /> 
+                : (
+                    <>
+                        <CustomButton
+                            title="Sign Up"
+                            onPressFunc={handleSignup}
+                            variant="primary-inverted"
+                            borderWidth={1.5}
+                            margin={10}
+                        />
+                        <CustomButton
+                                title="Cancel"
+                                onPressFunc={() =>router.back()}
+                                variant="secondary-inverted"
+                            />
+                    </>
+                )}
+
+
             </View>
-
-            <TouchableOpacity style={[styles.button, { borderWidth: 0, margin: 10 }]} onPress={handleSignup} disabled={isLoading}>
-                {isLoading ? <ActivityIndicator /> : <Text style={styles.buttonText}>Sign Up</Text>}
-            </TouchableOpacity>
-
-        </View>
+        </DismissKeyboardView>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        padding: 10,
-    },
-    button: {
-        backgroundColor: Colors.light.tint,
-        borderRadius: 20,
-        width: 100,
-        height: 40, 
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 4,
-        justifyContent: 'center', 
-        alignItems: 'center', 
+        flex: 1,
     },
     inputtextcontainer: {
         borderColor: '#ccc', 
@@ -180,9 +170,23 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         width: '60%' 
     },
-    buttonText: {
-        color: Colors.dark.tint,
-        fontSize: 16,
-        fontWeight: 'bold',
-    }
+    // button: {
+    //     backgroundColor: Colors.light.tint,
+    //     borderRadius: 20,
+    //     width: 100,
+    //     height: 40, 
+    //     shadowColor: "#000",
+    //     shadowOffset: { width: 0, height: 2 },
+    //     shadowOpacity: 0.2,
+    //     shadowRadius: 4,
+    //     justifyContent: 'center', 
+    //     alignItems: 'center', 
+    // },
+    // buttonText: {
+    //     color: Colors.dark.tint,
+    //     fontSize: 16,
+    //     fontWeight: 'bold',
+    // }
 });
+
+export default SignupScreen;
