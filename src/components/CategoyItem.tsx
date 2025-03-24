@@ -1,5 +1,5 @@
-import { Ionicons } from "@expo/vector-icons";
-import { StyleSheet, Alert, TouchableOpacity, Modal } from "react-native";
+import { AntDesign, Ionicons } from "@expo/vector-icons";
+import { StyleSheet, Alert, TouchableOpacity, Modal, useColorScheme } from "react-native";
 import { View, Text, InputText } from "./Themed";
 import { useCategories } from "@/store/catStore";
 import Colors from "../constants/Colors";
@@ -7,9 +7,11 @@ import { useState } from "react";
 
 interface CategoryItemProps {
     category: string;
+    onCollapseButtonPress: ( sectionTitle: string) => void;
+    collapse: boolean
 }
 
-const CategoryItem: React.FC<CategoryItemProps> = ({ category }) => {
+const CategoryItem: React.FC<CategoryItemProps> = ({ category, onCollapseButtonPress, collapse }) => {
     const { editCategory, deleteCategory } = useCategories();
     const [showCategoryModal, setShowCategoryModal] = useState(false);
     const [newCategoryName, setNewCategoryName] = useState('');
@@ -25,6 +27,15 @@ const CategoryItem: React.FC<CategoryItemProps> = ({ category }) => {
 
     return (
         <View style={styles.categoryItem} lightColor="#eee" darkColor="#333">
+            <TouchableOpacity
+                style={{ padding: 7 }}
+                onPress={() => onCollapseButtonPress(category)}>
+                    {
+                        collapse 
+                        ? <AntDesign name="caretright" size={20} color={useColorScheme() === 'light' ? Colors.light.tint : Colors.dark.tint} /> 
+                        : <AntDesign name="caretdown" size={20} color={useColorScheme() === 'light' ? Colors.light.tint : Colors.dark.tint} /> 
+                    }
+            </TouchableOpacity> 
             <Text style={styles.catTitle}>{category}</Text>
             <View style={{ flexDirection: 'row', backgroundColor: 'transparent' }}>
                 <TouchableOpacity
@@ -32,7 +43,7 @@ const CategoryItem: React.FC<CategoryItemProps> = ({ category }) => {
                         setShowCategoryModal(true);
                     }}
                 >
-                    <Ionicons name="pencil" size={24} color="#65beff" style={{ marginRight: 10 }} />
+                    <AntDesign name="edit" size={24} color={useColorScheme() === 'light' ? Colors.light.tint : Colors.dark.tint} style={{ marginRight: 10 }} />
                 </TouchableOpacity>
                 <TouchableOpacity
                     onPress={() => {
