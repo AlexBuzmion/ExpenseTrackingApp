@@ -5,6 +5,7 @@ import { CrossPlatformDatePicker } from '@/src/components/CrossPlatformDatePicke
 import { useState } from 'react';
 import { generateCSV, generatePDF } from '@/utils/exportUtils';
 import { endOfDay, startOfDay } from 'date-fns';
+import CustomButton from '@/src/components/CustomButton';
 
 export default function TabTwoScreen() {
     const listStore = useEntriesStore();
@@ -53,21 +54,31 @@ export default function TabTwoScreen() {
             <Text style={styles.title}>Export Lists</Text>
             <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
             
-            <TouchableOpacity 
-                style={[styles.button, { borderWidth: 1, margin: 10 }]} 
-                onPress={handleGeneratePDF}
-                disabled={pdfIsLoading}
-            >
-                { pdfIsLoading ? <ActivityIndicator /> : <Text>Export PDF</Text>  }
-            </TouchableOpacity>
+            <CustomButton
+                title="Export PDF"
+                onPressFunc={handleGeneratePDF}
+                variant="secondary"
+                width={200}
+                height={60}
+                borderWidth={1}
+                margin={10}
+                disabled={pdfIsLoading} 
+            />
+                {/* { pdfIsLoading ? <ActivityIndicator /> : <Text>Export PDF</Text> }
+            </CustomButton> */}
             
-            <TouchableOpacity 
-                style={[styles.button, { borderWidth: 1, margin: 10 }]} 
-                onPress={handleGenerateCSV}
+            <CustomButton 
+                title="Export CSV"
+                onPressFunc={handleGenerateCSV}
+                variant="secondary"
+                width={200}
+                height={60}
+                borderWidth={1}
+                margin={10}
                 disabled={csvIsLoading}
-            >
-                {csvIsLoading ? <ActivityIndicator size="small" style={{ alignContent: 'center', justifyContent: 'center'}}/> : <Text>Export CSV</Text> }
-            </TouchableOpacity>
+            />
+                {/* {csvIsLoading ? <ActivityIndicator size="small" style={{ alignContent: 'center', justifyContent: 'center'}}/> : <Text>Export CSV</Text> }
+            </TouchableOpacity> */}
         </View>
     );
 }

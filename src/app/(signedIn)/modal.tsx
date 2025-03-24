@@ -13,6 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 import Colors from '@/src/constants/Colors';
 import { useTaxStore } from "@/store/taxStore";
 import { useCategories } from '@/store/catStore';
+import CustomButton from '@/src/components/CustomButton';
 
 export default function ModalScreen() {
 
@@ -116,6 +117,11 @@ export default function ModalScreen() {
 		router.back();
 	}
 
+	function handleEditCategories()
+	{
+		router.push("/categoryModal");
+	}
+
 	function getTotal() {
 		const total = parseFloat(hst) + parseFloat(subTotal);
 		return total.toFixed(2);
@@ -163,12 +169,16 @@ export default function ModalScreen() {
 			/>
 			
 			{/* Add Category Button */}
-            <Link href="/categoryModal" asChild>
-                <TouchableOpacity style={styles.addCategoryButton}>
-                    <Text style={styles.addCategoryButtonText}>Edit Categories</Text>
-                </TouchableOpacity>
-            </Link>
-			
+            
+                <CustomButton 
+					title="Add Category"
+					onPressFunc={handleEditCategories}
+					variant="primary"
+                	width={200}
+                	height={50}
+                	borderWidth={1}
+                	margin={10}
+                />
 
 			<CurrencyInputField 
 				value={subTotal}
@@ -186,7 +196,7 @@ export default function ModalScreen() {
 				/>
 			</View>
 					
-			<View >
+			<View style={styles.provinceDropdownContainer} lightColor="#fff" darkColor="#222">
 				<Dropdown
 					style={styles.provinceDropdown}
 					data={provinceList}
@@ -213,11 +223,15 @@ export default function ModalScreen() {
 
 				{/* Use a light status bar on iOS to account for the black space above the modal */}
 				<StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
-				<TouchableOpacity 
-					style={[styles.button,{ borderWidth: 1, margin: 10,}]} 
-					onPress={() => {trySaveEntry()}}>
-					<Text style={styles.saveButtonText}>Save</Text>
-				</TouchableOpacity>
+				<CustomButton
+					title='Save'
+					onPressFunc={trySaveEntry}
+					variant="primary"
+                	width={150}
+                	height={60}
+                	borderWidth={1}
+                	margin={10}
+				/>
 			</View>
 		</TouchableWithoutFeedback>
     );
@@ -268,13 +282,15 @@ const styles = StyleSheet.create({
 		alignItems: 'center' 
 	},
 	provinceDropdown: {
-		width: 'auto',
+		height: '100%',
+	},
+	provinceDropdownContainer: {
 		height: 45,
-		borderWidth: 1, 
-		borderColor: '#ccc', 
-		borderRadius: 8, 
-		paddingHorizontal: 10,
-		marginVertical: 10
+        borderColor: '#ccc',
+        borderWidth: 1,
+        borderRadius: 8,
+		justifyContent: 'center',
+		padding: 5,
 	},
 	inputWrapper: {
 		 justifyContent: 'center',
