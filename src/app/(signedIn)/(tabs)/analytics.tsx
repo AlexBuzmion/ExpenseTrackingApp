@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { StyleSheet, ScrollView, View, Text } from 'react-native';
+import { StyleSheet, ScrollView} from 'react-native';
+import { View, Text } from '@/src/components/Themed';
 import CategoryPieChart from '@/src/components/CategoryPieChart';
 import { CrossPlatformDatePicker } from '@/src/components/CrossPlatformDatePicker';
 import { endOfDay, startOfDay } from 'date-fns';
@@ -9,24 +10,26 @@ export default function AnalyticsScreen() {
     const [endDate, setEndDate] = useState(endOfDay(new Date()));     // Initial end date
 
     return (
-        <ScrollView contentContainerStyle={styles.scrollContainer}>
-            <View style={styles.container}>
-                <Text style={styles.title}>Expense Analytics</Text>
+        <View>
+            <ScrollView contentContainerStyle={styles.scrollContainer}>
+                <View style={styles.container}>
+                    <Text style={styles.title}>Expense Analytics</Text>
 
-                <View style={styles.datePickerContainer}>
-                    <CrossPlatformDatePicker
-                        value={startDate}
-                        onChange={(date) => setStartDate(startOfDay(date))}
-                    />
-                    <CrossPlatformDatePicker
-                        value={endDate}
-                        onChange={(date) => setEndDate(endOfDay(date))} // Set to end of day
-                    />
+                    <View style={styles.datePickerContainer}>
+                        <CrossPlatformDatePicker
+                            value={startDate}
+                            onChange={(date) => setStartDate(startOfDay(date))}
+                        />
+                        <CrossPlatformDatePicker
+                            value={endDate}
+                            onChange={(date) => setEndDate(endOfDay(date))} // Set to end of day
+                        />
+                    </View>
+
+                    <CategoryPieChart startDate={startDate} endDate={endDate} />
                 </View>
-
-                <CategoryPieChart startDate={startDate} endDate={endDate} />
-            </View>
-        </ScrollView>
+            </ScrollView>
+        </View>
     );
 }
 

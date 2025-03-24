@@ -115,6 +115,8 @@ const CategoryPieChart: React.FC<CategoryPieChartProps> = ({ startDate, endDate 
 
     return (
         <View style={styles.container}>
+
+            {/* Pie Chart */}
             <Svg width={width} height={width * 0.8}>
                 {slices}
             </Svg>
