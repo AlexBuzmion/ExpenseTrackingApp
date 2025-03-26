@@ -28,6 +28,7 @@ function ItemDetails() {
     const [hst, setHst] = useState(item?.hst.toString() || '0.00');
     const [total, setTotal] = useState(item?.total.toString() || '0.00');
     const [hasChanges, setHasChanges] = useState(false);
+    const [note, setNote] = useState(item?.note || '');
 
     useEffect(() => {
         if (
@@ -119,6 +120,9 @@ function ItemDetails() {
 
             <Text style={styles.title}>Total:</Text>
             <InputText value={`$${total}`} editable={false} style={styles.input} />
+
+            <Text style={styles.title}>Note:</Text>
+            <InputText value={note} onChangeText={setNote} style={styles.input} />
 
             <View style={styles.footer}>
                 <Text style={styles.dateText}>Created on {new Date(item.creationDate).toLocaleDateString(
