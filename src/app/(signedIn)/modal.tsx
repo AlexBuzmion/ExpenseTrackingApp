@@ -167,26 +167,16 @@ export default function ModalScreen() {
 				onCategoryChange={val => setCategorySelected(val) }
 				onSubcategoryChange={val => setSubCategorySelected(val)}
 			/>
-			
-			{/* Add Category Button */}
-            
-                <CustomButton 
-					title="Add Category"
-					onPressFunc={handleEditCategories}
-					variant="primary"
-                	width={200}
-                	height={50}
-                	borderWidth={1}
-                	margin={10}
-                />
 
-			<CurrencyInputField 
-				value={subTotal}
-				onValidChange={val => {
-					setSubTotal(val)
-				}}
-				inputTitle='Subtotal'
-			/>
+			<View style={styles.inputWrapper}>
+				<CurrencyInputField 
+					value={subTotal}
+					onValidChange={val => {
+						setSubTotal(val)
+					}}
+					inputTitle='Subtotal'
+				/>
+			</View>
 
 			<View style={styles.inputWrapper}>
 				<CurrencyInputField 
@@ -240,7 +230,8 @@ export default function ModalScreen() {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		padding: 14
+		padding: 14,
+		marginTop: 40
 	},
 	title: {
 		fontSize: 20,
@@ -291,10 +282,11 @@ const styles = StyleSheet.create({
         borderRadius: 8,
 		justifyContent: 'center',
 		padding: 5,
+		marginTop: 10
 	},
 	inputWrapper: {
 		 justifyContent: 'center',
-		 marginVertical: 10,
+		 marginTop: 10,
 	 },
 	addCategoryButton: {
 		backgroundColor: Colors.light.tint,
