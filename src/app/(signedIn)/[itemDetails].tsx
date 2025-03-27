@@ -1,13 +1,16 @@
-import { View, Text, InputText, useThemeColor } from '@/src/components/Themed';
+import { View, Text, InputText } from '@/src/components/Themed';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import { Alert, Pressable, StyleSheet, TouchableOpacity } from 'react-native';  
+import { Alert, Pressable, StyleSheet, TouchableOpacity } from 'react-native';
 import { useEntriesStore } from '@/store/entriesStore';
 import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useState } from 'react';
 import Colors from '../../constants/Colors';
+import { InputTextField } from '@/src/components/InputTextField';
+import DropdownComponent from '@/src/components/DropdownComponent';
+import CustomButton from '@/src/components/CustomButton';
 
 
-export default ItemDetails; 
+export default ItemDetails;
 
 function ItemDetails() {
     const router = useRouter();
@@ -16,8 +19,6 @@ function ItemDetails() {
     const updateExpense = useEntriesStore((state) => state.updateEntry);
     const removeExpense = useEntriesStore((state) => state.deleteEntry);
 
-    // Find the item using `id`
-    // const item = itemList.find((entry) => entry.id === itemDetails);
     const item = itemList[itemDetails];
 
     // State to track editable fields
@@ -34,25 +35,28 @@ function ItemDetails() {
         if (
             name !== item?.name ||
             category !== item?.category ||
+            subcategory !== item?.subcategory ||
             subtotal !== item?.subtotal.toString() ||
-            hst !== item?.hst.toString()
+            hst !== item?.hst.toString() ||
+            note !== item?.note
         ) {
             setHasChanges(true);
         } else {
             setHasChanges(false);
         }
-    }, [name, category, subtotal, hst]);
+    }, [name, category, subcategory, subtotal, hst]);
 
     async function handleDeleteItem() {
         console.log('called')
         Alert.alert(
-            `Confirm Deletion`, 
+            `Confirm Deletion`,
             `Are you sure you want to delete:\n\n${item?.name} - $${item?.total}?`,
             [
-                { text: "Cancel", style: "cancel" }, 
-                { text: "Yes", 
+                { text: "Cancel", style: "cancel" },
+                {
+                    text: "Yes",
                     onPress: async () => {
-                        await removeExpense(itemDetails);  
+                        await removeExpense(itemDetails);
                         router.back();
                     }
                 },
@@ -70,13 +74,14 @@ function ItemDetails() {
             // id: item.id,
             name,
             date: item.date,
-            category,
-            subcategory,
+            category: category, // Use category here
+            subcategory: subcategory, //Use subcategory here
             subtotal: parseFloat(subtotal),
             hst: parseFloat(hst),
             total: parseFloat((parseFloat(subtotal) + parseFloat(hst)).toFixed(2)),
+            note: note
         });
-        
+
         setHasChanges(false);
         router.back();
     }
@@ -92,39 +97,52 @@ function ItemDetails() {
     return (
         <View style={styles.container}>
             <Stack.Screen options={{ title: item.name }} />
-            
-            <Text style={styles.title}>Expense Name:</Text>
-            <InputText value={name} onChangeText={setName} style={styles.input} />
 
-            <Text style={styles.title}>Category:</Text>
-            <InputText value={category} onChangeText={setCategory} style={styles.input} />
+            <View style={styles.separator} />
 
-            <Text style={styles.title}>Subcategory:</Text>
-            <InputText value={subcategory} onChangeText={setSubcategory} style={styles.input} />
-
-            <Text style={styles.title}>Subtotal:</Text>
-            <InputText 
-                value={subtotal} 
-                onChangeText={(val) => setSubtotal(val.replace(/[^0-9.]/g, ''))} 
-                keyboardType="decimal-pad" 
-                style={styles.input} 
+            <InputTextField
+                headerTitle="Expense Name"
+                value={name}
+                onChangeText={setName}
             />
 
-            <Text style={styles.title}>HST:</Text>
-            <InputText 
-                value={hst} 
-                onChangeText={(val) => setHst(val.replace(/[^0-9.]/g, ''))} 
-                keyboardType="decimal-pad" 
-                style={styles.input} 
+            <View style={styles.dropdownContainer}>
+                <DropdownComponent
+                    category={category}
+                    subcategory={subcategory}
+                    onCategoryChange={val => setCategory(val)}
+                    onSubcategoryChange={val => setSubcategory(val)}
+                />
+            </View>
+
+            <InputTextField headerTitle="Subtotal:"
+                value={subtotal}
+                onChangeText={(val) => setSubtotal(val.replace(/[^0-9.]/g, ''))}
+                keyboardType="decimal-pad"
             />
 
-            <Text style={styles.title}>Total:</Text>
-            <InputText value={`$${total}`} editable={false} style={styles.input} />
+            <InputTextField
+                headerTitle="HST:"
+                value={hst}
+                onChangeText={(val) => setHst(val.replace(/[^0-9.]/g, ''))}
+                keyboardType="decimal-pad"
+            />
 
-            <Text style={styles.title}>Note:</Text>
-            <InputText value={note} onChangeText={setNote} style={styles.input} />
+            <InputTextField headerTitle='Total:' value={`$${total}`} editable={false} />
+
+            <InputTextField headerTitle='Note:' value={note} onChangeText={setNote} />
+
+            {hasChanges && (
+                <CustomButton
+                    title='Save Changes'
+                    variant="primary"
+                    onPressFunc={handleSaveChanges}
+                    width={150}
+                />
+            )}
 
             <View style={styles.footer}>
+
                 <Text style={styles.dateText}>Created on {new Date(item.creationDate).toLocaleDateString(
                     'en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
                 </Text>
@@ -133,11 +151,6 @@ function ItemDetails() {
                 </Pressable>
             </View>
 
-            {hasChanges && (
-                <TouchableOpacity style={styles.saveButton} onPress={handleSaveChanges}>
-                    <Text style={styles.saveText}>Save Changes</Text>
-                </TouchableOpacity>
-            )}
         </View>
     );
 }
@@ -145,58 +158,45 @@ function ItemDetails() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        alignItems: 'flex-start',
-        padding: 10,
-    },
-    title: {
-        fontSize: 15,
-        fontWeight: 'bold',
-        marginVertical: 3
+        marginTop: 10
     },
     separator: {
-        marginVertical: 30,
+        marginVertical: 3,
         height: 1,
         width: '80%',
     },
     footer: {
         position: 'absolute',
-        bottom: 10,
+        bottom: 0,
         width: '100%',
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
         paddingHorizontal: 20
     },
-    input: {
-        borderBottomWidth: 1,
-        padding: 10,
-        marginBottom: 15,
-        fontSize: 20,
-        letterSpacing: 0.5,
-        borderColor: '#ccc', 
-        borderWidth: 1, 
-        borderRadius: 8,
-    },
     saveText: {
-        // color: useThemeColor({}, 'text'), //! dont use hooks inside hooks/effects, this is not allowed and will throw errors 
         fontWeight: 'bold',
-
     },
     saveButton: {
         backgroundColor: Colors.light.tint,
         borderRadius: 20,
         width: 100,
-        height: 40, 
+        height: 40,
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.2,
         shadowRadius: 4,
-        justifyContent: 'center', 
-        alignItems: 'center', 
+        justifyContent: 'center',
+        alignItems: 'center',
         paddingVertical: 10
     },
     dateText: {
         fontSize: 15,
         color: '#888',
+    },
+    dropdownContainer: {
+        margin: 10,
+        width: '90%',
+        alignSelf: 'center',
     },
 });
