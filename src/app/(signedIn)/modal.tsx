@@ -1,14 +1,14 @@
 import { StatusBar } from 'expo-status-bar';
-import { Animated, Keyboard, Platform, StyleSheet, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
+import { Animated, Keyboard, Platform, StyleSheet, TouchableWithoutFeedback, Alert } from 'react-native';
 
 import { Text, View, InputText, Dropdown, AnimatedView } from '@/src/components/Themed';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { CurrencyInputField } from '../../components/CurrencyInputField';
 import { CrossPlatformDatePicker } from '../../components/CrossPlatformDatePicker';
 import DropdownComponent from '../../components/DropdownComponent';
 import { useEntriesStore } from '@/store/entriesStore';
-import { useRouter, Link } from 'expo-router'; // Import Link!
+import { useRouter } from 'expo-router'; // Import Link!
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '@/src/constants/Colors';
 import { useTaxStore } from "@/store/taxStore";
@@ -41,7 +41,6 @@ export default function ModalScreen() {
 	const [missingFields, setMissingFields] = useState({
 		itemName: false,
 		categorySelected: false,
-		subCategorySelected: false,
 	});
 
 	const provinceTax = taxRates[province] || { GST: 0, HST: 0, PST: 0 };
@@ -67,7 +66,6 @@ export default function ModalScreen() {
 	// pulse animation refs
 	const itemBorderAnim = useRef(new Animated.Value(0)).current;
 	const categoryBorderAnim = useRef(new Animated.Value(0)).current;
-	const subCategoryBorderAnim = useRef(new Animated.Value(0)).current;
 
 	// pulse border effect
 	function triggerPulseAnimation(animRef: Animated.Value) {
@@ -89,21 +87,32 @@ export default function ModalScreen() {
 		const newMissingFields = {
 			itemName: !itemName,
 			categorySelected: !categorySelected,
-			subCategorySelected: !subCategorySelected,
 		};
 		setMissingFields(newMissingFields);
 
-		if (newMissingFields.itemName) triggerPulseAnimation(itemBorderAnim);
+		if (newMissingFields.itemName) 
+			triggerPulseAnimation(itemBorderAnim);
 		if (newMissingFields.categorySelected)
 			triggerPulseAnimation(categoryBorderAnim);
-		if (newMissingFields.subCategorySelected)
-			triggerPulseAnimation(subCategoryBorderAnim);
-
+		
 		// if any fields are missing, prevent saving
 		if (Object.values(newMissingFields).includes(true)) {
-			alert("Please fill out all required fields before saving.");
+			let alertMessage = '';
+
+			if (newMissingFields.itemName) {
+				alertMessage += "Item name is required\n";
+			}
+			if (newMissingFields.categorySelected) {
+				alertMessage += "Category is required\n";
+			}
+
+			Alert.alert(
+				"Missing Information", // Or a more generic title
+				alertMessage.trim() // Remove trailing newline
+			);
 			return;
 		}
+
 		console.log("Saving entry...");
 		listStore.addEntry({
 			name: itemName,
@@ -117,10 +126,6 @@ export default function ModalScreen() {
 			note: itemNote
 		});
 		router.back();
-	}
-
-	function handleEditCategories() {
-		router.push("/categoryModal");
 	}
 
 	function getTotal() {
@@ -161,7 +166,7 @@ export default function ModalScreen() {
 					onChange={val => setDate(val)}
 					value={date}
 				/>
-
+				
 				<DropdownComponent
 					category={categorySelected}
 					subcategory={subCategorySelected}
@@ -212,10 +217,10 @@ export default function ModalScreen() {
 					</Text>
 				</View>
 
-				<View style={[styles.inputFieldContainer, { height: 100, alignItems: 'flex-start'} ]} lightColor='#fff' darkColor='#222'>
+				<View style={[styles.inputFieldContainer, { height: 100, alignItems: 'flex-start' }]} lightColor='#fff' darkColor='#222'>
 					<Text style={{ marginRight: 10, fontSize: 16 }}>Note:</Text>
 					<InputText
-						style={[styles.inputField, {textAlignVertical: 'top'}]}
+						style={[styles.inputField, { textAlignVertical: 'top' }]}
 						onChangeText={val => setItemNote(val)}
 						placeholder="Enter notes"
 						placeholderTextColor="#888"
