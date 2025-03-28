@@ -1,102 +1,125 @@
-import React, { useState } from 'react';
-import { StyleSheet } from 'react-native';
-import { Dropdown } from 'react-native-element-dropdown';
-import { categories } from '@/store/expenseListStore';
+import React, { useState, useEffect } from 'react';
+import { View, Dropdown } from '@/src/components/Themed';
+import { useEntriesStore } from '@/store/entriesStore';
+import { StyleSheet, Alert } from 'react-native';
 import Colors from '../constants/Colors';
-import { View, Text } from '@/src/components/Themed';
-import { useColorScheme } from '@/src/components/useColorScheme';
+import { useCategories } from '@/store/catStore';
+import { useRouter } from 'expo-router';
 
-const data = categories;
 
 type DropdownComponentProps = {
     category: string;
     subcategory: string;
-    onCategoryChange: (category: string) => void;
-    onSubcategoryChange: (subcategory: string) => void;
+    onCategoryChange: (value: string) => void;
+    onSubcategoryChange: (value: string) => void;
 };
+
+const ADD_NEW_CATEGORY_VALUE = '__ADD_NEW_CATEGORY__';
+const ADD_NEW_SUBCATEGORY_VALUE = '__ADD_NEW_SUBCATEGORY__';
 
 const DropdownComponent: React.FC<DropdownComponentProps> = ({
     category,
     subcategory,
     onCategoryChange,
-    onSubcategoryChange
+    onSubcategoryChange,
 }) => {
-    const theme = useColorScheme() ?? 'light';
+    const categories = useCategories((state) => state.categories);
+    const [isCategoryFocus, setIsCategoryFocus] = useState(false);
+    const [isSubcategoryFocus, setIsSubcategoryFocus] = useState(false);
+    const router = useRouter();
 
-    const [value, setValue] = useState(null);
-    const [isFocus, setIsFocus] = useState(false);
-    const [selectedCategory, setSelectedCategory] = useState('');
-    const [subcategories, setSubcategories] = useState<{ label: string; value: string }[]>([]);
-    const [selectedSubcategory, setSelectedSubcategory] = useState('');
 
-    // Dynamically set colors
-    const dropdownStyle = {
-        backgroundColor: Colors[theme].background,
-        borderColor: isFocus ? 'transparent' : 'transparent',
-    };
+    // --- Prepare category data with the "Add New" item ---
+    const categoryData = [
+        { label: '+ ADD NEW CATEGORY', value: ADD_NEW_CATEGORY_VALUE },
+        ...Object.keys(categories).map((cat) => ({
+            label: cat,
+            value: cat,
+        })),
+    ];
 
-    const textColor = Colors[theme].text;
-    const placeholderColor = theme === 'dark' ? '#bbb' : '#888';
+    // --- Prepare subcategory data with the "Add New" item (only if valid category selected) ---
+    const subcategoryData = (category && category !== ADD_NEW_CATEGORY_VALUE && categories[category])
+        ? [
+        { label: '+ ADD NEW SUBCATEGORY', value: ADD_NEW_SUBCATEGORY_VALUE },
+            ...categories[category].map((sub) => ({ label: sub, value: sub }))
+        ]
+        : [];
+
+    useEffect(() => {
+        // Reset subcategory if category changes or becomes invalid (or is the Add New placeholder)
+        if (category && category !== ADD_NEW_CATEGORY_VALUE && (!categories[category] || !categories[category]?.includes(subcategory))) {
+            onSubcategoryChange('');
+        } else if (category === ADD_NEW_CATEGORY_VALUE) {
+            onSubcategoryChange('');
+        }
+    }, [category, categories, subcategory, onSubcategoryChange]);
+
+    // Determine if the subcategory dropdown should be disabled (for the disable prop)
+    const isSubcategoryDisabled = !category || category === ADD_NEW_CATEGORY_VALUE || !categories[category];
 
     return (
-        <View style={[styles.container, { maxWidth: 400 }]}>
+        <View>
             {/* Category Dropdown */}
-            <View style={styles.dropdownContainer}>
-                <Dropdown
-                    style={[styles.dropdown, dropdownStyle]}
-                    placeholderStyle={[styles.placeholderStyle, { color: placeholderColor }]}
-                    selectedTextStyle={[styles.selectedTextStyle, { color: textColor }]}
-                    inputSearchStyle={[styles.inputSearchStyle, { backgroundColor: '#ccc', color: textColor }]}
-                    iconStyle={styles.iconStyle}
-                    data={Object.keys(data).map((key) => ({ label: key, value: key }))}
-                    search
-                    maxHeight={450}
-                    labelField="label"
-                    valueField="value"
-                    placeholder={selectedCategory ? selectedCategory : !isFocus ? 'Select category' : 'What is this expense for?'}
-                    searchPlaceholder="Search..."
-                    value={value}
-                    onFocus={() => setIsFocus(true)}
-                    onBlur={() => setIsFocus(false)}
-                    onChange={item => {
-                        setValue(item.value);
-                        setSelectedCategory(item.label);
-                        onCategoryChange(item.value);
-                        setSelectedSubcategory('');
-                        onSubcategoryChange('');
-                        setIsFocus(false);
-                        setSubcategories(categories[item.label].map(subcat => ({ label: subcat, value: subcat })));
-                    }}
-                />
-            </View>
+            <Dropdown
+                containerStyle={[styles.dropdown, isCategoryFocus && { borderColor: Colors.dark.tint }]} // Use separate focus state
+                data={categoryData}
+                search
+                maxHeight={300}
+                labelField="label"
+                valueField="value"
+                placeholder={!isCategoryFocus ? 'Select category or Add New' : '...'}
+                searchPlaceholder="Search..."
+                value={category}
+                onFocus={() => setIsCategoryFocus(true)}
+                onBlur={() => setIsCategoryFocus(false)}
+                onChange={item => {
+                    setIsCategoryFocus(false); // Close dropdown
+                    if (item.value === ADD_NEW_CATEGORY_VALUE) {
+                        router.push("/categoryModal");
+                        // Keep the previous category selected visually
+                    } else {
+                        onCategoryChange(item.value); // Normal category change
+                    }
+                }}
+                lightColor="#fff" // Set light/dark colors
+                darkColor="#222"
+                iconColor='#ccc'
+            />
+
             {/* Subcategory Dropdown */}
-            {selectedCategory && (
-                <View style={styles.dropdownContainer}>
-                <Dropdown
-                    style={[styles.dropdown, dropdownStyle]}
-                    placeholderStyle={[styles.placeholderStyle, { color: placeholderColor }]}
-                    selectedTextStyle={[styles.selectedTextStyle, { color: textColor }]}
-                    inputSearchStyle={[styles.inputSearchStyle, { backgroundColor: '#ccc', color: textColor }]}
-                    iconStyle={styles.iconStyle}
-                    data={subcategories}
-                    search
-                    maxHeight={450}
-                    labelField="label"
-                    valueField="value"
-                    placeholder={selectedSubcategory ? selectedSubcategory : !isFocus ? 'Select subcategory' : '...'}
-                    searchPlaceholder="Search..."
-                    value={value}
-                    onFocus={() => setIsFocus(true)}
-                    onBlur={() => setIsFocus(false)}
-                    onChange={item => {
-                        setValue(item.label);
-                        setSelectedSubcategory(item.label);
-                        onSubcategoryChange(item.value);
-                        setIsFocus(false);
-                    }}
-                />
-                </View>
-            )}
+            <Dropdown
+                containerStyle={[styles.dropdown, isSubcategoryFocus && { borderColor: Colors.dark.tint }]} // Use separate focus state
+                data={subcategoryData}
+                search
+                maxHeight={300}
+                labelField="label"
+                valueField="value"
+                placeholder={!isSubcategoryFocus ? 'Select subcategory or Add New' : '...'} // Updated placeholder
+                searchPlaceholder="Search..."
+                value={subcategory}
+                onFocus={() => setIsSubcategoryFocus(true)} // Use separate focus state setter
+                onBlur={() => setIsSubcategoryFocus(false)} // Use separate focus state setter
+                onChange={item => {
+                    setIsSubcategoryFocus(false); // Close dropdown
+                    if (item.value === ADD_NEW_SUBCATEGORY_VALUE) {
+                        if (category && category !== ADD_NEW_CATEGORY_VALUE) {
+                            router.push("/categoryModal");
+                        } else {
+                            // Alert user if they somehow clicked Add New without a valid category
+                            Alert.alert("Select Category", "Please select a valid category before adding a subcategory.");
+                        }
+                    } else {
+                        onSubcategoryChange(item.value); // Normal subcategory change
+                    }
+                }}
+
+                // DISABLE SUBCATEGORY DROPDOWN if no valid category is selected or data is empty
+                disable={isSubcategoryDisabled}
+                lightColor="#fff"
+                darkColor="#222"
+                iconColor='#ccc'
+            />
         </View>
     );
 };
@@ -104,46 +127,12 @@ const DropdownComponent: React.FC<DropdownComponentProps> = ({
 export default DropdownComponent;
 
 const styles = StyleSheet.create({
-    container: {
-
-    },
-    dropdownContainer: {
-        height: 40,
-        borderColor: '#ccc',
-        borderWidth: 1,
-        borderRadius: 8,
-        paddingHorizontal: 10,
-        marginBottom: 10,
-    },
     dropdown: {
-        height: 38,
+        height: 45,
         borderColor: '#ccc',
         borderWidth: 1,
         borderRadius: 8,
-        paddingHorizontal: 10,
+        paddingHorizontal: 8,
         marginBottom: 10,
-    },
-    label: {
-        position: 'absolute',
-        backgroundColor: 'gray',
-        left: 22,
-        top: 8,
-        zIndex: 9999,
-        // paddingHorizontal: 8,
-        fontSize: 16,
-    },
-    placeholderStyle: {
-        fontSize: 16,
-    },
-    selectedTextStyle: {
-        fontSize: 16,
-    },
-    iconStyle: {
-        width: 20,
-        height: 20,
-    },
-    inputSearchStyle: {
-        height: 40,
-        fontSize: 16,
     },
 });
