@@ -37,9 +37,9 @@ export default function AccountSetupScreen() {
         }
     }
 
-    useEffect(() => {
-        console.log(answers);
-    }, [answers]);
+    // useEffect(() => {
+    //     console.log(answers);
+    // }, [answers]);
 
     // require 50% scroll on the screen before moving to the next question
     const viewConfig = useRef({viewAreaCoveragePercentThreshold: 50 }).current; 

@@ -138,18 +138,8 @@ export default function ModalScreen() {
 			style={styles.container}
 		>
 			<View style={[styles.container]}>
-				<AnimatedView
-					style={[styles.inputFieldContainer,
-					{
-						borderColor: itemBorderAnim.interpolate({
-							inputRange: [0, 2],
-							outputRange: ['#ccc', 'red'],
-						}),
-						borderWidth: missingFields.itemName ? 2 : 1,
-					},
-					]}
-					lightColor="#fff"  // Set light/dark colors
-					darkColor="#222"
+				<View
+					style={[styles.inputFieldContainer, ]}
 				>
 
 					<Text style={{ marginRight: 10, fontSize: 16 }}>Item:</Text>
@@ -159,7 +149,7 @@ export default function ModalScreen() {
 						placeholder="Enter item name"
 						placeholderTextColor="#888"
 					/>
-				</AnimatedView>
+				</View>
 
 				<View style={styles.separator} lightColor="#fff" darkColor="#222" />
 				<CrossPlatformDatePicker
