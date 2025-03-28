@@ -21,6 +21,7 @@ export type ExpenseEntry = {
     hst: number;
     total: number;
     creationDate: string;
+    note: string;
 };
 
 type ExpenseListStore = {
