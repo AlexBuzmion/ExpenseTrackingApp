@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 import { View, Text, InputText } from '@/src/components/Themed';
+import { InputTextField } from './InputTextField';
 
 type CurrencyInputFieldProps = {
     value?: string;
@@ -51,10 +52,9 @@ export function CurrencyInputField( {value, onValidChange, inputTitle}: Currency
 
     return (
         <View style={styles.wrapper}>
-        <View style={styles.inputContainer} lightColor="#fff" darkColor="#222">
-            <Text style={styles.title}>{inputTitle}  </Text>
-            <Text style={styles.currencySymbol}>$</Text>
-            <InputText
+        <View lightColor="#fff" darkColor="#222">
+            <InputTextField
+                headerTitle={'$ ' + inputTitle}
                 style={styles.input}
                 keyboardType='decimal-pad'
                 value={textValue}

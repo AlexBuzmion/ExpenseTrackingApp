@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { Animated, Keyboard, Platform, StyleSheet, TouchableWithoutFeedback, Alert } from 'react-native';
+import { Animated, Keyboard, Platform, StyleSheet, TouchableWithoutFeedback, Alert, ScrollView } from 'react-native';
 
 import { Text, View, InputText, Dropdown, AnimatedView } from '@/src/components/Themed';
 
@@ -14,6 +14,7 @@ import Colors from '@/src/constants/Colors';
 import { useTaxStore } from "@/store/taxStore";
 import { useCategories } from '@/store/catStore';
 import CustomButton from '@/src/components/CustomButton';
+import { InputTextField } from '@/src/components/InputTextField';
 
 export default function ModalScreen() {
 
@@ -90,11 +91,11 @@ export default function ModalScreen() {
 		};
 		setMissingFields(newMissingFields);
 
-		if (newMissingFields.itemName) 
+		if (newMissingFields.itemName)
 			triggerPulseAnimation(itemBorderAnim);
 		if (newMissingFields.categorySelected)
 			triggerPulseAnimation(categoryBorderAnim);
-		
+
 		// if any fields are missing, prevent saving
 		if (Object.values(newMissingFields).includes(true)) {
 			let alertMessage = '';
@@ -137,98 +138,108 @@ export default function ModalScreen() {
 			onPress={Platform.OS !== 'web' ? () => Keyboard.dismiss() : undefined}
 			style={styles.container}
 		>
-			<View style={[styles.container]}>
-				<View
-					style={[styles.inputFieldContainer, ]}
-				>
+			<ScrollView style={[styles.container]}>
 
-					<Text style={{ marginRight: 10, fontSize: 16 }}>Item:</Text>
-					<InputText
-						style={styles.inputField}
+				<View style={{flex: 1}} lightColor='fff' darkColor='#222'>
+					
+					<View style={styles.separator} lightColor="#fff" darkColor="#222" />
+					<View style={styles.separator} lightColor="#fff" darkColor="#222" />
+					<View style={styles.separator} lightColor="#fff" darkColor="#222" />
+
+					<InputTextField
+						headerTitle='Item: '
+						value={itemName}
 						onChangeText={val => setItemName(val)}
-						placeholder="Enter item name"
-						placeholderTextColor="#888"
+						placeholder='Enter item name'
 					/>
-				</View>
 
-				<View style={styles.separator} lightColor="#fff" darkColor="#222" />
-				<CrossPlatformDatePicker
-					onChange={val => setDate(val)}
-					value={date}
-				/>
-				
-				<DropdownComponent
-					category={categorySelected}
-					subcategory={subCategorySelected}
-					onCategoryChange={val => setCategorySelected(val)}
-					onSubcategoryChange={val => setSubCategorySelected(val)}
-				/>
+					<View style={styles.separator} lightColor="#fff" darkColor="#222" />
 
-				<View style={styles.inputWrapper}>
-					<CurrencyInputField
-						value={subTotal}
-						onValidChange={val => {
-							setSubTotal(val)
-						}}
-						inputTitle='Subtotal'
-					/>
-				</View>
+					<View style={styles.marginHorizontal} lightColor='fff' darkColor='#222'>
+						<CrossPlatformDatePicker
+							onChange={val => setDate(val)}
+							value={date}
+						/>
+					</View>
 
-				<View style={styles.inputWrapper}>
-					<CurrencyInputField
-						value={hst.toString()}
-						onValidChange={val => setHst(val)}
-						inputTitle='Tax'
-					/>
-				</View>
+					<View style={styles.separator} lightColor="#fff" darkColor="#222" />
 
-				<View style={styles.provinceDropdownContainer} lightColor="#fff" darkColor="#222">
-					<Dropdown
-						style={styles.provinceDropdown}
-						data={provinceList}
-						labelField="label"
-						valueField="value"
-						placeholder="Select Province"
-						value={province}
-						onChange={item => setProvince(item.value)}
-						renderLeftIcon={() => (
-							<Ionicons name="filter" size={20} color="#ccc" style={{ marginRight: 8 }} />
-						)}
-						iconColor="#ccc"
-						lightColor="#fff"
-						darkColor="#222"
-					/>
-				</View>
+					<View style={styles.marginHorizontal} lightColor='fff' darkColor='#222'>
+						<DropdownComponent
+							category={categorySelected}
+							subcategory={subCategorySelected}
+							onCategoryChange={val => setCategorySelected(val)}
+							onSubcategoryChange={val => setSubCategorySelected(val)}
+						/>
+					</View>
+					
+					<View style={styles.inputWrapper}>
+						<CurrencyInputField
+							inputTitle='Subtotal: '
+							// value={'$ ' + subTotal}
+							onValidChange={val => {setSubTotal(val)}}
+						/>
+					</View>
 
-				<View style={styles.inputFieldContainer} lightColor="#fff" darkColor="#222">
-					<Text style={[styles.currencySymbol]}>TOTAL: </Text>
-					<Text style={[styles.currencySymbol]}>
-						$ {getTotal()}
-					</Text>
-				</View>
+					<View style={styles.inputWrapper}>
+						<CurrencyInputField
+							value={hst.toString()}
+							onValidChange={val => setHst(val)}
+							inputTitle='Tax: '
+						/>
+					</View>
 
-				<View style={[styles.inputFieldContainer, { height: 100, alignItems: 'flex-start' }]} lightColor='#fff' darkColor='#222'>
-					<Text style={{ marginRight: 10, fontSize: 16 }}>Note:</Text>
-					<InputText
-						style={[styles.inputField, { textAlignVertical: 'top' }]}
+					<View style={styles.separator} lightColor="#fff" darkColor="#222" />
+
+					<View style={styles.provinceDropdownContainer} lightColor="#fff" darkColor="#222">
+						<Dropdown
+							style={styles.provinceDropdown}
+							data={provinceList}
+							labelField="label"
+							valueField="value"
+							placeholder="Select Province"
+							value={province}
+							onChange={item => setProvince(item.value)}
+							renderLeftIcon={() => (
+								<Ionicons name="filter" size={20} color="#ccc" style={{ marginRight: 8 }} />
+							)}
+							iconColor="#ccc"
+							lightColor="#fff"
+							darkColor="#222"
+						/>
+					</View>
+
+					<View style={styles.separator} lightColor="#fff" darkColor="#222" />
+
+					<View style={styles.inputFieldContainer} lightColor="#fff" darkColor="#222">
+						<Text style={[styles.currencySymbol]}>TOTAL: </Text>
+						<Text style={[styles.currencySymbol]}>
+							$ {getTotal()}
+						</Text>
+					</View>
+
+					<View style={styles.separator} lightColor="#fff" darkColor="#222" />
+
+					<InputTextField
+						headerTitle='Note: '
+						value={itemNote}
 						onChangeText={val => setItemNote(val)}
-						placeholder="Enter notes"
-						placeholderTextColor="#888"
+						placeholder='Enter notes'
+					/>
+
+					{/* Use a light status bar on iOS to account for the black space above the modal */}
+					<StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
+					<CustomButton
+						title='Save'
+						onPressFunc={trySaveEntry}
+						variant="primary"
+						width={150}
+						height={60}
+						borderWidth={1}
+						margin={10}
 					/>
 				</View>
-
-				{/* Use a light status bar on iOS to account for the black space above the modal */}
-				<StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
-				<CustomButton
-					title='Save'
-					onPressFunc={trySaveEntry}
-					variant="primary"
-					width={150}
-					height={60}
-					borderWidth={1}
-					margin={10}
-				/>
-			</View>
+			</ScrollView>
 		</TouchableWithoutFeedback>
 	);
 }
@@ -236,8 +247,8 @@ export default function ModalScreen() {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		padding: 14,
-		marginTop: 40
+		//padding: 14,
+		//marginTop: 40
 	},
 	title: {
 		fontSize: 20,
@@ -247,6 +258,9 @@ const styles = StyleSheet.create({
 		marginVertical: 10,
 		height: 1,
 		width: '100%',
+	},
+	marginHorizontal: {
+		marginHorizontal: 18
 	},
 	inputField: {
 		flex: 1,
@@ -264,11 +278,11 @@ const styles = StyleSheet.create({
 		paddingHorizontal: 10,
 		maxWidth: '100%',
 		height: 50,
-		marginVertical: 10
+		marginVertical: 10,
+		marginHorizontal: 18
 	},
 	currencySymbol: {
 		fontSize: 16,
-
 	},
 	button: {
 		backgroundColor: Colors.light.tint,
@@ -288,7 +302,7 @@ const styles = StyleSheet.create({
 		borderRadius: 8,
 		justifyContent: 'center',
 		padding: 5,
-		marginTop: 10
+		marginHorizontal: 18
 	},
 	inputWrapper: {
 		justifyContent: 'center',

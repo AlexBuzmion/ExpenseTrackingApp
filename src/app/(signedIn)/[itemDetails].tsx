@@ -94,8 +94,9 @@ function ItemDetails() {
     }
 
     return (
-        <ScrollView contentContainerStyle={styles.scrollViewContent}>
+        <ScrollView>
           <DismissKeyboardView>
+            <View style={{flex: 1}} lightColor='fff' darkColor='#222'>
 
                 <View style={styles.separator} lightColor='fff' darkColor='#222' />
 
@@ -149,6 +150,7 @@ function ItemDetails() {
                         <Ionicons name="trash-outline" size={40} color="#ccc" />
                     </Pressable>
                 </View>
+            </View>
               </DismissKeyboardView>
         </ScrollView>
     );
@@ -158,9 +160,6 @@ const styles = StyleSheet.create({
     container: {
         marginTop: 10,
 
-    },
-    scrollViewContent: {
-        padding: 14
     },
     separator: {
         marginVertical: 10,
