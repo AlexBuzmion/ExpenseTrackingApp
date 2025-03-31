@@ -25,6 +25,11 @@ export default function ProfileScreen() {
             alert(error.message);
         }
     }
+    
+    function handleCategoriesPage()
+    {
+        router.push("/categoryModal");
+    }
 
     return (
         <View style={ styles.container }>
@@ -52,13 +57,24 @@ export default function ProfileScreen() {
                             </>
                         )
                     : (
-                        <CustomButton
-                            title="Logout"
-                            onPressFunc={logOut}
-                            variant="primary"
-                            borderWidth={1.5}
-                            margin={10}
-                        />
+                        <View>
+                            <CustomButton
+                                title="Logout"
+                                onPressFunc={logOut}
+                                variant="primary"
+                                borderWidth={1.5}
+                                margin={10}
+                            />
+    
+                            <CustomButton
+                                title="See all Categories"
+                                onPressFunc={handleCategoriesPage}
+                                variant="secondary"
+                                borderWidth={1.5}
+                                margin={10}
+                                width={200}
+                            />
+                        </View>
                     )
                 ) 
             }
