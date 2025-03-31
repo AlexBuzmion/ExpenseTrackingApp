@@ -238,6 +238,15 @@ export default function ModalScreen() {
 						borderWidth={1}
 						margin={10}
 					/>
+
+					<CustomButton
+						title='Cancel'
+						onPressFunc={() => router.back()}
+						variant="secondary"
+						width={150}
+						height={60}
+						borderWidth={1}
+					/>
 				</View>
 			</ScrollView>
 		</TouchableWithoutFeedback>

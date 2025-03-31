@@ -21,34 +21,28 @@ export default function CategoryEditor() {
     const router = useRouter();
     const setFirstTimeUser = useAuthStore((state) => state.setFirstTimeUser);
     const { categories, addCategory, deleteCategory, editCategory, addSubcategory, deleteSubcategory, editSubcategory, initCategories } = useCategories();
-    
+
     const [loading, setLoading] = useState(true);
     const [showCategoryModal, setShowCategoryModal] = useState(false);
     const [newCategoryName, setNewCategoryName] = useState('');
     const [showSubcategoryModal, setShowSubcategoryModal] = useState(false);
     const [newSubcategoryName, setNewSubcategoryName] = useState('');
     const [currentCategoryForSub, setCurrentCategoryForSub] = useState('');
-    
+
     //? this replaces the sections const, converts and stores the categories object from Record<string, string[]> to SectionData[]
     //? SectionData interface above includes control for collapse and showFooter on top of cats and subcats stored
-    const [sectionData, setSectionData] = useState<SectionData[]>(transformCatsToSectionData(categories)); 
+    const [sectionData, setSectionData] = useState<SectionData[]>(transformCatsToSectionData(categories));
 
     //? function to toggle collapse and showFooter for each section
-    const toggleSection = ( sectionTitle: string) => {
+    const toggleSection = (sectionTitle: string) => {
         setSectionData(prevSections =>
             prevSections.map(section =>
-              section.title === sectionTitle
-                ? { ...section, collapsed: !section.collapsed, showFooter: !section.showFooter }
-                : section
+                section.title === sectionTitle
+                    ? { ...section, collapsed: !section.collapsed, showFooter: !section.showFooter }
+                    : section
             )
         );
     }
-    
-    // const sections = Object.entries(categories).map(([cat, subcats]) => ({
-    //     title: cat,
-    //     data: subcats.map((sub) => ({ name: sub, category: cat })),
-    //     collapsed: true 
-    // }));
 
     useEffect(() => {
         const initialize = async () => {
@@ -133,32 +127,32 @@ export default function CategoryEditor() {
                 keyExtractor={(item, index) => item.category + item.name + index}
                 renderSectionHeader={({ section: { title, collapsed } }) => (
                     // Category Item
-                    <CategoryItem 
-                        category={title} 
-                        onCollapseButtonPress={() =>toggleSection(title)}
-                        collapse= { collapsed }
+                    <CategoryItem
+                        category={title}
+                        onCollapseButtonPress={() => toggleSection(title)}
+                        collapse={collapsed}
                     />
                 )}
-                
+
                 renderItem={({ item }) => (
                     // Subcategory Item
                     <SubcategoryItem category={item.category} subcategory={item.name}></SubcategoryItem>
                 )}
-                renderSectionFooter={({ section: { title, showFooter } }) => 
-                    showFooter ? 
-                    (
-                        <CustomButton 
-                            title={`Add more types for ${title}`}
-                            onPressFunc={() => promptAddSubcategory(title)}
-                            variant="secondary-alternative"
-                            height={45}
-                            borderWidth={0}
-                        />
-                        // <TouchableOpacity onPress={() => promptAddSubcategory(title)} style={{ marginLeft: 10, padding: 10, borderWidth: 1 }}>
-                        //     <Text style={styles.addSubCategoryButtonText} lightColor='blue' darkColor='#65beff'>add more types for {title}</Text>
-                        // </TouchableOpacity>
-                    ) 
-                    : null
+                renderSectionFooter={({ section: { title, showFooter } }) =>
+                    showFooter ?
+                        (
+                            <CustomButton
+                                title={`Add more types for ${title}`}
+                                onPressFunc={() => promptAddSubcategory(title)}
+                                variant="secondary-alternative"
+                                height={45}
+                                borderWidth={0}
+                            />
+                            // <TouchableOpacity onPress={() => promptAddSubcategory(title)} style={{ marginLeft: 10, padding: 10, borderWidth: 1 }}>
+                            //     <Text style={styles.addSubCategoryButtonText} lightColor='blue' darkColor='#65beff'>add more types for {title}</Text>
+                            // </TouchableOpacity>
+                        )
+                        : null
                 }
                 ListFooterComponent={
                     <CustomButton
@@ -172,20 +166,30 @@ export default function CategoryEditor() {
             />
 
             {/*Confirm Categories*/}
-            <View style={{ alignItems: 'center', justifyContent: 'center', marginVertical: 20 }} lightColor="#fff" darkColor="#222">
+            <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginVertical: 20 }} lightColor="#fff" darkColor="#222">
                 <CustomButton
-                title="Confirm Categories"
-                onPressFunc={handleConfirm}
-                variant="primary"
-                width={200}
-                textStyle={{ fontSize: 18 }}
+                    title='Cancel'
+                    onPressFunc={() => router.back()}
+                    variant="secondary"
+                    width={150}
+                    height={60}
+                    borderWidth={1}
                 />
+                
+                <CustomButton
+                    title="Confirm Categories"
+                    onPressFunc={handleConfirm}
+                    variant="primary"
+                    width={200}
+                    textStyle={{ fontSize: 18 }}
+                />
+
             </View>
-            
+
             {/*Adding a New Category*/}
             <Modal visible={showCategoryModal} transparent animationType="slide">
                 <View style={styles.promptBackgroundView}>
-                    <View style={styles.inputFieldBackgroundView}  lightColor="#fff" darkColor="#222">
+                    <View style={styles.inputFieldBackgroundView} lightColor="#fff" darkColor="#222">
                         <Text style={{ fontWeight: 'bold' }}>Enter new category name:</Text>
                         <InputText value={newCategoryName} onChangeText={setNewCategoryName} placeholder="Category name" style={styles.inputField} />
                         <View style={styles.promptButtonView}>
@@ -215,8 +219,8 @@ export default function CategoryEditor() {
 
 const styles = StyleSheet.create({
     promptButtonView: {
-        flexDirection: 'row', 
-        justifyContent: 'space-around', 
+        flexDirection: 'row',
+        justifyContent: 'space-around',
         backgroundColor: 'transparent'
     },
     confirmButton: {
@@ -239,13 +243,13 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         flexDirection: 'row',
         justifyContent: 'space-between',
-        alignItems: 'center', 
-        marginLeft: 30, 
-        padding: 5, 
-        marginBottom: 5, 
+        alignItems: 'center',
+        marginLeft: 30,
+        padding: 5,
+        marginBottom: 5,
     },
     catTitle: {
-        fontWeight: 'bold', 
+        fontWeight: 'bold',
         fontSize: 16,
         marginLeft: 5
     },
@@ -253,11 +257,11 @@ const styles = StyleSheet.create({
         marginLeft: 5
     },
     addCategoryButton: {
-        padding: 10, 
-        backgroundColor: '#e6cff2', 
+        padding: 10,
+        backgroundColor: '#e6cff2',
         borderRadius: 8,
-        alignItems: 'center', 
-        marginTop: 10 
+        alignItems: 'center',
+        marginTop: 10
     },
     addCategoryButtonText: {
         fontWeight: 'bold',
@@ -269,22 +273,22 @@ const styles = StyleSheet.create({
         fontSize: 12,
     },
     inputField: {
-        borderWidth: 1, 
-        borderColor: 'gray', 
+        borderWidth: 1,
+        borderColor: 'gray',
         marginVertical: 10,
         padding: 10
     },
     promptBackgroundView: {
-        flex: 1, 
-        justifyContent: 'center', 
+        flex: 1,
+        justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: 'rgba(0,0,0,0.5)'
     },
     inputFieldBackgroundView: {
-        width: '80%', 
-        padding: 20, 
+        width: '80%',
+        padding: 20,
         borderRadius: 10,
-        borderWidth: 1, 
+        borderWidth: 1,
         borderColor: 'gray'
     },
 });
