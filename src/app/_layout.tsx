@@ -84,8 +84,9 @@ function RootLayoutNav() {
     
     getAuth().onAuthStateChanged(onAuthStateChanged);
     async function onAuthStateChanged(user: any) {
-        console.log("user", user);
-        const FTU = await useAuthStore.getState().initFirstTimeUser();
+        const FTU = await useAuthStore.getState().initFirstTimeUser()
+        console.log('FTU', useAuthStore.getState().firstTimeUser);
+    
         if (user) {
             // user is signed in (either anonymous or not)
             // setUser(user.uid);
@@ -99,7 +100,6 @@ function RootLayoutNav() {
             router.replace('/(1signedOut)');
         }
     }
-    //todo: update this to firebase to store the auth state
 
     return (
         <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>

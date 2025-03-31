@@ -17,10 +17,8 @@ export default function LoginScreen() {
     const [password, setPassword] = useState('');
     const [passwordVisibillity, setPasswordVisibillity] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const isSignedIn = useAuthStore(state => state.signedIn);
-    const setSignedIn = useAuthStore((state) => state.setSignedIn);
+    const isFirstTime = useAuthStore(state => state.firstTimeUser);
     const firebaseAuth = getAuth(getApp());
-
     const refToPass = useRef<TextInput>(null);
 
     async function handleLogin() {
@@ -29,8 +27,9 @@ export default function LoginScreen() {
             await signInWithEmailAndPassword(firebaseAuth, email, password);
             const userVerified = getAuth().currentUser?.emailVerified;
             if(!userVerified) throw new Error('email not verified');
-            setSignedIn(!isSignedIn);
             alert(`Hello! ${firebaseAuth.currentUser?.displayName}`);
+            console.log(`isFirstTimeUser ${isFirstTime}`);
+            isFirstTime ? router.replace('/(onboarding)/onboarding') : router.replace('/(signedIn)');
             // console.log(firebaseAuth.currentUser);
         } catch (error: any) {
             alert(error.message);
@@ -77,7 +76,7 @@ export default function LoginScreen() {
                             />
                             <CustomButton
                                 title="Cancel"
-                                onPressFunc={() =>router.navigate('/(signedIn)/(tabs)/profile')}
+                                onPressFunc={() =>router.navigate('/(1signedOut)')}
                                 variant="secondary-inverted"
                             />
                         </>

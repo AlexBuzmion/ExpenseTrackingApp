@@ -24,9 +24,9 @@ const  SignupScreen = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [passwordVisibillity, setPasswordVisibillity] = useState(false);
 
-    const refToEmail = useRef<TextInput>(null); 
-    const refToPass = useRef<TextInput>(null);
-    const refToConfirmPass = useRef<TextInput>(null);
+    const refToEmail = useRef<any>(null); 
+    const refToPass = useRef<any>(null);
+    const refToConfirmPass = useRef<any>(null);
 
     async function handleSignup(){
         setIsLoading(true);
@@ -144,7 +144,7 @@ const  SignupScreen = () => {
                         />
                         <CustomButton
                                 title="Cancel"
-                                onPressFunc={() =>router.back()}
+                                onPressFunc={() =>router.navigate('/(1signedOut)')}
                                 variant="secondary-inverted"
                             />
                     </>
