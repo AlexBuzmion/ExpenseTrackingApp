@@ -76,7 +76,7 @@ export default function LoginScreen() {
                             />
                             <CustomButton
                                 title="Cancel"
-                                onPressFunc={() =>router.navigate('/(1signedOut)')}
+                                onPressFunc={() =>router.navigate('/(signedOut)')}
                                 variant="secondary-inverted"
                             />
                         </>
