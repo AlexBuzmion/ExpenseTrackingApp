@@ -5,7 +5,7 @@ import Colors from "@/src/constants/Colors";
 import { useRef, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import {getApp} from "@firebase/app";
-import { getAuth , createUserWithEmailAndPassword, updateProfile, sendEmailVerification} from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, updateProfile, sendEmailVerification } from "firebase/auth";
 import { getFirestore, doc, setDoc, collection, addDoc, getDoc } from "firebase/firestore";
 import { useTaxStore } from "@/store/taxStore";
 import DismissKeyboardView from "@/src/components/DismissKeyboardView";
@@ -87,7 +87,26 @@ const  SignupScreen = () => {
         if (password !== confirmPassword) {
             return "Passwords do not match.";
         }
-        // Add more checks as needed (e.g., uppercase, lowercase, numbers, special characters)
+
+        // Regex checks
+        const uppercaseRegex = /[A-Z]/;
+        const lowercaseRegex = /[a-z]/;
+        const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/;  // Expanded special characters
+        const numericRegex = /[0-9]/;
+
+        if (!uppercaseRegex.test(password)) {
+            return "Password must contain at least one uppercase character.";
+        }
+        if (!lowercaseRegex.test(password)) {
+            return "Password must contain at least one lowercase character.";
+        }
+        if (!specialCharRegex.test(password)) {
+            return "Password must contain at least one special character. Ex.: !@#$%^&*(),.?\":{}|<>";
+        }
+        if (!numericRegex.test(password)) {
+            return "Password must contain at least one numeric character.";
+        }
+
         return ''; // Password is valid
     }
 
