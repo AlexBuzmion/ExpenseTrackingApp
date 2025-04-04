@@ -35,7 +35,7 @@ export default function ModalScreen() {
 	const [subCategorySelected, setSubCategorySelected] = useState("");
 	const [subTotal, setSubTotal] = useState("0.00");
 	const [hst, setHst] = useState("0.00");
-	const [province, setProvince] = useState("Ontario");
+	const [province, setProvince] = useState("ON");
 	const [itemNote, setItemNote] = useState("");
 
 	// track errors (missing fields)
@@ -140,29 +140,22 @@ export default function ModalScreen() {
 		>
 			<ScrollView style={[styles.container]}>
 
-				<View style={{flex: 1}} lightColor='fff' darkColor='#222'>
+				<View style={{flex: 1, marginTop: 50}} lightColor='fff' darkColor='#222'>
 					
-					<View style={styles.separator} lightColor="#fff" darkColor="#222" />
-					<View style={styles.separator} lightColor="#fff" darkColor="#222" />
-					<View style={styles.separator} lightColor="#fff" darkColor="#222" />
-
 					<InputTextField
-						headerTitle='Item: '
+						headerTitle='Item:'
 						value={itemName}
 						onChangeText={val => setItemName(val)}
 						placeholder='Enter item name'
 					/>
 
-					<View style={styles.separator} lightColor="#fff" darkColor="#222" />
-
 					<View style={styles.marginHorizontal} lightColor='fff' darkColor='#222'>
+						<Text style={styles.title}>Transaction Date: </Text>
 						<CrossPlatformDatePicker
 							onChange={val => setDate(val)}
 							value={date}
 						/>
 					</View>
-
-					<View style={styles.separator} lightColor="#fff" darkColor="#222" />
 
 					<View style={styles.marginHorizontal} lightColor='fff' darkColor='#222'>
 						<DropdownComponent
@@ -173,52 +166,40 @@ export default function ModalScreen() {
 						/>
 					</View>
 					
-					<View style={styles.inputWrapper}>
+					<View>
 						<CurrencyInputField
-							inputTitle='Subtotal: '
+							inputTitle='Subtotal:'
 							// value={'$ ' + subTotal}
 							onValidChange={val => {setSubTotal(val)}}
 						/>
 					</View>
 
-					<View style={styles.inputWrapper}>
-						<CurrencyInputField
-							value={hst.toString()}
-							onValidChange={val => setHst(val)}
-							inputTitle='Tax: '
-						/>
+					<View style={[{flexDirection: 'row', alignItems: 'flex-end', marginHorizontal: '2.5%'}]}>
+						<View style={{flex: .74, }}>
+							<CurrencyInputField
+								value={hst.toString()}
+								onValidChange={val => setHst(val)}
+								inputTitle='Tax: '
+							/>
+						</View>
+						<View style={[styles.provinceDropdownContainer, {flex: .2,}]} lightColor="#fff" darkColor="#222">
+							<Dropdown
+								data={provinceList}
+								labelField="label"
+								valueField="value"
+								placeholder="Province"
+								value={province}
+								onChange={item => setProvince(item.value)}
+							/>
+						</View>
 					</View>
-
-					<View style={styles.separator} lightColor="#fff" darkColor="#222" />
-
-					<View style={styles.provinceDropdownContainer} lightColor="#fff" darkColor="#222">
-						<Dropdown
-							style={styles.provinceDropdown}
-							data={provinceList}
-							labelField="label"
-							valueField="value"
-							placeholder="Select Province"
-							value={province}
-							onChange={item => setProvince(item.value)}
-							renderLeftIcon={() => (
-								<Ionicons name="filter" size={20} color="#ccc" style={{ marginRight: 8 }} />
-							)}
-							iconColor="#ccc"
-							lightColor="#fff"
-							darkColor="#222"
-						/>
-					</View>
-
-					<View style={styles.separator} lightColor="#fff" darkColor="#222" />
 
 					<View style={styles.inputFieldContainer} lightColor="#fff" darkColor="#222">
-						<Text style={[styles.currencySymbol]}>TOTAL: </Text>
+						<Text style={[styles.currencySymbol, {fontWeight: 'bold'}]}>Total: </Text>
 						<Text style={[styles.currencySymbol]}>
 							$ {getTotal()}
 						</Text>
 					</View>
-
-					<View style={styles.separator} lightColor="#fff" darkColor="#222" />
 
 					<InputTextField
 						headerTitle='Note: '
@@ -233,19 +214,12 @@ export default function ModalScreen() {
 						title='Save'
 						onPressFunc={trySaveEntry}
 						variant="primary"
-						width={150}
-						height={60}
-						borderWidth={1}
-						margin={10}
 					/>
 
 					<CustomButton
 						title='Cancel'
 						onPressFunc={() => router.back()}
 						variant="secondary"
-						width={150}
-						height={60}
-						borderWidth={1}
 					/>
 				</View>
 			</ScrollView>
@@ -260,80 +234,35 @@ const styles = StyleSheet.create({
 		//marginTop: 40
 	},
 	title: {
-		fontSize: 20,
-		fontWeight: 'bold',
-	},
-	separator: {
-		marginVertical: 10,
-		height: 1,
-		width: '100%',
+		fontSize: 16,
+		fontWeight: '500'
 	},
 	marginHorizontal: {
-		marginHorizontal: 18
-	},
-	inputField: {
-		flex: 1,
-		fontSize: 16,
-		paddingVertical: 10,
-		paddingHorizontal: 8,
-		height: '100%'
+		marginHorizontal: '8%'
 	},
 	inputFieldContainer: {
+		marginLeft: '8%',
 		flexDirection: 'row',
 		alignItems: 'center',
 		borderColor: '#ccc',
-		borderWidth: 1,
+		borderWidth: 1.5,
 		borderRadius: 8,
 		paddingHorizontal: 10,
-		maxWidth: '100%',
-		height: 50,
+		maxWidth: '84%',
+		height: Platform.OS === 'ios' ? 60 : 50,
 		marginVertical: 10,
 		marginHorizontal: 18
 	},
 	currencySymbol: {
 		fontSize: 16,
 	},
-	button: {
-		backgroundColor: Colors.light.tint,
-		borderRadius: 20,
-		width: 100,
-		height: 40,
-		justifyContent: 'center',
-		alignItems: 'center'
-	},
-	provinceDropdown: {
-		height: '100%',
-	},
 	provinceDropdownContainer: {
-		height: 45,
+		height: Platform.OS === 'ios' ? 60 : 50,
 		borderColor: '#ccc',
-		borderWidth: 1,
+		borderWidth: 1.5,
 		borderRadius: 8,
 		justifyContent: 'center',
 		padding: 5,
-		marginHorizontal: 18
-	},
-	inputWrapper: {
-		justifyContent: 'center',
-		marginTop: 10,
-	},
-	addCategoryButton: {
-		backgroundColor: Colors.light.tint,
-		borderRadius: 20,
-		width: 120,
-		height: 40,
-		justifyContent: 'center',
-		alignItems: 'center',
-		alignSelf: 'center',
-		marginVertical: 10,
-	},
-	addCategoryButtonText: {
-		color: Colors.dark.tint,
-		fontWeight: 'bold',
-	},
-	saveButtonText: {
-		color: Colors.dark.tint,
-		fontSize: 16,
-		fontWeight: 'bold',
+		marginBottom: '1.4%'
 	},
 });

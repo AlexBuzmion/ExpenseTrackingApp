@@ -18,11 +18,32 @@ export const useTaxStore = create<TaxRatesStore>((set) => ({
             const docSnap = await getDoc(docRef);
             if (docSnap.exists()) {
                 const data = docSnap.data() as Record<string, { GST: number; HST: number; PST: number }>;
-                // Object.entries(data).forEach((item) => {
-
-                // })
-                set({ taxRates: data });
-                return data;
+                const provinceAcronyms: Record<string, string> = {
+                    "Alberta": "AB",
+                    "British Columbia": "BC",
+                    "Manitoba": "MB",
+                    "New Brunswick": "NB",
+                    "Newfoundland & Labrador": "NL",
+                    "Northwest Territories": "NT",
+                    "Nova Scotia": "NS",
+                    "Nunavut": "NU",
+                    "Ontario": "ON",
+                    "Prince Edward Island": "PE", // or "PEI" if preferred
+                    "Quebec": "QC",
+                    "Saskatchewan": "SK",
+                    "Yukon": "YT"
+                };
+        
+                // Transform the data keys to acronyms
+                const transformedData: Record<string, { GST: number; HST: number; PST: number }> = {};
+                for (const [province, rates] of Object.entries(data)) {
+                    const acronym = provinceAcronyms[province] || province;
+                    transformedData[acronym] = rates;
+                }
+        
+                console.log("Fetched provincial tax rates:", transformedData);
+                set({ taxRates: transformedData });
+                return transformedData;
             }
             return {};
         } catch (error: any) {

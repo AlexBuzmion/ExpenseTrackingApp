@@ -68,31 +68,34 @@ export default function AnalyticsScreen() {
                         </View>
 
                         {!customDateRangeEnabled && (
-                            <View style={{marginTop: 10}}>
-                                <Text>Month:</Text>
-                                <View style={styles.dropdownContainer}>
-                                    <Dropdown
-                                    style={styles.dropdown}
-                                        data={months}
-                                        labelField="label"
-                                        valueField="value"
-                                        placeholder="Select Month"
-                                        value={selectedMonth}
-                                        onChange={item => setSelectedMonth(item.value)}
-                                    />
+                            <View style={{marginTop: 10, flexDirection: 'row'}}>
+                                <View style={{flex: .5}}>
+                                    <Text>Month:</Text>
+                                    <View style={styles.dropdownContainer}>
+                                        <Dropdown
+                                            style={styles.dropdown}
+                                            data={months}
+                                            labelField="label"
+                                            valueField="value"
+                                            placeholder="Select Month"
+                                            value={selectedMonth}
+                                            onChange={item => setSelectedMonth(item.value)}
+                                        />
+                                    </View>
                                 </View>
-
-                                <Text>Year:</Text>
-                                <View style={styles.dropdownContainer}>
-                                    <Dropdown
-                                    style={styles.dropdown}
-                                        data={years}
-                                        labelField="label"
-                                        valueField="value"
-                                        placeholder="Select Year"
-                                        value={selectedYear}
-                                        onChange={item => setSelectedYear(item.value)}
-                                    />
+                                <View style={{flex: .5}}>
+                                    <Text>Year:</Text>
+                                    <View style={styles.dropdownContainer}>
+                                        <Dropdown
+                                            style={styles.dropdown}
+                                            data={years}
+                                            labelField="label"
+                                            valueField="value"
+                                            placeholder="Select Year"
+                                            value={selectedYear}
+                                            onChange={item => setSelectedYear(item.value)}
+                                        />
+                                    </View>
                                 </View>
                             </View>
                         )}
@@ -172,7 +175,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         padding: 5,
         height: 40,
-        width: 250,
+        width: "auto",
     },
     dropdown: {
         height: '100%',

@@ -41,65 +41,68 @@ export function CrossPlatformDatePicker({ value, onChange }: CrossPlatformDatePi
 
     return (
         <View style={[styles.inputContainer, styles.wrapper]}>
-            {Platform.OS === 'web' ? (
-                <DatePicker
-                    selected={date}
-                    onChange={(selectedDate) => {
-                        setDate(selectedDate || new Date()); // Update local state
-                        if (onChange) onChange(selectedDate || new Date()); // Pass to parent
-                    }}
-                    dateFormat='yyyy-MM-dd'
-                    className='custom-datepicker'
-                    popperPlacement='bottom-start'
-                    showPopperArrow={false}
-                    portalId='root'
-                    calendarContainer={({ children }) => (
-                        <div style={{ position: 'absolute', zIndex: 9999, backgroundColor: 'gray' }}>{children}</div>
-                    )}
-                />
-            ) : (
-                // mobile (iOS/Android) uses native DateTimePicker
-                <>
+            {Platform.OS === 'ios' && (
+            // iOS: Render inline DateTimePicker (no toggle needed)
+            <DateTimePicker
+                style= {{ height: 44}}
+                mode="date"
+                display="compact"
+                value={date}
+                onChange={onChangeDate}
+            />
+            )}
+            {Platform.OS === 'web' && (
+            // Web: Use the custom DatePicker
+            <DatePicker
+                selected={date}
+                onChange={(selectedDate) => {
+                const newDate = selectedDate || new Date();
+                setDate(newDate);
+                if (onChange) onChange(newDate);
+                }}
+                dateFormat="yyyy-MM-dd"
+                className="custom-datepicker"
+                popperPlacement="bottom-start"
+                showPopperArrow={false}
+                portalId="root"
+                calendarContainer={({ children }) => (
+                <div style={{ position: 'absolute', zIndex: 9999, backgroundColor: 'gray' }}>
+                    {children}
+                </div>
+                )}
+            />
+            )}
+            {Platform.OS === 'android' && (
+            // Android: Render a toggle button, then conditionally render the DateTimePicker
+            <>
                 <TouchableOpacity onPress={toggleDatePickerVisibility}>
-                    <Text>{date.toDateString()}</Text>
+                <Text>{date.toDateString()}</Text>
                 </TouchableOpacity>
-
                 {dateVisibility && (
-                    <DateTimePicker
-                    mode='date'
-                    display={Platform.OS === 'ios' ? 'compact' : 'spinner'}
-                    
+                <DateTimePicker
+                    mode="date"
+                    display="compact"
                     value={date}
                     onChange={onChangeDate}
-                    />
+                />
                 )}
-
-                {dateVisibility && Platform.OS === 'ios' && (
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
-                    <TouchableOpacity style={{ padding: 10 }} onPress={toggleDatePickerVisibility}>
-                        <Text>Cancel</Text>
-                    </TouchableOpacity>
-                    {/* <TouchableOpacity style={{ padding: 10 }} onPress={confirmDateIOS}>
-                        <Text>Confirm</Text>
-                    </TouchableOpacity> */}
-                    </View>
-                )}
-                </>
+            </>
             )}
         </View>
     );
+      
 }
 
 const styles = StyleSheet.create({
     wrapper: {
-        height: 40,
+        height: Platform.OS === 'ios' ? 56 : 46,
         marginBottom: 10,
     },
     inputContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         borderColor: '#ccc',
-        borderWidth: 1,
+        borderWidth: 1.5,
         borderRadius: 8,
         paddingHorizontal: 10,
         maxWidth: 150,
