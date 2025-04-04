@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
         borderColor: '#ccc',
     },
     input: {
-        // flex: 1,
+        flex: 1,
         // padding: 10,
         height: Platform.OS === 'ios' ? 56 : 46,
         fontSize: 16,
