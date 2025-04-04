@@ -1,9 +1,11 @@
 import React, { useState, useMemo } from 'react';
-import { StyleSheet, ScrollView, Switch } from 'react-native';
+import { StyleSheet, ScrollView, TouchableOpacity, useColorScheme } from 'react-native';
 import { View, Text, Dropdown } from '@/src/components/Themed';
 import CategoryPieChart from '@/src/components/CategoryPieChart';
 import { CrossPlatformDatePicker } from '@/src/components/CrossPlatformDatePicker';
 import { endOfDay, startOfDay, getMonth, getYear } from 'date-fns';
+import { Ionicons } from '@expo/vector-icons';
+import { Colors } from 'react-native/Libraries/NewAppScreen';
 
 export default function AnalyticsScreen() {
     const [startDate, setStartDate] = useState(startOfDay(new Date()));
@@ -55,13 +57,11 @@ export default function AnalyticsScreen() {
                 <Text style={styles.title}>Expense Analytics</Text>
 
                 <View style={styles.filterContainer}>
-                    <View style={styles.switchContainer}>
+                    
+                        <TouchableOpacity style={styles.switchContainer} onPress={() => setCustomDateRangeEnabled(!customDateRangeEnabled)}>
                         <Text style={styles.switchLabel}>Custom Date Range:</Text>
-                        <Switch
-                            value={customDateRangeEnabled}
-                            onValueChange={setCustomDateRangeEnabled}
-                        />
-                    </View>
+                            <Ionicons name={customDateRangeEnabled ? 'radio-button-on' : 'radio-button-off'} size={20} color={ useColorScheme() === 'light' ? Colors.light.tint : "#fff"}></Ionicons>
+                        </TouchableOpacity>
 
                     {!customDateRangeEnabled && (
                         <View style={styles.dateSelectContainer}>
@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 4,
-        elevation: 3,
+        height: 40,
     },
     switchLabel: {
         fontSize: 16,

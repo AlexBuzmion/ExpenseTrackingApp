@@ -102,6 +102,7 @@ interface CustomButtonProps {
     buttonStyle?: StyleProp<ViewStyle>;
     textStyle?: StyleProp<TextStyle>;
     disabled?: boolean
+    children?: React.ReactNode;
 }
 
 const CustomButton: FC<CustomButtonProps> = ({
