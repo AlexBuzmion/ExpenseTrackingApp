@@ -164,13 +164,13 @@ function getRandomColor() {
 const styles = StyleSheet.create({
     container: {
         alignItems: 'center',
-        paddingTop: 20,
+        paddingTop: 1,
     },
     legend: {
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'center',
-        marginTop: 20,
+        marginTop: 1,
     },
     legendItem: {
         flexDirection: 'row',

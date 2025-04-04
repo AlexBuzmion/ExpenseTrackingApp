@@ -6,8 +6,8 @@ import { CrossPlatformDatePicker } from '@/src/components/CrossPlatformDatePicke
 import { endOfDay, startOfDay, getMonth, getYear } from 'date-fns';
 
 export default function AnalyticsScreen() {
-    const [startDate, setStartDate] = useState(startOfDay(new Date())); // Initial start date
-    const [endDate, setEndDate] = useState(endOfDay(new Date()));     // Initial end date
+    const [startDate, setStartDate] = useState(startOfDay(new Date()));
+    const [endDate, setEndDate] = useState(endOfDay(new Date()));
     const [selectedMonth, setSelectedMonth] = useState('');
     const [selectedYear, setSelectedYear] = useState('');
     const [customDateRangeEnabled, setCustomDateRangeEnabled] = useState(false);
@@ -31,7 +31,7 @@ export default function AnalyticsScreen() {
 
     const years = useMemo(() => {
         const currentYear = new Date().getFullYear();
-        const startYear = currentYear - 10;  // Show last 10 years
+        const startYear = currentYear - 10;
         const yearOptions = [];
         for (let year = currentYear; year >= startYear; year--) {
             yearOptions.push({ label: String(year), value: String(year) });
@@ -39,7 +39,6 @@ export default function AnalyticsScreen() {
         return yearOptions;
     }, []);
 
-    // Function to calculate key for CategoryPieChart
     const getKey = () => {
         if (customDateRangeEnabled) {
             return `custom-${startDate.toISOString()}-${endDate.toISOString()}`;
@@ -51,135 +50,164 @@ export default function AnalyticsScreen() {
     };
 
     return (
-        <View>
+        <View style={styles.container}>
             <ScrollView contentContainerStyle={styles.scrollContainer}>
-                <View style={styles.container}>
-                    <Text style={styles.title}>Expense Analytics</Text>
+                <Text style={styles.title}>Expense Analytics</Text>
 
-                    <View style={styles.filterContainer}>
-                        <Text style={styles.subtitle}>Filter by:</Text>
+                <View style={styles.filterContainer}>
+                    <View style={styles.switchContainer}>
+                        <Text style={styles.switchLabel}>Custom Date Range:</Text>
+                        <Switch
+                            value={customDateRangeEnabled}
+                            onValueChange={setCustomDateRangeEnabled}
+                        />
+                    </View>
 
-                        <View style={styles.switchContainer}>
-                            <Text>Custom Date Range:</Text>
-                            <Switch
-                                value={customDateRangeEnabled}
-                                onValueChange={setCustomDateRangeEnabled}
-                            />
-                        </View>
-
-                        {!customDateRangeEnabled && (
-                            <View style={{marginTop: 10, flexDirection: 'row'}}>
-                                <View style={{flex: .5}}>
-                                    <Text>Month:</Text>
-                                    <View style={styles.dropdownContainer}>
-                                        <Dropdown
-                                            style={styles.dropdown}
-                                            data={months}
-                                            labelField="label"
-                                            valueField="value"
-                                            placeholder="Select Month"
-                                            value={selectedMonth}
-                                            onChange={item => setSelectedMonth(item.value)}
-                                        />
-                                    </View>
-                                </View>
-                                <View style={{flex: .5}}>
-                                    <Text>Year:</Text>
-                                    <View style={styles.dropdownContainer}>
-                                        <Dropdown
-                                            style={styles.dropdown}
-                                            data={years}
-                                            labelField="label"
-                                            valueField="value"
-                                            placeholder="Select Year"
-                                            value={selectedYear}
-                                            onChange={item => setSelectedYear(item.value)}
-                                        />
-                                    </View>
+                    {!customDateRangeEnabled && (
+                        <View style={styles.dateSelectContainer}>
+                            <View style={styles.dateOption}>
+                                <Text style={styles.dateLabel}>Month:</Text>
+                                <View style={styles.dropdownContainer}>
+                                    <Dropdown
+                                        style={styles.dropdown}
+                                        data={months}
+                                        labelField="label"
+                                        valueField="value"
+                                        placeholder="Select Month"
+                                        value={selectedMonth}
+                                        onChange={item => setSelectedMonth(item.value)}
+                                    />
                                 </View>
                             </View>
-                        )}
 
-                        {customDateRangeEnabled && (
-                            <View style={styles.datePickerContainer}>
+                            <View style={styles.dateOption}>
+                                <Text style={styles.dateLabel}>Year:</Text>
+                                <View style={styles.dropdownContainer}>
+                                    <Dropdown
+                                        style={styles.dropdown}
+                                        data={years}
+                                        labelField="label"
+                                        valueField="value"
+                                        placeholder="Select Year"
+                                        value={selectedYear}
+                                        onChange={item => setSelectedYear(item.value)}
+                                    />
+                                </View>
+                            </View>
+                        </View>
+                    )}
+
+                    {customDateRangeEnabled && (
+                        <View style={styles.dateSelectContainer}>
+                            <View>
+                                <Text style={styles.dateLabel}>Start Date:</Text>
                                 <CrossPlatformDatePicker
                                     value={startDate}
                                     onChange={(date) => setStartDate(startOfDay(date))}
                                 />
+                            </View>
+                            <View>
+                                <Text style={styles.dateLabel}>End Date:</Text>
                                 <CrossPlatformDatePicker
                                     value={endDate}
-                                    onChange={(date) => setEndDate(endOfDay(date))} // Set to end of day
+                                    onChange={(date) => setEndDate(endOfDay(date))}
                                 />
                             </View>
-                        )}
-                    </View>
-
-                    <CategoryPieChart
-                        startDate={customDateRangeEnabled ? startDate : null}
-                        endDate={customDateRangeEnabled ? endDate : null}
-                        selectedMonth={!customDateRangeEnabled ? selectedMonth : null}
-                        selectedYear={!customDateRangeEnabled ? selectedYear : null}
-                        key={getKey()} // Key prop for re-rendering
-                    />
+                        </View>
+                    )}
                 </View>
+
+                <CategoryPieChart
+                    startDate={customDateRangeEnabled ? startDate : null}
+                    endDate={customDateRangeEnabled ? endDate : null}
+                    selectedMonth={!customDateRangeEnabled ? selectedMonth : null}
+                    selectedYear={!customDateRangeEnabled ? selectedYear : null}
+                    key={getKey()}
+                />
             </ScrollView>
         </View>
     );
 }
 
 const styles = StyleSheet.create({
-    scrollContainer: {
-        flexGrow: 1, // Important for ScrollView to work correctly
-    },
     container: {
         flex: 1,
-        alignItems: 'center',
-        justifyContent: 'flex-start', // Start from the top
         padding: 20,
+    },
+    scrollContainer: {
+        paddingBottom: 20,
+        alignItems: 'center',
     },
     title: {
         fontSize: 24,
         fontWeight: 'bold',
         marginBottom: 20,
-    },
-    subtitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginTop: 10,
-        marginBottom: 10,
+        textAlign: 'center',
     },
     filterContainer: {
-        width: '100%',
-        marginBottom: 10,
-        alignItems: 'flex-start',
-    },
-    datePickerContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-around', // Or use 'space-between'
-        width: '100%',
+        width: '95%',
         marginBottom: 20,
+        padding: 15,
+        borderColor: '#ccc',
+        borderWidth: 1,
+        borderRadius: 10,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
     },
     switchContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        width: '80%',
-        marginBottom: 10,
+        marginBottom: 15,
+        paddingHorizontal: 10,
+        borderColor: '#ccc',
+        borderWidth: 1,
+        borderRadius: 10,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
+    },
+    switchLabel: {
+        fontSize: 16,
+        fontWeight: '500',
+    },
+    dateSelectContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 15,
+    },
+    dateOption: {
+        flex: 1,
+    },
+    dateLabel: {
+        fontSize: 14,
+        marginBottom: 5,
+        fontWeight: 'bold',
     },
     dropdownContainer: {
-        marginHorizontal: 12,
-        marginVertical: 8,
-        borderWidth: 1,
-        borderRadius: 8,
         borderColor: '#ccc',
+        borderWidth: 1,
+        borderRadius: 10,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
+        marginHorizontal: 5,
+        marginVertical: 5,
         justifyContent: 'center',
-        padding: 5,
         height: 40,
-        width: "auto",
     },
     dropdown: {
-        height: '100%',
-        width: '90%',
         paddingHorizontal: 10,
+    },
+    datePickerContainer: {
+        marginBottom: 15,
     },
 });
