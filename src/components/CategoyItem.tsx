@@ -28,15 +28,15 @@ const CategoryItem: React.FC<CategoryItemProps> = ({ category, onCollapseButtonP
     return (
         <View style={styles.categoryItem} lightColor="#eee" darkColor="#333">
             <TouchableOpacity
-                style={{ padding: 7 }}
+                style={{ padding: 7, flex: 1, flexDirection: 'row', }}
                 onPress={() => onCollapseButtonPress(category)}>
                     {
                         collapse 
                         ? <AntDesign name="caretright" size={20} color={useColorScheme() === 'light' ? Colors.light.tint : Colors.dark.tint} /> 
                         : <AntDesign name="caretdown" size={20} color={useColorScheme() === 'light' ? Colors.light.tint : Colors.dark.tint} /> 
                     }
+                <Text style={styles.catTitle}>{category}</Text>
             </TouchableOpacity> 
-            <Text style={styles.catTitle}>{category}</Text>
             <View style={{ flexDirection: 'row', backgroundColor: 'transparent' }}>
                 <TouchableOpacity
                     onPress={() => {
@@ -67,7 +67,7 @@ const CategoryItem: React.FC<CategoryItemProps> = ({ category, onCollapseButtonP
 
             <Modal visible={showCategoryModal} transparent animationType="slide">
                 <View style={styles.promptBackgroundView}>
-                    <View style={styles.inputFieldBackgroundView} lightColor="#fff" darkColor="#222">
+                    <View style={styles.inputFieldBackgroundView}>
                         <Text style={{ fontWeight: 'bold' }}>Enter new name for {category}:</Text>
                         <InputText value={newCategoryName} onChangeText={setNewCategoryName} placeholder="Category name" style={styles.inputField} />
                         <View style={styles.promptButtonView}>
@@ -95,9 +95,9 @@ const styles = StyleSheet.create({
         marginBottom: 5,
     },
     catTitle: {
-        fontWeight: 'bold',
+        fontWeight: '600',
         fontSize: 16,
-        marginLeft: 5
+        marginLeft: 20
     },
     promptButtonView: {
         flexDirection: 'row', 

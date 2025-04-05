@@ -32,7 +32,7 @@ export default function AccountScreen() {
             <CustomButton 
                 title="Login"
                 onPressFunc={() => router.navigate("/login")}
-                variant="primary-inverted"
+                variant="primary"
                 borderWidth={1}
                 margin={10}
             />

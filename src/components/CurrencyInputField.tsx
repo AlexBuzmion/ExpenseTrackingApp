@@ -52,7 +52,7 @@ export function CurrencyInputField( {value, onValidChange, inputTitle}: Currency
 
     return (
         <View>
-        <View lightColor="#fff" darkColor="#222">
+        <View>
             <InputTextField
                 headerTitle={inputTitle}
                 style={styles.input}

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import { SectionList, StyleSheet, TouchableOpacity, Animated, Easing, ActivityIndicator } from 'react-native';
+import { SectionList, StyleSheet, TouchableOpacity, Animated, Easing, ActivityIndicator, Platform, useColorScheme } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text, View, InputText as TextInput } from '@/src/components/Themed';
 import { Link, Stack, useFocusEffect } from 'expo-router';
@@ -129,9 +129,9 @@ export default function TabOneScreen() {
 				<Stack.Screen options={{ title: 'Expenses' }} />
 				{/* Search Bar */}
 				<View style={styles.searchBar} lightColor="#fff" darkColor='#222'>
-					<Ionicons style={{ paddingHorizontal: 10 }} name="search" size={20} color={Colors.dark.tint} />
+					<Ionicons style={{ paddingHorizontal: '1%' }} name="search" size={26} color={useColorScheme() === 'light' ? Colors.light.tint : Colors.dark.tint} />
 					<TextInput
-						style={{ flex: 1, color: Colors.dark.tint }}
+						style={{ flex: 1, color: useColorScheme() === 'light' ? Colors.light.tint : Colors.dark.tint, fontSize: 16 }}
 						placeholder="Search"
 						placeholderTextColor="#999"
 						onChangeText={(text) => setSearchQuery(text.trimStart())}
@@ -158,8 +158,8 @@ export default function TabOneScreen() {
 								)}
 								renderSectionHeader={({ section: { title } }) => (
 									<View style={styles.headerContainer}>
-										<Text style={styles.headerText} lightColor={Colors.dark.tint} darkColor={Colors.light.tint}>{title}</Text>
-										<View style={styles.separator} lightColor={Colors.dark.tint} darkColor={Colors.light.tint} />
+										<Text style={[styles.headerText, ]} >{title}</Text>
+										<View style={styles.separator} lightColor={Colors.light.tint} darkColor={Colors.dark.tint} />
 									</View>
 									
 								)}
@@ -172,7 +172,7 @@ export default function TabOneScreen() {
 				<Animated.View style={[styles.addbutton, { transform: [{ scale: listStore && Object.keys(listStore).length === 0 ? scaleAnim : 1 }] }]}>
 					<Link href="/modal" asChild>
 						<TouchableOpacity>
-							<Ionicons name="add" size={30} color={Colors.dark.tint} />
+							<Ionicons name="add" size={30} color={useColorScheme() === 'light' ? Colors.dark.tint : Colors.light.tint} />
 						</TouchableOpacity>
 					</Link>
 				</Animated.View>
@@ -187,13 +187,13 @@ const styles = StyleSheet.create({
 	},
 	title: {
 		fontSize: 20,
-		fontWeight: 'bold',
+		fontWeight: '500',
 		textAlign: 'center',
 		marginTop: 20,
 	},
 	separator: {
 		marginVertical: 5,
-		height: 1,
+		height: 2,
 		width: '100%',
 	},
 	addbutton: {
@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
 		fontWeight: 'bold',
 	},
 	searchBar: {
-		height: 40,
+		height: Platform.OS === 'ios' ? 56 : 46,
 		margin: 12,
 		borderWidth: 1,
 		borderRadius: 8,

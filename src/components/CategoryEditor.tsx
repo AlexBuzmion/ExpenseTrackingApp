@@ -1,4 +1,4 @@
-import { StyleSheet, ActivityIndicator, SectionList, TouchableOpacity, Modal, Alert } from "react-native";
+import { StyleSheet, ActivityIndicator, SectionList, TouchableOpacity, Modal, Alert, Platform } from "react-native";
 import { InputText, View, Text } from "./Themed";
 import { useAuthStore } from "@/store/authStore";
 import { useCategories } from "@/store/catStore";
@@ -166,12 +166,12 @@ export default function CategoryEditor() {
             />
 
             {/*Confirm Categories*/}
-            <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginVertical: 20 }} lightColor="#fff" darkColor="#222">
+            <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center', }} lightColor="#fff" darkColor="#222">
                 <CustomButton
                     title='Cancel'
                     onPressFunc={() => router.back()}
                     variant="secondary"
-                    width={150}
+                    width= { Platform.OS === 'ios' ? 150 : 140}
                     height={60}
                     borderWidth={1}
                 />
@@ -180,7 +180,7 @@ export default function CategoryEditor() {
                     title="Confirm Categories"
                     onPressFunc={handleConfirm}
                     variant="primary"
-                    width={200}
+                    width= { Platform.OS === 'ios' ? 200 : 180}
                     textStyle={{ fontSize: 18 }}
                 />
 

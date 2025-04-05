@@ -38,7 +38,7 @@ export default function ProfileScreen() {
                 : ( getAuth().currentUser?.isAnonymous || getAuth().currentUser === null
                     ? (
                             <>
-                            <Text style={{ width: 200, textAlign: 'center', marginBottom: 10, fontSize: 20}}>Lets unlock all your features! </Text>
+                                <Text style={{ width: 200, textAlign: 'center', marginBottom: 10, fontSize: 20}}>Lets unlock all your features! </Text>
                                 <CustomButton
                                     title="Login"
                                     onPressFunc={() => router.navigate("/login")}
@@ -57,23 +57,24 @@ export default function ProfileScreen() {
                             </>
                         )
                     : (
-                        <View>
-                            <CustomButton
-                                title="Logout"
-                                onPressFunc={logOut}
-                                variant="primary"
-                                borderWidth={1.5}
-                                margin={10}
-                            />
-    
+                        <View style={styles.container}>
                             <CustomButton
                                 title="See all Categories"
                                 onPressFunc={handleCategoriesPage}
-                                variant="secondary"
+                                variant="primary"
                                 borderWidth={1.5}
                                 margin={10}
                                 width={200}
                             />
+                            <CustomButton
+                                title="Logout"
+                                onPressFunc={logOut}
+                                variant="primary-alternative"
+                                borderWidth={1.5}
+                                margin={10}
+                                width={200}
+                            />
+
                         </View>
                     )
                 ) 

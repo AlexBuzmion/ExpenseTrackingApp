@@ -1,11 +1,12 @@
 import React, { useState, useMemo } from 'react';
-import { StyleSheet, ScrollView, TouchableOpacity, useColorScheme } from 'react-native';
+import { StyleSheet, ScrollView, TouchableOpacity, useColorScheme, Platform } from 'react-native';
 import { View, Text, Dropdown } from '@/src/components/Themed';
 import CategoryPieChart from '@/src/components/CategoryPieChart';
 import { CrossPlatformDatePicker } from '@/src/components/CrossPlatformDatePicker';
 import { endOfDay, startOfDay, getMonth, getYear } from 'date-fns';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function AnalyticsScreen() {
     const [startDate, setStartDate] = useState(startOfDay(new Date()));
@@ -52,7 +53,7 @@ export default function AnalyticsScreen() {
     };
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
             <ScrollView contentContainerStyle={styles.scrollContainer}>
                 <Text style={styles.title}>Expense Analytics</Text>
 
@@ -99,14 +100,14 @@ export default function AnalyticsScreen() {
 
                     {customDateRangeEnabled && (
                         <View style={styles.dateSelectContainer}>
-                            <View>
+                            <View style={styles.dateOption}>
                                 <Text style={styles.dateLabel}>Start Date:</Text>
                                 <CrossPlatformDatePicker
                                     value={startDate}
                                     onChange={(date) => setStartDate(startOfDay(date))}
                                 />
                             </View>
-                            <View>
+                            <View  style={styles.dateOption}>
                                 <Text style={styles.dateLabel}>End Date:</Text>
                                 <CrossPlatformDatePicker
                                     value={endDate}
@@ -125,7 +126,7 @@ export default function AnalyticsScreen() {
                     key={getKey()}
                 />
             </ScrollView>
-        </View>
+        </SafeAreaView>
     );
 }
 
@@ -192,17 +193,17 @@ const styles = StyleSheet.create({
     },
     dropdownContainer: {
         borderColor: '#ccc',
-        borderWidth: 1,
-        borderRadius: 10,
+        borderWidth: 1.5,
+        borderRadius: 8,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 4,
-        elevation: 3,
+        // elevation: 3,
         marginHorizontal: 5,
-        marginVertical: 5,
+        // marginVertical: 5,
         justifyContent: 'center',
-        height: 40,
+        height: Platform.OS === 'ios' ? 56 : 46,
     },
     dropdown: {
         paddingHorizontal: 10,

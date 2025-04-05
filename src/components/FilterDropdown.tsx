@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { Text, View, Dropdown} from '@/src/components/Themed';
-import {StyleSheet } from 'react-native';
+import {Platform, StyleSheet } from 'react-native';
 interface FilterDropdownProps {
   selectedFilter: string;
   setSelectedFilter: (filter: string) => void;
@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     justifyContent: 'center',
     padding: 5,
-    height: 40,
+    height: Platform.OS === 'ios' ? 56 : 46,
     width: 250,
   },
   dropdown: {

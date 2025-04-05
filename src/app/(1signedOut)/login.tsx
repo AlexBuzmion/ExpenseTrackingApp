@@ -68,7 +68,7 @@ export default function LoginScreen() {
                             <CustomButton
                                 title="Login"
                                 onPressFunc={handleLogin}
-                                variant="primary-inverted"
+                                variant="primary"
                                 borderWidth={1}
                                 margin={10}
                                 disabled={isLoading}
@@ -78,7 +78,7 @@ export default function LoginScreen() {
                                 title="Cancel"
                                 // onPressFunc={() =>router.navigate('/(1signedOut)')}
                                 onPressFunc={() => router.back()}
-                                variant="secondary-inverted"
+                                variant="secondary"
                             />
                         </>
                     )
