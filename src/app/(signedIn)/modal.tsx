@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { Animated, Keyboard, Platform, StyleSheet, TouchableWithoutFeedback, Alert } from 'react-native';
+import { Animated, Keyboard, Platform, StyleSheet, TouchableWithoutFeedback, Alert, ScrollView } from 'react-native';
 
 import { Text, View, InputText, Dropdown, AnimatedView } from '@/src/components/Themed';
 
@@ -14,6 +14,7 @@ import Colors from '@/src/constants/Colors';
 import { useTaxStore } from "@/store/taxStore";
 import { useCategories } from '@/store/catStore';
 import CustomButton from '@/src/components/CustomButton';
+import { InputTextField } from '@/src/components/InputTextField';
 
 export default function ModalScreen() {
 
@@ -34,7 +35,7 @@ export default function ModalScreen() {
 	const [subCategorySelected, setSubCategorySelected] = useState("");
 	const [subTotal, setSubTotal] = useState("0.00");
 	const [hst, setHst] = useState("0.00");
-	const [province, setProvince] = useState("Ontario");
+	const [province, setProvince] = useState("ON");
 	const [itemNote, setItemNote] = useState("");
 
 	// track errors (missing fields)
@@ -90,11 +91,11 @@ export default function ModalScreen() {
 		};
 		setMissingFields(newMissingFields);
 
-		if (newMissingFields.itemName) 
+		if (newMissingFields.itemName)
 			triggerPulseAnimation(itemBorderAnim);
 		if (newMissingFields.categorySelected)
 			triggerPulseAnimation(categoryBorderAnim);
-		
+
 		// if any fields are missing, prevent saving
 		if (Object.values(newMissingFields).includes(true)) {
 			let alertMessage = '';
@@ -137,98 +138,91 @@ export default function ModalScreen() {
 			onPress={Platform.OS !== 'web' ? () => Keyboard.dismiss() : undefined}
 			style={styles.container}
 		>
-			<View style={[styles.container]}>
-				<View
-					style={[styles.inputFieldContainer, ]}
-				>
+			<ScrollView style={[styles.container]}>
 
-					<Text style={{ marginRight: 10, fontSize: 16 }}>Item:</Text>
-					<InputText
-						style={styles.inputField}
+				<View style={{flex: 1, marginTop: 50}} lightColor='fff' darkColor='#222'>
+					
+					<InputTextField
+						headerTitle='Item:'
+						value={itemName}
 						onChangeText={val => setItemName(val)}
-						placeholder="Enter item name"
-						placeholderTextColor="#888"
+						placeholder='Enter item name'
 					/>
-				</View>
 
-				<View style={styles.separator} lightColor="#fff" darkColor="#222" />
-				<CrossPlatformDatePicker
-					onChange={val => setDate(val)}
-					value={date}
-				/>
-				
-				<DropdownComponent
-					category={categorySelected}
-					subcategory={subCategorySelected}
-					onCategoryChange={val => setCategorySelected(val)}
-					onSubcategoryChange={val => setSubCategorySelected(val)}
-				/>
+					<View style={styles.marginHorizontal} lightColor='fff' darkColor='#222'>
+						<Text style={styles.title}>Transaction Date: </Text>
+						<CrossPlatformDatePicker
+							onChange={val => setDate(val)}
+							value={date}
+						/>
+					</View>
 
-				<View style={styles.inputWrapper}>
-					<CurrencyInputField
-						value={subTotal}
-						onValidChange={val => {
-							setSubTotal(val)
-						}}
-						inputTitle='Subtotal'
-					/>
-				</View>
+					<View style={styles.marginHorizontal} lightColor='fff' darkColor='#222'>
+						<DropdownComponent
+							category={categorySelected}
+							subcategory={subCategorySelected}
+							onCategoryChange={val => setCategorySelected(val)}
+							onSubcategoryChange={val => setSubCategorySelected(val)}
+						/>
+					</View>
+					
+					<View>
+						<CurrencyInputField
+							inputTitle='Subtotal:'
+							// value={'$ ' + subTotal}
+							onValidChange={val => {setSubTotal(val)}}
+						/>
+					</View>
 
-				<View style={styles.inputWrapper}>
-					<CurrencyInputField
-						value={hst.toString()}
-						onValidChange={val => setHst(val)}
-						inputTitle='Tax'
-					/>
-				</View>
+					<View style={[{flexDirection: 'row', alignItems: 'flex-end', marginHorizontal: '2.5%'}]}>
+						<View style={{flex: .74, }}>
+							<CurrencyInputField
+								value={hst.toString()}
+								onValidChange={val => setHst(val)}
+								inputTitle='Tax: '
+							/>
+						</View>
+						<View style={[styles.provinceDropdownContainer, {flex: .2,}]} lightColor="#fff" darkColor="#222">
+							<Dropdown
+								data={provinceList}
+								labelField="label"
+								valueField="value"
+								placeholder="Province"
+								value={province}
+								onChange={item => setProvince(item.value)}
+							/>
+						</View>
+					</View>
 
-				<View style={styles.provinceDropdownContainer} lightColor="#fff" darkColor="#222">
-					<Dropdown
-						style={styles.provinceDropdown}
-						data={provinceList}
-						labelField="label"
-						valueField="value"
-						placeholder="Select Province"
-						value={province}
-						onChange={item => setProvince(item.value)}
-						renderLeftIcon={() => (
-							<Ionicons name="filter" size={20} color="#ccc" style={{ marginRight: 8 }} />
-						)}
-						iconColor="#ccc"
-						lightColor="#fff"
-						darkColor="#222"
-					/>
-				</View>
+					<View style={styles.inputFieldContainer} lightColor="#fff" darkColor="#222">
+						<Text style={[styles.currencySymbol, {fontWeight: 'bold'}]}>Total: </Text>
+						<Text style={[styles.currencySymbol]}>
+							$ {getTotal()}
+						</Text>
+					</View>
 
-				<View style={styles.inputFieldContainer} lightColor="#fff" darkColor="#222">
-					<Text style={[styles.currencySymbol]}>TOTAL: </Text>
-					<Text style={[styles.currencySymbol]}>
-						$ {getTotal()}
-					</Text>
-				</View>
-
-				<View style={[styles.inputFieldContainer, { height: 100, alignItems: 'flex-start' }]} lightColor='#fff' darkColor='#222'>
-					<Text style={{ marginRight: 10, fontSize: 16 }}>Note:</Text>
-					<InputText
-						style={[styles.inputField, { textAlignVertical: 'top' }]}
+					<InputTextField
+						headerTitle='Note: '
+						value={itemNote}
 						onChangeText={val => setItemNote(val)}
-						placeholder="Enter notes"
-						placeholderTextColor="#888"
+						placeholder='Enter notes'
+					/>
+
+					{/* Use a light status bar on iOS to account for the black space above the modal */}
+					<StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
+					<CustomButton
+						title='Save'
+						onPressFunc={trySaveEntry}
+						variant="primary"
+					/>
+
+					<CustomButton
+						title='Cancel'
+						onPressFunc={() => router.back()}
+						variant="secondary"
 					/>
 				</View>
-
-				{/* Use a light status bar on iOS to account for the black space above the modal */}
-				<StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
-				<CustomButton
-					title='Save'
-					onPressFunc={trySaveEntry}
-					variant="primary"
-					width={150}
-					height={60}
-					borderWidth={1}
-					margin={10}
-				/>
-			</View>
+			</ScrollView>
 		</TouchableWithoutFeedback>
 	);
 }
@@ -236,81 +230,39 @@ export default function ModalScreen() {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		padding: 14,
-		marginTop: 40
+		//padding: 14,
+		//marginTop: 40
 	},
 	title: {
-		fontSize: 20,
-		fontWeight: 'bold',
-	},
-	separator: {
-		marginVertical: 10,
-		height: 1,
-		width: '100%',
-	},
-	inputField: {
-		flex: 1,
 		fontSize: 16,
-		paddingVertical: 10,
-		paddingHorizontal: 8,
-		height: '100%'
+		fontWeight: '500'
+	},
+	marginHorizontal: {
+		marginHorizontal: '8%'
 	},
 	inputFieldContainer: {
+		marginLeft: '8%',
 		flexDirection: 'row',
 		alignItems: 'center',
 		borderColor: '#ccc',
-		borderWidth: 1,
+		borderWidth: 1.5,
 		borderRadius: 8,
 		paddingHorizontal: 10,
-		maxWidth: '100%',
-		height: 50,
-		marginVertical: 10
+		maxWidth: '84%',
+		height: Platform.OS === 'ios' ? 60 : 50,
+		marginVertical: 10,
+		marginHorizontal: 18
 	},
 	currencySymbol: {
 		fontSize: 16,
-
-	},
-	button: {
-		backgroundColor: Colors.light.tint,
-		borderRadius: 20,
-		width: 100,
-		height: 40,
-		justifyContent: 'center',
-		alignItems: 'center'
-	},
-	provinceDropdown: {
-		height: '100%',
 	},
 	provinceDropdownContainer: {
-		height: 45,
+		height: Platform.OS === 'ios' ? 60 : 50,
 		borderColor: '#ccc',
-		borderWidth: 1,
+		borderWidth: 1.5,
 		borderRadius: 8,
 		justifyContent: 'center',
 		padding: 5,
-		marginTop: 10
-	},
-	inputWrapper: {
-		justifyContent: 'center',
-		marginTop: 10,
-	},
-	addCategoryButton: {
-		backgroundColor: Colors.light.tint,
-		borderRadius: 20,
-		width: 120,
-		height: 40,
-		justifyContent: 'center',
-		alignItems: 'center',
-		alignSelf: 'center',
-		marginVertical: 10,
-	},
-	addCategoryButtonText: {
-		color: Colors.dark.tint,
-		fontWeight: 'bold',
-	},
-	saveButtonText: {
-		color: Colors.dark.tint,
-		fontSize: 16,
-		fontWeight: 'bold',
+		marginBottom: '1.4%'
 	},
 });

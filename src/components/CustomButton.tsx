@@ -102,6 +102,7 @@ interface CustomButtonProps {
     buttonStyle?: StyleProp<ViewStyle>;
     textStyle?: StyleProp<TextStyle>;
     disabled?: boolean
+    children?: React.ReactNode;
 }
 
 const CustomButton: FC<CustomButtonProps> = ({
@@ -118,8 +119,8 @@ const CustomButton: FC<CustomButtonProps> = ({
 }) => {
     const mode = useColorScheme() || 'light'; 
     const variantStyles = getVariantStyles(variant, mode, borderWidth);
-    const defaultWidth = '90%'; 
-    const defaultHeight = Platform.OS === 'ios' ? 70 : 60;
+    const defaultWidth = '84%'; 
+    const defaultHeight = Platform.OS === 'ios' ? 66 : 62;
     // combine default styles with variant and any overrides
     const combinedButtonStyle = [
         styles.button, 
@@ -144,7 +145,7 @@ const CustomButton: FC<CustomButtonProps> = ({
 
 const styles = StyleSheet.create({
     button: {
-        borderRadius: 16,
+        borderRadius: 8,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.2,
@@ -153,7 +154,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
       },
     buttonText: {
-        fontSize: 20, 
+        fontSize: 18, 
         textAlign: 'center',
     },
 });

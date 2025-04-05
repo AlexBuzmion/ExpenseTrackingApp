@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Dropdown } from '@/src/components/Themed';
 import { useEntriesStore } from '@/store/entriesStore';
-import { StyleSheet, Alert } from 'react-native';
+import { StyleSheet, Alert, Platform } from 'react-native';
 import Colors from '../constants/Colors';
 import { useCategories } from '@/store/catStore';
 import { useRouter } from 'expo-router';
@@ -128,9 +128,9 @@ export default DropdownComponent;
 
 const styles = StyleSheet.create({
     dropdown: {
-        height: 45,
+        height: Platform.OS === 'ios' ? 56 : 46,
         borderColor: '#ccc',
-        borderWidth: 1,
+        borderWidth: 1.5,
         borderRadius: 8,
         paddingHorizontal: 8,
         marginBottom: 10,

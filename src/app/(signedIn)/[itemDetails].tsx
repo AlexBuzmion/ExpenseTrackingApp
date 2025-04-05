@@ -1,14 +1,13 @@
-import { View, Text, InputText } from '@/src/components/Themed';
+import { View, Text } from '@/src/components/Themed';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import { Alert, Pressable, StyleSheet, TouchableOpacity } from 'react-native';
+import { Alert, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { useEntriesStore } from '@/store/entriesStore';
 import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useState } from 'react';
-import Colors from '../../constants/Colors';
 import { InputTextField } from '@/src/components/InputTextField';
 import DropdownComponent from '@/src/components/DropdownComponent';
 import CustomButton from '@/src/components/CustomButton';
-
+import DismissKeyboardView from '@/src/components/DismissKeyboardView';
 
 export default ItemDetails;
 
@@ -44,7 +43,7 @@ function ItemDetails() {
         } else {
             setHasChanges(false);
         }
-    }, [name, category, subcategory, subtotal, hst]);
+    }, [name, category, subcategory, subtotal, hst, note]);
 
     async function handleDeleteItem() {
         console.log('called')
@@ -95,78 +94,80 @@ function ItemDetails() {
     }
 
     return (
-        <View style={styles.container}>
-            <Stack.Screen options={{ title: item.name }} />
+        <ScrollView>
+          <DismissKeyboardView>
+            <View style={{flex: 1}} lightColor='fff' darkColor='#222'>
 
-            <View style={styles.separator} />
+                <View style={styles.separator} lightColor='fff' darkColor='#222' />
 
-            <InputTextField
-                headerTitle="Expense Name"
-                value={name}
-                onChangeText={setName}
-            />
-
-            <View style={styles.dropdownContainer}>
-                <DropdownComponent
-                    category={category}
-                    subcategory={subcategory}
-                    onCategoryChange={val => setCategory(val)}
-                    onSubcategoryChange={val => setSubcategory(val)}
+                <InputTextField
+                    headerTitle="Expense Name"
+                    value={name}
+                    onChangeText={setName}
                 />
-            </View>
 
-            <InputTextField headerTitle="Subtotal:"
-                value={subtotal}
-                onChangeText={(val) => setSubtotal(val.replace(/[^0-9.]/g, ''))}
-                keyboardType="decimal-pad"
-            />
+                <View style={styles.dropdownContainer} lightColor='fff' darkColor='#222'>
+                    <DropdownComponent
+                        category={category}
+                        subcategory={subcategory}
+                        onCategoryChange={val => setCategory(val)}
+                        onSubcategoryChange={val => setSubcategory(val)}
+                    />
+                </View>
 
-            <InputTextField
-                headerTitle="HST:"
-                value={hst}
-                onChangeText={(val) => setHst(val.replace(/[^0-9.]/g, ''))}
-                keyboardType="decimal-pad"
-            />
-
-            <InputTextField headerTitle='Total:' value={`$${total}`} editable={false} />
-
-            <InputTextField headerTitle='Note:' value={note} onChangeText={setNote} />
-
-            {hasChanges && (
-                <CustomButton
-                    title='Save Changes'
-                    variant="primary"
-                    onPressFunc={handleSaveChanges}
-                    width={150}
+                <InputTextField headerTitle="Subtotal:"
+                    value={subtotal}
+                    onChangeText={(val) => setSubtotal(val.replace(/[^0-9.]/g, ''))}
+                    keyboardType="decimal-pad"
                 />
-            )}
 
-            <View style={styles.footer}>
+                <InputTextField
+                    headerTitle="HST:"
+                    value={hst}
+                    onChangeText={(val) => setHst(val.replace(/[^0-9.]/g, ''))}
+                    keyboardType="decimal-pad"
+                />
 
-                <Text style={styles.dateText}>Created on {new Date(item.creationDate).toLocaleDateString(
-                    'en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-                </Text>
-                <Pressable onPress={() => handleDeleteItem()}>
-                    <Ionicons name="trash-outline" size={40} color="#ccc" />
-                </Pressable>
+                <InputTextField headerTitle='Total:' value={`$${total}`} editable={false} />
+
+                <InputTextField headerTitle='Note:' value={note} onChangeText={setNote} />
+
+                {hasChanges && (
+                    <CustomButton
+                        title='Save Changes'
+                        variant="primary"
+                        onPressFunc={handleSaveChanges}
+                        width={150}
+                    />
+                )}
+
+                <View style={styles.footer} lightColor='fff' darkColor='#222'>
+
+                    <Text style={styles.dateText}>Created on {new Date(item.creationDate).toLocaleDateString(
+                        'en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                    </Text>
+                    <Pressable onPress={() => handleDeleteItem()}>
+                        <Ionicons name="trash-outline" size={40} color="#ccc" />
+                    </Pressable>
+                </View>
             </View>
-
-        </View>
+              </DismissKeyboardView>
+        </ScrollView>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        marginTop: 10
+        marginTop: 10,
+
     },
     separator: {
-        marginVertical: 3,
+        marginVertical: 10,
         height: 1,
-        width: '80%',
+        width: '100%',
     },
     footer: {
-        position: 'absolute',
+        position: 'relative',
         bottom: 0,
         width: '100%',
         flexDirection: 'row',
@@ -176,19 +177,6 @@ const styles = StyleSheet.create({
     },
     saveText: {
         fontWeight: 'bold',
-    },
-    saveButton: {
-        backgroundColor: Colors.light.tint,
-        borderRadius: 20,
-        width: 100,
-        height: 40,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 4,
-        justifyContent: 'center',
-        alignItems: 'center',
-        paddingVertical: 10
     },
     dateText: {
         fontSize: 15,

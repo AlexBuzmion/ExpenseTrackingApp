@@ -53,25 +53,26 @@ export const InputTextField = forwardRef<any, CustomInputTextProps>(
 
 const styles = StyleSheet.create({
     container: {
-        width: '90%',
+        width: '84%',
         alignSelf: 'center',
-        marginBottom: '4%',
+        marginBottom: '2%',
     },
     header: {
         fontSize: 16,
         marginBottom: 5,
+        fontWeight: '500',
     },
     inputWrapper: {
         flexDirection: 'row',
         alignItems: 'center',
         borderRadius: 8,
-        borderWidth: 2,
+        borderWidth: 1.5,
         borderColor: '#ccc',
     },
     input: {
         flex: 1,
-        padding: 10,
-        height: Platform.OS === 'ios' ? 64 : 54,
+        // padding: 10,
+        height: Platform.OS === 'ios' ? 56 : 46,
         fontSize: 16,
     },
     iconContainer: {

@@ -5,7 +5,7 @@ import Colors from "@/src/constants/Colors";
 import { useRef, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import {getApp} from "@firebase/app";
-import { getAuth , createUserWithEmailAndPassword, updateProfile, sendEmailVerification} from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, updateProfile, sendEmailVerification } from "firebase/auth";
 import { getFirestore, doc, setDoc, collection, addDoc, getDoc } from "firebase/firestore";
 import { useTaxStore } from "@/store/taxStore";
 import DismissKeyboardView from "@/src/components/DismissKeyboardView";
@@ -17,7 +17,7 @@ const  SignupScreen = () => {
     const router = useRouter();
     const firebaseAuth = getAuth(getApp());
     const db = getFirestore(getApp());
-    const [username, setUsername] = useState('');
+    const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -30,20 +30,27 @@ const  SignupScreen = () => {
 
     async function handleSignup(){
         setIsLoading(true);
-        // if (checkPasswordValidity() != '') {
-        //     alert(checkPasswordValidity());
-        //     return;
-        // }
-        // if (checkEmailValidity() != '') {
-        //     alert(checkEmailValidity());
-        //     return;
-        // }
+
+        const passwordValidityMessage = checkPasswordValidity();
+        if (passwordValidityMessage != '') {
+            alert(passwordValidityMessage);
+            setIsLoading(false);  // Stop loading if validation fails
+            return;
+        }
+
+        const emailValidityMessage = checkEmailValidity();
+        if (emailValidityMessage != '') {
+            alert(emailValidityMessage);
+            setIsLoading(false);  // Stop loading if validation fails
+            return;
+        }
+
         try {
             await createUserWithEmailAndPassword(firebaseAuth, email, password);
             const user = firebaseAuth.currentUser;
             if (user) {
                 try {
-                    await updateProfile(user, { displayName: username });
+                    await updateProfile(user, { displayName: name });
                 } catch (error: any) {
                     alert(error.message);
                 }
@@ -73,27 +80,55 @@ const  SignupScreen = () => {
         }
     };
 
-    //todo ensure this function works
     function checkPasswordValidity() {
-        return 'Tiago, add password validation check'; 
+        if (password.length < 8) {
+            return "Password must be at least 8 characters long.";
+        }
+        if (password !== confirmPassword) {
+            return "Passwords do not match.";
+        }
+
+        // Regex checks
+        const uppercaseRegex = /[A-Z]/;
+        const lowercaseRegex = /[a-z]/;
+        const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/;  // Expanded special characters
+        const numericRegex = /[0-9]/;
+
+        if (!uppercaseRegex.test(password)) {
+            return "Password must contain at least one uppercase character.";
+        }
+        if (!lowercaseRegex.test(password)) {
+            return "Password must contain at least one lowercase character.";
+        }
+        if (!specialCharRegex.test(password)) {
+            return "Password must contain at least one special character. Ex.: !@#$%^&*(),.?\":{}|<>";
+        }
+        if (!numericRegex.test(password)) {
+            return "Password must contain at least one numeric character.";
+        }
+
+        return ''; // Password is valid
     }
 
-    //todo ensure there is a email regex check
     function checkEmailValidity() {
-        return 'Tiago, add email validation check';
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Basic email regex
+        if (!emailRegex.test(email)) {
+            return "Please enter a valid email address.";
+        }
+        return ''; // Email is valid
     }
 
     return (
         <DismissKeyboardView>
             <View style={styles.container}>
                 <InputTextField
-                    headerTitle='Username'
-                    onChangeText={setUsername} 
-                    value={username} 
-                    placeholder="Username"
-                    autoCapitalize="none"
-                    autoFocus 
-                    returnKeyType="next" 
+                    headerTitle='Your Name'  
+                    onChangeText={setName}
+                    value={name}
+                    placeholder="Enter your full name" 
+                    autoCapitalize="words"
+                    autoFocus
+                    returnKeyType="next"
                     onSubmitEditing={() => refToEmail.current?.focus()}
                 />
 
@@ -170,23 +205,6 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         width: '60%' 
     },
-    // button: {
-    //     backgroundColor: Colors.light.tint,
-    //     borderRadius: 20,
-    //     width: 100,
-    //     height: 40, 
-    //     shadowColor: "#000",
-    //     shadowOffset: { width: 0, height: 2 },
-    //     shadowOpacity: 0.2,
-    //     shadowRadius: 4,
-    //     justifyContent: 'center', 
-    //     alignItems: 'center', 
-    // },
-    // buttonText: {
-    //     color: Colors.dark.tint,
-    //     fontSize: 16,
-    //     fontWeight: 'bold',
-    // }
 });
 
 export default SignupScreen;
