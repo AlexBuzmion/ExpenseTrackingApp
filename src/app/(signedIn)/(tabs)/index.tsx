@@ -172,7 +172,7 @@ export default function TabOneScreen() {
 				<Animated.View style={[styles.addbutton, { transform: [{ scale: listStore && Object.keys(listStore).length === 0 ? scaleAnim : 1 }] }]}>
 					<Link href="/modal" asChild>
 						<TouchableOpacity>
-							<Ionicons name="add" size={30} color={useColorScheme() === 'light' ? Colors.dark.tint : Colors.light.tint} />
+							<Ionicons name="add" size={30} color={Colors.dark.tint} />
 						</TouchableOpacity>
 					</Link>
 				</Animated.View>

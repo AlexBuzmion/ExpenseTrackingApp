@@ -14,7 +14,7 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({ selectedFilter, setSele
   ];
 
   return (
-    <View style={styles.container} lightColor='fff' darkColor='#222'>
+    <View style={styles.container}>
       <Dropdown
         style={styles.dropdown}
         data={filterOptions}
@@ -27,8 +27,6 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({ selectedFilter, setSele
           <Ionicons name='filter-sharp' size={20} color="#ccc" style={{ marginRight: 8 }} />
         )}
         iconColor='#ccc'
-        lightColor="fff"
-        darkColor="#222"
       />
     </View>
   );
