@@ -140,7 +140,7 @@ export default function ModalScreen() {
 		>
 			<ScrollView style={[styles.container]}>
 
-				<View style={{flex: 1, marginTop: 50}} lightColor='fff' darkColor='#222'>
+				<View style={{flex: 1, paddingTop: 50}}>
 					
 					<InputTextField
 						headerTitle='Item:'
@@ -149,7 +149,7 @@ export default function ModalScreen() {
 						placeholder='Enter item name'
 					/>
 
-					<View style={styles.marginHorizontal} lightColor='fff' darkColor='#222'>
+					<View style={styles.marginHorizontal}>
 						<Text style={styles.title}>Transaction Date: </Text>
 						<CrossPlatformDatePicker
 							onChange={val => setDate(val)}
@@ -157,7 +157,7 @@ export default function ModalScreen() {
 						/>
 					</View>
 
-					<View style={styles.marginHorizontal} lightColor='fff' darkColor='#222'>
+					<View style={styles.marginHorizontal}>
 						<DropdownComponent
 							category={categorySelected}
 							subcategory={subCategorySelected}
@@ -182,7 +182,7 @@ export default function ModalScreen() {
 								inputTitle='Tax: '
 							/>
 						</View>
-						<View style={[styles.provinceDropdownContainer, {flex: .2,}]} lightColor="#fff" darkColor="#222">
+						<View style={[styles.provinceDropdownContainer, {flex: .2,}]}>
 							<Dropdown
 								data={provinceList}
 								labelField="label"
@@ -194,7 +194,7 @@ export default function ModalScreen() {
 						</View>
 					</View>
 
-					<View style={styles.inputFieldContainer} lightColor="#fff" darkColor="#222">
+					<View style={styles.inputFieldContainer} >
 						<Text style={[styles.currencySymbol, {fontWeight: 'bold'}]}>Total: </Text>
 						<Text style={[styles.currencySymbol]}>
 							$ {getTotal()}

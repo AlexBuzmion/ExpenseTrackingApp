@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { Text, View, Dropdown} from '@/src/components/Themed';
-import {StyleSheet } from 'react-native';
+import {Platform, StyleSheet } from 'react-native';
 interface FilterDropdownProps {
   selectedFilter: string;
   setSelectedFilter: (filter: string) => void;
@@ -14,7 +14,7 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({ selectedFilter, setSele
   ];
 
   return (
-    <View style={styles.container} lightColor='fff' darkColor='#222'>
+    <View style={styles.container}>
       <Dropdown
         style={styles.dropdown}
         data={filterOptions}
@@ -27,8 +27,6 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({ selectedFilter, setSele
           <Ionicons name='filter-sharp' size={20} color="#ccc" style={{ marginRight: 8 }} />
         )}
         iconColor='#ccc'
-        lightColor="fff"
-        darkColor="#222"
       />
     </View>
   );
@@ -43,7 +41,7 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     justifyContent: 'center',
     padding: 5,
-    height: 40,
+    height: Platform.OS === 'ios' ? 56 : 46,
     width: 250,
   },
   dropdown: {

@@ -173,14 +173,14 @@ const  SignupScreen = () => {
                         <CustomButton
                             title="Sign Up"
                             onPressFunc={handleSignup}
-                            variant="primary-inverted"
+                            variant="primary"
                             borderWidth={1.5}
                             margin={10}
                         />
                         <CustomButton
                                 title="Cancel"
                                 onPressFunc={() =>router.navigate('/(1signedOut)')}
-                                variant="secondary-inverted"
+                                variant="secondary"
                             />
                     </>
                 )}

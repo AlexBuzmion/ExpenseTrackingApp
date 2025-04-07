@@ -57,7 +57,7 @@ const SubcategoryItem: React.FC<SubcategoryItemProps> = ({ subcategory, category
 
             <Modal visible={showSubcategoryModal} transparent animationType="slide">
                 <View style={styles.promptBackgroundView}>
-                    <View style={styles.inputFieldBackgroundView} lightColor="#fff" darkColor="#222">
+                    <View style={styles.inputFieldBackgroundView}>
                         <Text style={{ fontWeight: 'bold' }}>Enter new name for {subcategory}:</Text>
                         <InputText value={newSubcategoryName} onChangeText={setNewSubcategoryName} placeholder="Subcategory name" style={styles.inputField} />
                         <View style={styles.promptButtonView}>
