@@ -154,6 +154,15 @@ const  SignupScreen = () => {
                     ref={refToPass}
                     returnKeyType="next" 
                     onSubmitEditing={() => refToConfirmPass.current?.focus()}
+                    inputInstructions={
+                        <View>
+                            <Text>Password must be at least 8 characters long.</Text>
+                            <Text>Include one uppercase letter.</Text>
+                            <Text>Include one lowercase letter.</Text>
+                            <Text>Include one number.</Text>
+                            <Text>Include one special character.</Text>
+                        </View>
+                    }
                 />
                 <InputTextField
                     headerTitle='Confirm Password'
