@@ -1,11 +1,12 @@
 import { View } from '@/src/components/Themed';
 import { useState, useRef, useEffect } from 'react';
-import { Text, StyleSheet, FlatList, Animated, Pressable, TouchableOpacity } from 'react-native';
+import { Text, StyleSheet, FlatList, Animated, Pressable, TouchableOpacity, Platform } from 'react-native';
 import onboardingQuestions from '@/utils/onboardingQuestions';
 import NextButton from '@/src/components/nextButton';
 import QuestionItem from '@/src/components/questionItem';
 import OnboardingPaginator from '@/src/components/onboardingPaginator';
 import { useRouter } from 'expo-router';
+import CustomButton from '@/src/components/CustomButton';
 
 export default function AccountSetupScreen() {
     const router = useRouter();
@@ -96,6 +97,14 @@ export default function AccountSetupScreen() {
                 }
             </View>
                 <NextButton percentage={(currentIndex + 1) * (100 / onboardingQuestions.length)} scrollTo={scrollTo} />
+                <CustomButton
+                    title='Cancel'
+                    onPressFunc={() => router.navigate("/profile")}
+                    variant="secondary"
+                    width= { Platform.OS === 'ios' ? 150 : 140}
+                    height={60}
+                    borderWidth={1}
+                />
         </View>
     );
 }

@@ -29,6 +29,7 @@ const  SignupScreen = () => {
     const refToConfirmPass = useRef<any>(null);
 
     async function handleSignup(){
+        await firebaseAuth.signOut() 
         setIsLoading(true);
 
         const passwordValidityMessage = checkPasswordValidity();
