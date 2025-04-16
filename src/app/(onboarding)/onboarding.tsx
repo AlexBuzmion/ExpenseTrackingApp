@@ -1,6 +1,6 @@
 import { View } from '@/src/components/Themed';
 import { useState, useRef, useEffect } from 'react';
-import { Text, StyleSheet, FlatList, Animated, Pressable, TouchableOpacity, Platform } from 'react-native';
+import { Text, StyleSheet, FlatList, Animated, TouchableOpacity, Platform } from 'react-native';
 import onboardingQuestions from '@/utils/onboardingQuestions';
 import NextButton from '@/src/components/nextButton';
 import QuestionItem from '@/src/components/questionItem';
@@ -12,21 +12,20 @@ export default function AccountSetupScreen() {
     const router = useRouter();
     const [questions, setQuestions] = useState(onboardingQuestions);
     const scrollX = useRef(new Animated.Value(0)).current;
-    const [ currentIndex, setCurrentIndex ] = useState(0);
+    const [currentIndex, setCurrentIndex] = useState(0);
     const [answers, setAnswers] = useState({});
+    const flatListRef = useRef<FlatList>(null);
 
-    
-    const viewableItemsChanged = useRef(({ viewableItems } : any) => {
-        setCurrentIndex(viewableItems[0].index);
-    }).current;
+    const currentQuestionId = questions[currentIndex]?.id;
+    const isCurrentQuestionAnswered = answers.hasOwnProperty(currentQuestionId);
 
-    const handleSetAnswer = ( id: number , answer: string) => {
+    const handleSetAnswer = (id: number, answer: string) => {
+        setAnswers(prev => ({ ...prev, [id]: answer.at(0) }));
         if (id === 1 && answer.startsWith('A')) {
             setQuestions(prev => prev.filter(q => q.id !== 2));
         } else if (id === 1 && !answer.startsWith('A')) {
             setQuestions(onboardingQuestions);
         }
-        setAnswers(prev => ({ ...prev, [id]: answer.at(0) }));
     };
 
     const handleGenerateCats = () => {
@@ -38,42 +37,43 @@ export default function AccountSetupScreen() {
         }
     }
 
-    // useEffect(() => {
-    //     console.log(answers);
-    // }, [answers]);
+    const viewableItemsChanged = useRef(({ viewableItems }: any) => {
+        setCurrentIndex(viewableItems[0].index);
+    }).current;
 
-    // require 50% scroll on the screen before moving to the next question
-    const viewConfig = useRef({viewAreaCoveragePercentThreshold: 50 }).current; 
-    const onboardingRef = useRef<FlatList>(null);
-    
-    const scrollTo = () => {
-        if (currentIndex < questions.length - 1) {
-            onboardingRef.current?.scrollToIndex({ index: currentIndex + 1 });
-            setCurrentIndex(currentIndex + 1);
-        } else {
+    const viewConfig = useRef({ viewAreaCoveragePercentThreshold: 50 }).current;
+
+    const scrollToNext = () => {
+        if (currentIndex < questions.length - 1 && isCurrentQuestionAnswered) {
+            flatListRef.current?.scrollToIndex({ index: currentIndex + 1 });
+        } else if (currentIndex === questions.length - 1) {
             console.log('Last Item');
+        } else {
+            alert('Please answer the current question.');
+            //console.log('Please answer the current question.');
         }
     };
 
     return (
-        
         <View style={{ flex: 1 }}>
             <View style={{ flex: 1.5 }}>
                 <FlatList
+                    ref={flatListRef}
                     data={questions}
                     keyExtractor={(item) => item.id.toString()}
                     renderItem={({ item }) => (
                         <QuestionItem
-                        id={item.id}
-                        question={item.question}
-                        answers={item.answers}
-                        onAnswerSelect={handleSetAnswer}
+                            id={item.id}
+                            question={item.question}
+                            answers={item.answers}
+                            onAnswerSelect={handleSetAnswer}
                         />
                     )}
                     horizontal
                     showsHorizontalScrollIndicator={false}
                     pagingEnabled
                     bounces={false}
+                    scrollEnabled={isCurrentQuestionAnswered} // Control scrolling based on whether the current question is answered
                     onScroll={Animated.event(
                         [{ nativeEvent: { contentOffset: { x: scrollX } } }],
                         { useNativeDriver: false }
@@ -81,30 +81,33 @@ export default function AccountSetupScreen() {
                     onViewableItemsChanged={viewableItemsChanged}
                     viewabilityConfig={viewConfig}
                     scrollEventThrottle={32}
-                    ref={onboardingRef}
                 />
             </View>
             <OnboardingPaginator data={questions} scrollX={scrollX} />
-            <View style={{ flex: .2, position: 'relative', justifyContent: 'center', alignItems: 'center', marginBottom: 20}}>
-                { currentIndex + 1  === questions.length  && ( Object.entries(answers).length === questions.length )
-                    ? (<TouchableOpacity 
-                            style={styles.nextButton}
-                            onPress={handleGenerateCats} 
-                        >
-                            <Text>   Continue   </Text> 
-                        </TouchableOpacity>) 
+            <View style={{ flex: .2, position: 'relative', justifyContent: 'center', alignItems: 'center', marginBottom: 20 }}>
+                {currentIndex + 1 === questions.length && (Object.entries(answers).length === questions.length)
+                    ? (<TouchableOpacity
+                        style={styles.nextButton}
+                        onPress={handleGenerateCats}
+                    >
+                        <Text>  Continue  </Text>
+                    </TouchableOpacity>)
                     : null
                 }
             </View>
-                <NextButton percentage={(currentIndex + 1) * (100 / onboardingQuestions.length)} scrollTo={scrollTo} />
-                <CustomButton
-                    title='Cancel'
-                    onPressFunc={() => router.navigate("/profile")}
-                    variant="secondary"
-                    width= { Platform.OS === 'ios' ? 150 : 140}
-                    height={60}
-                    borderWidth={1}
-                />
+            <NextButton
+                percentage={(currentIndex + 1) * (100 / onboardingQuestions.length)}
+                scrollTo={scrollToNext}
+                disabled={!isCurrentQuestionAnswered} // Disable the next button if the current question isn't answered
+            />
+            <CustomButton
+                title='Cancel'
+                onPressFunc={() => router.navigate("/profile")}
+                variant="secondary"
+                width={Platform.OS === 'ios' ? 150 : 140}
+                height={60}
+                borderWidth={1}
+            />
         </View>
     );
 }
@@ -120,6 +123,6 @@ const styles = StyleSheet.create({
         backgroundColor: '#e6cff2',
         borderRadius: 100,
         padding: 15.2,
-        
+
     },
 });
