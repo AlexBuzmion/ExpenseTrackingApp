@@ -18,23 +18,23 @@ const CategoryPieChart: React.FC<CategoryPieChartProps> = ({ startDate, endDate,
     const filteredExpenses = useMemo(() => {
         return Object.values(expenseList).filter(expense => {
             const expenseDate = parseISO(expense.date);
-
+            const expenseYear = getYear(expenseDate).toString();
+            const expenseMonth = getMonth(expenseDate).toString();
+    
             if (startDate && endDate) {
                 return isWithinInterval(expenseDate, { start: startDate, end: endDate });
-            } else if (selectedMonth && selectedYear) {
-                const expenseMonth = getMonth(expenseDate).toString();
-                const expenseYear = getYear(expenseDate).toString();
-
-                return (
-                    expenseMonth === selectedMonth &&
-                    expenseYear === selectedYear
-                );
+            } else if (selectedYear) {
+                // Filter by year if only selectedYear is present
+                if (selectedMonth) {
+                    return expenseMonth === selectedMonth && expenseYear === selectedYear;
+                } else {
+                    return expenseYear === selectedYear;
+                }
             } else {
                 return true; // No filter, include all expenses
             }
         });
     }, [expenseList, startDate, endDate, selectedMonth, selectedYear]);
-
     // Calculate total expenses per category USING FILTERED EXPENSES
     const categoryTotals: Record<string, number> = useMemo(() => {
         const totals: Record<string, number> = {};
