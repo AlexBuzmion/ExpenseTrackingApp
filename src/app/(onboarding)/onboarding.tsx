@@ -1,5 +1,5 @@
 import { View } from '@/src/components/Themed';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { Text, StyleSheet, FlatList, Animated, TouchableOpacity, Platform } from 'react-native';
 import onboardingQuestions from '@/utils/onboardingQuestions';
 import NextButton from '@/src/components/nextButton';
@@ -46,6 +46,7 @@ export default function AccountSetupScreen() {
     const scrollToNext = () => {
         if (currentIndex < questions.length - 1 && isCurrentQuestionAnswered) {
             flatListRef.current?.scrollToIndex({ index: currentIndex + 1 });
+            setCurrentIndex(currentIndex + 1);
         } else if (currentIndex === questions.length - 1) {
             console.log('Last Item');
         } else {
@@ -54,9 +55,13 @@ export default function AccountSetupScreen() {
         }
     };
 
+    const handleReset = () => {
+        router.replace('/(onboarding)/onboarding');
+    };
+
     return (
         <View style={{ flex: 1 }}>
-            <View style={{ flex: 1.5 }}>
+            <View style={{ flex: 3 }}>
                 <FlatList
                     ref={flatListRef}
                     data={questions}
@@ -100,6 +105,14 @@ export default function AccountSetupScreen() {
                 scrollTo={scrollToNext}
                 disabled={!isCurrentQuestionAnswered} // Disable the next button if the current question isn't answered
             />
+            {/* <CustomButton
+                title='Next'
+                onPressFunc={scrollToNext}
+                variant="primary"
+                width={Platform.OS === 'ios' ? 150 : 140}
+                height={60}
+                borderWidth={1}
+            /> */}
             <CustomButton
                 title='Cancel'
                 onPressFunc={() => router.navigate("/profile")}
@@ -108,6 +121,16 @@ export default function AccountSetupScreen() {
                 height={60}
                 borderWidth={1}
             />
+            <CustomButton
+                onPressFunc={handleReset}
+                title="Reset"
+                height={Platform.OS === 'ios' ? 28 : 30}
+                width={'30%'}
+                margin={5}
+                variant='secondary-alternative'
+                textStyle={{ color: '#e6cff2' }}
+            />
+            
         </View>
     );
 }
