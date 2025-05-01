@@ -100,11 +100,11 @@ export default function AccountSetupScreen() {
                     : null
                 }
             </View>
-            <NextButton
+            {/* <NextButton
                 percentage={(currentIndex + 1) * (100 / onboardingQuestions.length)}
                 scrollTo={scrollToNext}
                 disabled={!isCurrentQuestionAnswered} // Disable the next button if the current question isn't answered
-            />
+            /> */}
             {/* <CustomButton
                 title='Next'
                 onPressFunc={scrollToNext}
