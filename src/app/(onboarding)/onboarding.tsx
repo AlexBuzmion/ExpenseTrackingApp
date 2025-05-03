@@ -20,13 +20,25 @@ export default function AccountSetupScreen() {
     const isCurrentQuestionAnswered = answers.hasOwnProperty(currentQuestionId);
 
     const handleSetAnswer = (id: number, answer: string) => {
-        setAnswers(prev => ({ ...prev, [id]: answer.at(0) }));
+        const newAnswers = { ...answers, [id]: answer.at(0) };
+    
         if (id === 1 && answer.startsWith('A')) {
-            setQuestions(prev => prev.filter(q => q.id !== 2));
+            const updatedQuestions = onboardingQuestions.filter(q => q.id !== 2);
+            const updatedAnswers = Object.fromEntries(
+                Object.entries(newAnswers).filter(([key]) =>
+                    updatedQuestions.some(q => q.id.toString() === key)
+                )
+            );
+            setQuestions(updatedQuestions);
+            setAnswers(updatedAnswers);
         } else if (id === 1 && !answer.startsWith('A')) {
             setQuestions(onboardingQuestions);
+            setAnswers(newAnswers);
+        } else {
+            setAnswers(newAnswers);
         }
     };
+    
 
     const handleGenerateCats = () => {
         if (questions.length === Object.keys(answers).length) {
@@ -78,7 +90,7 @@ export default function AccountSetupScreen() {
                     showsHorizontalScrollIndicator={false}
                     pagingEnabled
                     bounces={false}
-                    scrollEnabled={isCurrentQuestionAnswered} // Control scrolling based on whether the current question is answered
+                    //scrollEnabled={isCurrentQuestionAnswered} // Control scrolling based on whether the current question is answered
                     onScroll={Animated.event(
                         [{ nativeEvent: { contentOffset: { x: scrollX } } }],
                         { useNativeDriver: false }
