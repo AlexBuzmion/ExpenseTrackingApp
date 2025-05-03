@@ -90,13 +90,13 @@ export default function AccountSetupScreen() {
                     showsHorizontalScrollIndicator={false}
                     pagingEnabled
                     bounces={false}
-                    //scrollEnabled={isCurrentQuestionAnswered} // Control scrolling based on whether the current question is answered
+                    scrollEnabled={isCurrentQuestionAnswered} // Control scrolling based on whether the current question is answered
                     onScroll={Animated.event(
                         [{ nativeEvent: { contentOffset: { x: scrollX } } }],
                         { useNativeDriver: false }
                     )}
                     onViewableItemsChanged={viewableItemsChanged}
-                    viewabilityConfig={viewConfig}
+                    //viewabilityConfig={viewConfig}
                     scrollEventThrottle={32}
                 />
             </View>
