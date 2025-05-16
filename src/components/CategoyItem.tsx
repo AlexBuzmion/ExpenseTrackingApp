@@ -69,7 +69,7 @@ const CategoryItem: React.FC<CategoryItemProps> = ({ category, onCollapseButtonP
                 <View style={styles.promptBackgroundView}>
                     <View style={styles.inputFieldBackgroundView}>
                         <Text style={{ fontWeight: 'bold' }}>Enter new name for {category}:</Text>
-                        <InputText value={newCategoryName} onChangeText={setNewCategoryName} placeholder="Category name" style={styles.inputField} />
+                        <InputText value={newCategoryName} onChangeText={setNewCategoryName} placeholder={category} style={styles.inputField} />
                         <View style={styles.promptButtonView}>
                             <TouchableOpacity onPress={() => setShowCategoryModal(false)}><Text lightColor="blue" darkColor='#65beff'>Cancel</Text></TouchableOpacity>
                             <TouchableOpacity onPress={(event) => confirmEditCategory() }>

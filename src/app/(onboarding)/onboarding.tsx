@@ -125,14 +125,14 @@ export default function AccountSetupScreen() {
                 height={60}
                 borderWidth={1}
             /> */}
-            <CustomButton
+            {/* <CustomButton
                 title='Cancel'
                 onPressFunc={() => router.navigate("/profile")}
                 variant="secondary"
                 width={Platform.OS === 'ios' ? 150 : 140}
                 height={60}
                 borderWidth={1}
-            />
+            /> */}
             <CustomButton
                 onPressFunc={handleReset}
                 title="Reset"

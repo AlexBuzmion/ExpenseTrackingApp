@@ -74,7 +74,7 @@ export default function ProfileScreen() {
                                 margin={10}
                                 width={200}
                             />
-                            <CustomButton
+                            {/* <CustomButton
                                 title="OnBoarding"
                                 onPressFunc={() => router.replace('/(onboarding)/onboarding')}
                                 variant="primary-alternative"
@@ -89,7 +89,7 @@ export default function ProfileScreen() {
                                 borderWidth={1.5}
                                 margin={10}
                                 width={200}
-                            />
+                            /> */}
 
                         </View>
                     )
