@@ -54,9 +54,9 @@ export default function RootLayout() {
     });
 
     // call init taxrates on mount 
-    useEffect(() => {
-        useTaxStore.getState().initTaxRates();
-    }, []);
+    // useEffect(() => {
+    //     useTaxStore.getState().initTaxRates();
+    // }, []);
     
     useEffect(() => {
         console.log(`first time user? ${useAuthStore.getState().firstTimeUser}`)

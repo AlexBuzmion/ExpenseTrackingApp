@@ -59,7 +59,7 @@ const DropdownComponent: React.FC<DropdownComponentProps> = ({
     const isSubcategoryDisabled = !category || category === ADD_NEW_CATEGORY_VALUE || !categories[category];
 
     return (
-        <View>
+        <View style={{backgroundColor: 'transparent'}}>
             {/* Category Dropdown */}
             <Dropdown
                 containerStyle={[styles.dropdown, isCategoryFocus && { borderColor: Colors.dark.tint }]} // Use separate focus state

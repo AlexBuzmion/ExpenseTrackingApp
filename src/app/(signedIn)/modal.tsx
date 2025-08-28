@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { Animated, Keyboard, Platform, StyleSheet, TouchableWithoutFeedback, Alert, ScrollView } from 'react-native';
 
-import { Text, View, InputText, Dropdown, AnimatedView } from '@/src/components/Themed';
+import { Text, View, Dropdown } from '@/src/components/Themed';
 
 import { useEffect, useRef, useState } from 'react';
 import { CurrencyInputField } from '../../components/CurrencyInputField';
@@ -9,8 +9,6 @@ import { CrossPlatformDatePicker } from '../../components/CrossPlatformDatePicke
 import DropdownComponent from '../../components/DropdownComponent';
 import { useEntriesStore } from '@/store/entriesStore';
 import { useRouter } from 'expo-router'; // Import Link!
-import { Ionicons } from '@expo/vector-icons';
-import Colors from '@/src/constants/Colors';
 import { useTaxStore } from "@/store/taxStore";
 import { useCategories } from '@/store/catStore';
 import CustomButton from '@/src/components/CustomButton';
@@ -27,6 +25,10 @@ export default function ModalScreen() {
 	useEffect(() => {
 		initCats();
 	}, []);
+	
+    useEffect(() => {
+        useTaxStore.getState().initTaxRates();
+    }, []);
 
 	// track input values
 	const [itemName, setItemName] = useState("");

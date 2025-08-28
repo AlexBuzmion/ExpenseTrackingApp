@@ -3,7 +3,7 @@ import { InputText, View, Text } from "./Themed";
 import { useAuthStore } from "@/store/authStore";
 import { useCategories } from "@/store/catStore";
 import { useRouter } from "expo-router";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import Colors from "../constants/Colors";
 import CategoryItem from "./CategoyItem";
 import SubcategoryItem from "./SubcategoryItem";
@@ -31,11 +31,19 @@ export default function CategoryEditor() {
 
     //? this replaces the sections const, converts and stores the categories object from Record<string, string[]> to SectionData[]
     //? SectionData interface above includes control for collapse and showFooter on top of cats and subcats stored
-    const [sectionData, setSectionData] = useState<SectionData[]>(transformCatsToSectionData(categories));
+    const sectionData = useMemo(() => {
+        return transformCatsToSectionData(categories);
+    }, [categories]);
+
+    const [sectionDataState, setSectionDataState] = useState<SectionData[]>(sectionData);
+
+    useEffect(() => {
+        setSectionDataState(sectionData)
+    }, [sectionData])
 
     //? function to toggle collapse and showFooter for each section
     const toggleSection = (sectionTitle: string) => {
-        setSectionData(prevSections =>
+        setSectionDataState(prevSections =>
             prevSections.map(section =>
                 section.title === sectionTitle
                     ? { ...section, collapsed: !section.collapsed, showFooter: !section.showFooter }
@@ -120,7 +128,7 @@ export default function CategoryEditor() {
             </Text>
 
             <SectionList
-                sections={sectionData.map(section => ({
+                sections={sectionDataState.map(section => ({
                     ...section,
                     data: section.collapsed ? [] : section.data,
                 }))}
@@ -148,9 +156,6 @@ export default function CategoryEditor() {
                                 height={45}
                                 borderWidth={0}
                             />
-                            // <TouchableOpacity onPress={() => promptAddSubcategory(title)} style={{ marginLeft: 10, padding: 10, borderWidth: 1 }}>
-                            //     <Text style={styles.addSubCategoryButtonText} lightColor='blue' darkColor='#65beff'>add more types for {title}</Text>
-                            // </TouchableOpacity>
                         )
                         : null
                 }

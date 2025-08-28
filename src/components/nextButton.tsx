@@ -26,23 +26,22 @@ export default function NextButton({percentage, scrollTo } : any) {
     }, [percentage]);
 
     useEffect(() => {
-        progressAnim.addListener(
-            (value) => {
-                const strokeDashoffset = circumference - (circumference * value.value) / 100;
-                if (progressRef?.current) {
-                    (progressRef.current as any).setNativeProps({
-                        strokeDashoffset,
-                    });
-                }
-            }, 
-            [percentage]
-        );
+        progressAnim.addListener((value) => {
+            const strokeDashoffset = circumference - (circumference * value.value) / 100;
+            if (progressRef?.current) {
+                (progressRef.current as any).setNativeProps({
+                    strokeDashoffset,
+                });
+            }
+        });
         return () => {
             progressAnim.removeAllListeners();
-        }
-    }, []);
+        };
+    }, [percentage]);
 
-    
+    // Hide visual when percentage is 100
+    if (percentage === 100) return null;
+
     return (
         <View style={styles.container}>
             <Svg width={size} height={size}>

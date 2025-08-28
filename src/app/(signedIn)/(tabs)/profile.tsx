@@ -25,7 +25,7 @@ export default function ProfileScreen() {
             alert(error.message);
         }
     }
-    
+
     function handleCategoriesPage()
     {
         router.push("/categoryModal");
@@ -74,6 +74,22 @@ export default function ProfileScreen() {
                                 margin={10}
                                 width={200}
                             />
+                            {/* <CustomButton
+                                title="OnBoarding"
+                                onPressFunc={() => router.replace('/(onboarding)/onboarding')}
+                                variant="primary-alternative"
+                                borderWidth={1.5}
+                                margin={10}
+                                width={200}
+                            />
+                            <CustomButton
+                                title="SuggestedCats"
+                                onPressFunc={() => router.replace('/(onboarding)/suggestedCats')}
+                                variant="primary-alternative"
+                                borderWidth={1.5}
+                                margin={10}
+                                width={200}
+                            /> */}
 
                         </View>
                     )

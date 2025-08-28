@@ -3,17 +3,19 @@ import { StyleSheet, ScrollView, TouchableOpacity, useColorScheme, Platform } fr
 import { View, Text, Dropdown } from '@/src/components/Themed';
 import CategoryPieChart from '@/src/components/CategoryPieChart';
 import { CrossPlatformDatePicker } from '@/src/components/CrossPlatformDatePicker';
-import { endOfDay, startOfDay, getMonth, getYear } from 'date-fns';
+import { endOfDay, startOfDay, getMonth, getYear, startOfYear } from 'date-fns';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import CustomButton from '@/src/components/CustomButton';
 
 export default function AnalyticsScreen() {
-    const [startDate, setStartDate] = useState(startOfDay(new Date()));
+    const [startDate, setStartDate] = useState(startOfYear(new Date()));
     const [endDate, setEndDate] = useState(endOfDay(new Date()));
     const [selectedMonth, setSelectedMonth] = useState('');
     const [selectedYear, setSelectedYear] = useState('');
     const [customDateRangeEnabled, setCustomDateRangeEnabled] = useState(false);
+    const [monthDropdownEnabled, setEnableMonthDropdown] = useState(false);
 
     const months = useMemo(() => {
         return [
@@ -45,8 +47,8 @@ export default function AnalyticsScreen() {
     const getKey = () => {
         if (customDateRangeEnabled) {
             return `custom-${startDate.toISOString()}-${endDate.toISOString()}`;
-        } else if (selectedMonth && selectedYear) {
-            return `${selectedYear}-${selectedMonth}`;
+        } else if (selectedYear) {
+            return selectedMonth ? `${selectedYear}-${selectedMonth}` : `${selectedYear}`;
         } else {
             return 'all';
         }
@@ -67,21 +69,6 @@ export default function AnalyticsScreen() {
                     {!customDateRangeEnabled && (
                         <View style={styles.dateSelectContainer}>
                             <View style={styles.dateOption}>
-                                <Text style={styles.dateLabel}>Month:</Text>
-                                <View style={styles.dropdownContainer}>
-                                    <Dropdown
-                                        style={styles.dropdown}
-                                        data={months}
-                                        labelField="label"
-                                        valueField="value"
-                                        placeholder="Select Month"
-                                        value={selectedMonth}
-                                        onChange={item => setSelectedMonth(item.value)}
-                                    />
-                                </View>
-                            </View>
-
-                            <View style={styles.dateOption}>
                                 <Text style={styles.dateLabel}>Year:</Text>
                                 <View style={styles.dropdownContainer}>
                                     <Dropdown
@@ -91,10 +78,44 @@ export default function AnalyticsScreen() {
                                         valueField="value"
                                         placeholder="Select Year"
                                         value={selectedYear}
-                                        onChange={item => setSelectedYear(item.value)}
+                                        onChange={(item) => {
+                                            setSelectedYear(item.value);
+                                            setEnableMonthDropdown(true);
+                                          }}
                                     />
                                 </View>
                             </View>
+
+                            {monthDropdownEnabled && (
+                                <View style={styles.dateOption}>
+                                    <Text style={styles.dateLabel}>Month:</Text>
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <View style={{ flex: 1 }}>
+                                            <View style={styles.dropdownContainer}>
+                                                <Dropdown
+                                                    style={styles.dropdown}
+                                                    data={months}
+                                                    labelField="label"
+                                                    valueField="value"
+                                                    placeholder="Select Month"
+                                                    value={selectedMonth}
+                                                    onChange={item => setSelectedMonth(item.value)}
+                                                />
+                                            </View>
+                                        </View>
+                                        <View>
+                                            <CustomButton
+                                                onPressFunc={() => setSelectedMonth('')}
+                                                title="Clear"
+                                                width={'auto'}
+                                                height={40}
+                                                textStyle={{ fontSize: 10, fontWeight: 'bold' }}
+                                                buttonStyle={{ margin: 0 }}
+                                            />
+                                        </View>
+                                    </View>
+                                </View>
+                            )}
                         </View>
                     )}
 
@@ -207,6 +228,7 @@ const styles = StyleSheet.create({
     },
     dropdown: {
         paddingHorizontal: 10,
+        fontSize: 14,
     },
     datePickerContainer: {
         marginBottom: 15,
